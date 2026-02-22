@@ -6,7 +6,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import { Card, Statistic, Row, Col, Typography, Skeleton } from 'antd';
+import { Card, Statistic, Typography, Skeleton } from 'antd';
 import {
   MailOutlined,
   SafetyOutlined,
@@ -18,6 +18,8 @@ import {
   StopOutlined,
   UserAddOutlined,
   WarningOutlined,
+  HomeOutlined,
+  LaptopOutlined,
 } from '@ant-design/icons';
 import { motion } from 'framer-motion';
 
@@ -44,6 +46,8 @@ interface Stats {
   idNew?: number;
   idMismatch?: number;
   idNeedReview?: number;
+  physical?: number;
+  online?: number;
 }
 
 export default function CommitteeStats({ committee, season }: CommitteeStatsProps) {
@@ -194,6 +198,22 @@ export default function CommitteeStats({ committee, season }: CommitteeStatsProp
             bgColor: 'bg-orange-50',
             iconColor: 'text-orange-600',
           },
+          {
+            title: 'Physical',
+            value: stats.physical ?? 0,
+            icon: <HomeOutlined className="text-2xl" />,
+            color: 'teal',
+            bgColor: 'bg-teal-50',
+            iconColor: 'text-teal-600',
+          },
+          {
+            title: 'Online',
+            value: stats.online ?? 0,
+            icon: <LaptopOutlined className="text-2xl" />,
+            color: 'violet',
+            bgColor: 'bg-violet-50',
+            iconColor: 'text-violet-600',
+          },
         ]
       : []),
   ];
@@ -222,14 +242,14 @@ export default function CommitteeStats({ committee, season }: CommitteeStatsProp
       </motion.div>
 
       {/* Stats Grid */}
-      <Row gutter={[16, 16]}>
+      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
         {statsData.map((stat, index) => (
-          <Col xs={12} sm={12} md={12} lg={12} xl={6} key={stat.title}>
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.3, delay: index * 0.05 }}
-            >
+          <motion.div
+            key={stat.title}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3, delay: index * 0.05 }}
+          >
               <Card
                 className="shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer"
                 variant="borderless"
@@ -251,10 +271,9 @@ export default function CommitteeStats({ committee, season }: CommitteeStatsProp
                   </div>
                 </div>
               </Card>
-            </motion.div>
-          </Col>
+          </motion.div>
         ))}
-      </Row>
+      </div>
     </div>
   );
 }

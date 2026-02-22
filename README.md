@@ -1,12 +1,28 @@
 <div align="center">
 
-# IEEE KSB CRM
+<img src="https://upload.wikimedia.org/wikipedia/commons/2/21/IEEE_logo.svg" alt="IEEE Logo" width="100" />
+
+# ⚡ IEEE KSB CRM
+
+### Applicant Management System
 
 **A full-stack management system for IEEE KSB — handling applicant interviews, Welcome-Day events, attendance, email campaigns, QR codes, and more.**
 
-Built with **Next.js 16 · React 19 · TypeScript · Google Sheets API · Tailwind CSS · Ant Design**
+<br/>
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Next.js](https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Google Sheets](https://img.shields.io/badge/Google%20Sheets-API%20v4-34A853?style=for-the-badge&logo=googlesheets&logoColor=white)](https://developers.google.com/sheets/api)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+[![Ant Design](https://img.shields.io/badge/Ant%20Design-5-0170FE?style=for-the-badge&logo=antdesign&logoColor=white)](https://ant.design/)
+
+<br/>
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
+[![Node.js](https://img.shields.io/badge/Node.js-%E2%89%A5%2018.18-339933?style=flat-square&logo=node.js&logoColor=white)](https://nodejs.org/)
+[![Vercel](https://img.shields.io/badge/Deploy-Vercel-000?style=flat-square&logo=vercel&logoColor=white)](https://vercel.com/)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://github.com/Ahmedfahmy8308/IEEE-KSB/pulls)
 
 </div>
 

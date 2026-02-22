@@ -8,7 +8,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useToast } from '@/components/ToastProvider';
 import LoadingSpinner from '@/components/LoadingSpinner';
-import { INTERVIEW_STATE } from '@/lib/constants';
+import { INTERVIEW_STATE, INTERVIEW_MODE } from '@/lib/constants';
 import { Input, Select, Button, Card, Avatar, Tag, Space, Typography } from 'antd';
 import {
   UserOutlined,
@@ -72,6 +72,7 @@ interface MemberData {
   s1IdEntered?: string;
   idValidationStatus?: string;
   pullSource?: string;
+  interviewMode?: string;
 }
 
 export default function MemberDetailPage() {
@@ -822,6 +823,28 @@ export default function MemberDetailPage() {
                           <Option value="rejected">Rejected</Option>
                         </Select>
                       </div>
+
+                      {season === 'S2' && (
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Interview Mode
+                          </label>
+                          <Select
+                            size="large"
+                            value={member.interviewMode || INTERVIEW_MODE.PHYSICAL}
+                            onChange={(value) => handleInputChange('interviewMode', value)}
+                            disabled={!isEditing || !canEditField('interviewMode')}
+                            className="w-full"
+                          >
+                            <Option value={INTERVIEW_MODE.PHYSICAL}>
+                              🏢 Physical
+                            </Option>
+                            <Option value={INTERVIEW_MODE.ONLINE}>
+                              💻 Online
+                            </Option>
+                          </Select>
+                        </div>
+                      )}
 
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">

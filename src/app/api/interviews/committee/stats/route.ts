@@ -84,6 +84,8 @@ async function handler(request: NextRequest, user: User) {
       idNew: fullStats.idNew,
       idMismatch: fullStats.idMismatch,
       idNeedReview: fullStats.idNeedReview,
+      physical: fullStats.physical,
+      online: fullStats.online,
     };
 
     // Get unique interview dates for this committee

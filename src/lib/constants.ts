@@ -6,6 +6,14 @@
  * Constants and enums used across the application
  */
 
+// Interview Mode Values (S2 only)
+export const INTERVIEW_MODE = {
+  PHYSICAL: 'Physical',
+  ONLINE: 'Online',
+} as const;
+
+export type InterviewMode = (typeof INTERVIEW_MODE)[keyof typeof INTERVIEW_MODE];
+
 // Interview State Values
 export const INTERVIEW_STATE = {
   NOT_STARTED: 'Not Started',

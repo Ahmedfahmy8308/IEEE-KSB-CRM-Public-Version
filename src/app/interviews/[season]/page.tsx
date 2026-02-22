@@ -44,6 +44,8 @@ interface Stats {
   idNew?: number;
   idMismatch?: number;
   idNeedReview?: number;
+  physical?: number;
+  online?: number;
 }
 
 function DashboardContent() {

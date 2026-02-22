@@ -52,10 +52,12 @@ const S1_COLUMNS = {
   S1_ID_ENTERED: -1,
   ID_VALIDATION_STATUS: -1,
   PULL_SOURCE: -1,
+  INTERVIEW_MODE: -1,
 };
 
-// S2 layout: 30 columns (A–AD)
+// S2 layout: 31 columns (A–AE)
 // Column P (15) "If yes role" is removed; everything shifts up by 1
+// DB columns 0-14 are the same order as S1 (origin form differs, pull route handles mapping)
 const S2_COLUMNS = {
   ...BASE_COLUMNS,
   IF_YES_ROLE: -1, // not present in S2 sheet
@@ -64,16 +66,17 @@ const S2_COLUMNS = {
   WHY_IEEE_KSB: 17,
   INTERVIEW_DAY: 18,
   INTERVIEW_TIME: 19,
-  STATE: 20,
-  NOTE: 21,
-  ID: 22,
-  S1_ID_ENTERED: 23,
-  ID_VALIDATION_STATUS: 24,
-  APPROVED: 25,
-  IS_EMAIL_SEND: 26,
-  IS_APPROVED_EMAIL_SEND: 27,
-  PULL_SOURCE: 28,
-  LOG: 29,
+  INTERVIEW_MODE: 20,
+  STATE: 21,
+  NOTE: 22,
+  ID: 23,
+  S1_ID_ENTERED: 24,
+  ID_VALIDATION_STATUS: 25,
+  APPROVED: 26,
+  IS_EMAIL_SEND: 27,
+  IS_APPROVED_EMAIL_SEND: 28,
+  PULL_SOURCE: 29,
+  LOG: 30,
 };
 
 type ColumnMap = typeof S1_COLUMNS | typeof S2_COLUMNS;
@@ -85,12 +88,12 @@ export function getInterviewColumns(season?: string): ColumnMap {
 
 /** Return the sheet end-column letter for the given season */
 function getEndCol(season?: string): string {
-  return season === 'S2' ? 'AD' : 'AB';
+  return season === 'S2' ? 'AE' : 'AB';
 }
 
 /** Return the total column count for the given season */
 function getColCount(season?: string): number {
-  return season === 'S2' ? 30 : 28;
+  return season === 'S2' ? 31 : 28;
 }
 
 // Default export for backward compatibility (S1 layout)
@@ -137,6 +140,7 @@ export interface InterviewApplicant {
   s1IdEntered?: string;
   idValidationStatus?: string;
   pullSource?: string;
+  interviewMode?: string; // S2-only: 'Physical' or 'Online'
   rowIndex?: number; // Internal: actual row index in sheet (1-based)
 }
 
@@ -214,6 +218,7 @@ function rowToApplicant(row: string[], rowIndex: number, season?: string): Inter
     s1IdEntered: COLS.S1_ID_ENTERED >= 0 ? row[COLS.S1_ID_ENTERED] || '' : '',
     idValidationStatus: COLS.ID_VALIDATION_STATUS >= 0 ? row[COLS.ID_VALIDATION_STATUS] || '' : '',
     pullSource: COLS.PULL_SOURCE >= 0 ? row[COLS.PULL_SOURCE] || '' : '',
+    interviewMode: COLS.INTERVIEW_MODE >= 0 ? row[COLS.INTERVIEW_MODE] || '' : '',
     rowIndex,
   };
 }
@@ -259,6 +264,8 @@ function applicantToRow(applicant: InterviewApplicant, season?: string): (string
   if (COLS.ID_VALIDATION_STATUS >= 0 && applicant.idValidationStatus)
     row[COLS.ID_VALIDATION_STATUS] = applicant.idValidationStatus;
   if (COLS.PULL_SOURCE >= 0 && applicant.pullSource) row[COLS.PULL_SOURCE] = applicant.pullSource;
+  if (COLS.INTERVIEW_MODE >= 0 && applicant.interviewMode)
+    row[COLS.INTERVIEW_MODE] = applicant.interviewMode;
 
   return row;
 }
@@ -326,24 +333,29 @@ export async function batchAppendInterviewApplicants(
 export async function ensureS2Headers(season?: string): Promise<void> {
   const sheetName = getInterviewSheetName(season);
 
-  // 30 columns needed (A=1 ... AD=30)
-  await expandSheetColumns(sheetName, 30);
+  // 31 columns needed (A=1 ... AE=31)
+  await expandSheetColumns(sheetName, 31);
 
   // Read current header row
-  const headerRows = await readRange(sheetName, 'A1:AD1');
+  const headerRows = await readRange(sheetName, 'A1:AE1');
   const headers = headerRows[0] || [];
 
   // Check if S2-specific columns have headers
   const COLS = getInterviewColumns('S2');
   const needsUpdate =
+    !headers[COLS.INTERVIEW_MODE] ||
     !headers[COLS.S1_ID_ENTERED] ||
     !headers[COLS.ID_VALIDATION_STATUS] ||
     !headers[COLS.PULL_SOURCE];
 
   if (needsUpdate) {
-    // Write post-ID headers (X through AD) in one shot
-    await updateRange(sheetName, 'X1:AD1', [
+    // Write headers from U (col 20 = Interview Mode) through AE (col 30 = Log)
+    await updateRange(sheetName, 'U1:AE1', [
       [
+        'Interview Mode',
+        'state',
+        'Note',
+        'ID',
         'S1 ID Entered',
         'ID Validation Status',
         'Approved',

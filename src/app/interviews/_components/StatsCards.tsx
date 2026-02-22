@@ -2,7 +2,7 @@
 // Developed at Ufuq.tech
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import { Card, Statistic, Row, Col } from 'antd';
+import { Card, Statistic } from 'antd';
 import {
   TeamOutlined,
   MailOutlined,
@@ -16,6 +16,8 @@ import {
   UserAddOutlined,
   WarningOutlined,
   ExclamationCircleOutlined,
+  HomeOutlined,
+  LaptopOutlined,
 } from '@ant-design/icons';
 import { motion } from 'framer-motion';
 
@@ -34,6 +36,8 @@ interface StatsCardsProps {
     idNew?: number;
     idMismatch?: number;
     idNeedReview?: number;
+    physical?: number;
+    online?: number;
   };
   season?: string;
 }
@@ -127,48 +131,61 @@ export default function StatsCards({ stats, season }: StatsCardsProps) {
             bgGradient: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
             iconBgColor: 'rgba(253, 186, 116, 0.2)',
           },
+          {
+            title: 'Physical',
+            value: stats.physical ?? 0,
+            icon: <HomeOutlined style={{ fontSize: '32px', color: '#fff' }} />,
+            bgGradient: 'linear-gradient(135deg, #14b8a6 0%, #0d9488 100%)',
+            iconBgColor: 'rgba(94, 234, 212, 0.2)',
+          },
+          {
+            title: 'Online',
+            value: stats.online ?? 0,
+            icon: <LaptopOutlined style={{ fontSize: '32px', color: '#fff' }} />,
+            bgGradient: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+            iconBgColor: 'rgba(165, 180, 252, 0.2)',
+          },
         ]
       : []),
   ];
 
   return (
-    <Row gutter={[24, 24]} className="w-full">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 w-full">
       {statsData.map((stat, index) => (
-        <Col xs={24} sm={12} lg={12} xl={6} key={stat.title}>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: index * 0.1 }}
+        <motion.div
+          key={stat.title}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3, delay: index * 0.1 }}
+        >
+          <Card
+            className="shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer h-full"
+            variant="borderless"
+            style={{ background: stat.bgGradient }}
           >
-            <Card
-              className="shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer"
-              variant="borderless"
-              style={{ background: stat.bgGradient }}
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <Statistic
-                    title={
-                      <span style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: '14px' }}>
-                        {stat.title}
-                      </span>
-                    }
-                    value={stat.value}
-                    valueStyle={{
-                      color: '#ffffff',
-                      fontSize: '28px',
-                      fontWeight: 'bold',
-                    }}
-                  />
-                </div>
-                <div className="p-4 rounded-lg" style={{ backgroundColor: stat.iconBgColor }}>
-                  {stat.icon}
-                </div>
+            <div className="flex items-center justify-between">
+              <div className="flex-1">
+                <Statistic
+                  title={
+                    <span style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: '14px' }}>
+                      {stat.title}
+                    </span>
+                  }
+                  value={stat.value}
+                  valueStyle={{
+                    color: '#ffffff',
+                    fontSize: '28px',
+                    fontWeight: 'bold',
+                  }}
+                />
               </div>
-            </Card>
-          </motion.div>
-        </Col>
+              <div className="p-4 rounded-lg" style={{ backgroundColor: stat.iconBgColor }}>
+                {stat.icon}
+              </div>
+            </div>
+          </Card>
+        </motion.div>
       ))}
-    </Row>
+    </div>
   );
 }

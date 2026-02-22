@@ -11,7 +11,24 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-const CONFIG_PATH = path.join(process.cwd(), 'config.json');
+// On Vercel the project root is read-only (/var/task).
+// We keep a writable copy in /tmp and seed it from the bundled file on cold start.
+const BUNDLED_CONFIG_PATH = path.join(process.cwd(), 'config.json');
+const isVercel = !!process.env.VERCEL;
+const CONFIG_PATH = isVercel ? '/tmp/config.json' : BUNDLED_CONFIG_PATH;
+
+/** Ensure a writable config exists in /tmp on Vercel cold starts */
+function ensureWritableConfig(): void {
+  if (!isVercel) return;
+  if (!fs.existsSync(CONFIG_PATH)) {
+    try {
+      const bundled = fs.readFileSync(BUNDLED_CONFIG_PATH, 'utf-8');
+      fs.writeFileSync(CONFIG_PATH, bundled, 'utf-8');
+    } catch {
+      // Bundled file missing → will fall back to defaults in getConfig()
+    }
+  }
+}
 
 export interface AppConfig {
   sheetNames: {
@@ -66,6 +83,7 @@ const DEFAULT_CONFIG: AppConfig = {
  * Falls back to defaults if config.json is missing or malformed.
  */
 export function getConfig(): AppConfig {
+  ensureWritableConfig();
   try {
     const raw = fs.readFileSync(CONFIG_PATH, 'utf-8');
     const parsed = JSON.parse(raw);
@@ -84,6 +102,7 @@ export function getConfig(): AppConfig {
  * Merges the partial update with the current config.
  */
 export function updateConfig(partial: Partial<AppConfig>): AppConfig {
+  ensureWritableConfig();
   const current = getConfig();
   const merged = deepMerge(
     current as unknown as Record<string, unknown>,

@@ -232,6 +232,8 @@ export function calculateMemberStats(members: ApplicantRow[]): {
   idNew: number;
   idMismatch: number;
   idNeedReview: number;
+  physical: number;
+  online: number;
 } {
   const stats = {
     total: members.length,
@@ -246,6 +248,8 @@ export function calculateMemberStats(members: ApplicantRow[]): {
     idNew: 0,
     idMismatch: 0,
     idNeedReview: 0,
+    physical: 0,
+    online: 0,
   };
 
   for (const member of members) {
@@ -302,6 +306,11 @@ export function calculateMemberStats(members: ApplicantRow[]): {
     else if (vs === 'Wrong ID') stats.idMismatch++;
     else if (vs === 'Need Review') stats.idNeedReview++;
     else if (!vs) stats.idNew++;
+
+    // Interview mode counts (S2)
+    const mode = (member.interviewMode || '').trim();
+    if (mode === 'Online') stats.online++;
+    else if (mode === 'Physical') stats.physical++;
   }
 
   return stats;
@@ -326,6 +335,8 @@ export async function getMemberStats(season?: string): Promise<{
   idNew: number;
   idMismatch: number;
   idNeedReview: number;
+  physical: number;
+  online: number;
 }> {
   const members = await readAllRows(season);
   const fullStats = calculateMemberStats(members);
@@ -369,6 +380,8 @@ export async function getMemberStats(season?: string): Promise<{
     idNew: fullStats.idNew,
     idMismatch: fullStats.idMismatch,
     idNeedReview: fullStats.idNeedReview,
+    physical: fullStats.physical,
+    online: fullStats.online,
   };
 }
 

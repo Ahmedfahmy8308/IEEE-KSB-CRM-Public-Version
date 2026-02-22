@@ -106,6 +106,26 @@ function generateUniqueIdSync(existingSet: Set<string>): string {
   throw new Error('Unable to generate unique ID');
 }
 
+/**
+ * Parse Google Forms timestamps that may be in M/D/YYYY H:MM:SS format.
+ * Also handles ISO strings and other formats.
+ * Returns null if unparseable.
+ */
+function parseTimestamp(ts: string): Date | null {
+  // Try Google Forms format: M/D/YYYY H:MM:SS or MM/DD/YYYY HH:MM:SS
+  const gfMatch = ts.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})\s+(\d{1,2}):(\d{2}):(\d{2})$/);
+  if (gfMatch) {
+    const [, month, day, year, hour, minute, second] = gfMatch;
+    return new Date(
+      parseInt(year), parseInt(month) - 1, parseInt(day),
+      parseInt(hour), parseInt(minute), parseInt(second)
+    );
+  }
+  // Fallback: native Date parser
+  const d = new Date(ts);
+  return isNaN(d.getTime()) ? null : d;
+}
+
 interface PullConfig {
   originSheetId: string;
   originTabName: string;
@@ -163,12 +183,18 @@ export const POST = withRoles(['ChairMan'], async (request: NextRequest) => {
       return NextResponse.json({ message: 'No records found in origin sheet', pulled: 0 });
     }
 
-    // 2. Read existing DB records to find already-pulled timestamps
+    // 2. Read existing DB records, find the latest timestamp, and build timestamp set as fallback
     const existingRecords = await readAllInterviewApplicants(season);
     const existingTimestamps = new Set<string>();
+    let latestTimestamp: Date | null = null;
     for (const rec of existingRecords) {
       if (rec.timestamp) {
-        existingTimestamps.add(rec.timestamp.trim());
+        const ts = rec.timestamp.trim();
+        existingTimestamps.add(ts);
+        const d = parseTimestamp(ts);
+        if (d && (!latestTimestamp || d > latestTimestamp)) {
+          latestTimestamp = d;
+        }
       }
     }
 
@@ -191,7 +217,7 @@ export const POST = withRoles(['ChairMan'], async (request: NextRequest) => {
       }
     }
 
-    // 5. Process each origin row — skip if timestamp already exists in DB
+    // 5. Process each origin row — skip if timestamp is not newer than the latest in DB
     const newRecords: InterviewApplicant[] = [];
     let matched = 0;
     let needReview = 0;
@@ -203,11 +229,21 @@ export const POST = withRoles(['ChairMan'], async (request: NextRequest) => {
     const COLS = season === 'S1' ? ORIGIN_S1_COLS : ORIGIN_S2_COLS;
 
     for (const row of originRows) {
-      // Dedup by timestamp
       const timestamp = (row[COLS.TIMESTAMP] || '').trim();
+
+      // Skip if this exact timestamp already exists in DB (fallback dedup)
       if (timestamp && existingTimestamps.has(timestamp)) {
         skippedDuplicates++;
         continue;
+      }
+
+      // Skip if timestamp is not newer than the latest in DB
+      if (timestamp && latestTimestamp) {
+        const rowDate = parseTimestamp(timestamp);
+        if (rowDate && rowDate <= latestTimestamp) {
+          skippedDuplicates++;
+          continue;
+        }
       }
 
       const _emailAddress = (row[COLS.EMAIL_ADDRESS] || '').toLowerCase().trim();
@@ -287,6 +323,7 @@ export const POST = withRoles(['ChairMan'], async (request: NextRequest) => {
         s1IdEntered: enteredS1Id,
         idValidationStatus: validationStatus,
         pullSource: `pull-${new Date().toISOString().split('T')[0]}`,
+        interviewMode: season === 'S2' ? 'Physical' : '',
       };
 
       newRecords.push(applicant);

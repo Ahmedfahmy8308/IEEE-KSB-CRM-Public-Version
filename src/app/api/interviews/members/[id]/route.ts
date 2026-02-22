@@ -181,6 +181,17 @@ export const PATCH = withAuth(async (request: NextRequest, user) => {
       return NextResponse.json({ error: 'isEmailSend must be a boolean' }, { status: 400 });
     }
 
+    if (updates.interviewMode !== undefined) {
+      const mode = String(updates.interviewMode);
+      if (mode !== 'Physical' && mode !== 'Online') {
+        return NextResponse.json(
+          { error: 'interviewMode must be either "Physical" or "Online"' },
+          { status: 400 }
+        );
+      }
+      updates.interviewMode = mode;
+    }
+
     // Filter updates based on user role using helper function
     const allowedFields = getAllowedEditFields(user);
 

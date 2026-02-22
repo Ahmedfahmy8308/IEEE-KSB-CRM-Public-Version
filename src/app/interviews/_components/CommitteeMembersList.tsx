@@ -16,6 +16,7 @@ interface Member {
   phoneNumber: string;
   interviewDay?: string;
   interviewTime?: string;
+  interviewMode?: string;
   state?: string;
   approved?: string;
   idValidationStatus?: string;
@@ -39,12 +40,13 @@ export default function CommitteeMembersList({ committee, season }: CommitteeMem
   const sortBy = (searchParams.get('sortBy') as SortBy) || 'name';
   const sortOrder = (searchParams.get('sortOrder') as SortOrder) || 'asc';
   const selectedDate = searchParams.get('date') || 'all';
+  const selectedMode = searchParams.get('mode') || 'all';
 
   const updateQueryParams = (updates: Record<string, string>) => {
     const p = new URLSearchParams(searchParams.toString());
     for (const [key, value] of Object.entries(updates)) {
-      if (value === 'all' && key === 'date') {
-        p.delete('date');
+      if (value === 'all' && (key === 'date' || key === 'mode')) {
+        p.delete(key);
       } else {
         p.set(key, value);
       }
@@ -88,9 +90,15 @@ export default function CommitteeMembersList({ committee, season }: CommitteeMem
     new Set(members.filter((m) => m.interviewDay).map((m) => m.interviewDay))
   ).sort();
 
-  // Filter members by selected date
-  const filteredMembers =
-    selectedDate === 'all' ? members : members.filter((m) => m.interviewDay === selectedDate);
+  // Filter members by selected date and mode
+  const filteredMembers = members.filter((m) => {
+    if (selectedDate !== 'all' && m.interviewDay !== selectedDate) return false;
+    if (selectedMode !== 'all') {
+      const mode = m.interviewMode || 'Physical';
+      if (mode !== selectedMode) return false;
+    }
+    return true;
+  });
 
   // Helper function to truncate name to first two parts
   const truncateName = (fullName: string) => {
@@ -241,6 +249,32 @@ export default function CommitteeMembersList({ committee, season }: CommitteeMem
                 </select>
               </div>
 
+              {/* Interview Mode Filter (S2 only) */}
+              {season === 'S2' && (
+                <div className="flex items-center gap-2">
+                  <label
+                    htmlFor="mode-filter"
+                    className="text-sm text-gray-600 font-medium whitespace-nowrap"
+                  >
+                    Mode:
+                  </label>
+                  <select
+                    id="mode-filter"
+                    value={selectedMode}
+                    onChange={(e) => updateQueryParams({ mode: e.target.value })}
+                    className="px-3 py-1.5 rounded-lg border border-gray-300 text-sm font-medium text-gray-700 bg-white hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  >
+                    <option value="all">All ({members.length})</option>
+                    <option value="Physical">
+                      🏢 Physical ({members.filter((m) => (m.interviewMode || 'Physical') === 'Physical').length})
+                    </option>
+                    <option value="Online">
+                      💻 Online ({members.filter((m) => m.interviewMode === 'Online').length})
+                    </option>
+                  </select>
+                </div>
+              )}
+
               {/* Sort Options */}
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="text-sm text-gray-600 font-medium">Sort by:</span>
@@ -383,6 +417,17 @@ export default function CommitteeMembersList({ committee, season }: CommitteeMem
                           {member.idValidationStatus || 'New'}
                         </span>
                       )}
+                      {season === 'S2' && (
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            member.interviewMode === 'Online'
+                              ? 'bg-indigo-100 text-indigo-800'
+                              : 'bg-teal-100 text-teal-800'
+                          }`}
+                        >
+                          {member.interviewMode === 'Online' ? '💻 Online' : '🏢 Physical'}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -418,6 +463,11 @@ export default function CommitteeMembersList({ committee, season }: CommitteeMem
                     {season === 'S2' && (
                       <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                         ID Validation
+                      </th>
+                    )}
+                    {season === 'S2' && (
+                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Mode
                       </th>
                     )}
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -499,6 +549,19 @@ export default function CommitteeMembersList({ committee, season }: CommitteeMem
                             }`}
                           >
                             {member.idValidationStatus || 'New'}
+                          </span>
+                        </td>
+                      )}
+                      {season === 'S2' && (
+                        <td className="px-4 py-4 whitespace-nowrap text-sm">
+                          <span
+                            className={`px-2 py-1 rounded-full text-xs font-medium ${
+                              member.interviewMode === 'Online'
+                                ? 'bg-indigo-100 text-indigo-800'
+                                : 'bg-teal-100 text-teal-800'
+                            }`}
+                          >
+                            {member.interviewMode === 'Online' ? '💻 Online' : '🏢 Physical'}
                           </span>
                         </td>
                       )}

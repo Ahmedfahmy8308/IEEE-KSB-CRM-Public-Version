@@ -43,6 +43,26 @@ interface PullConfig {
   isActive: boolean;
 }
 
+/**
+ * Parse Google Forms timestamps that may be in M/D/YYYY H:MM:SS format.
+ * Also handles ISO strings and other formats.
+ * Returns null if unparseable.
+ */
+function parseTimestamp(ts: string): Date | null {
+  // Try Google Forms format: M/D/YYYY H:MM:SS or MM/DD/YYYY HH:MM:SS
+  const gfMatch = ts.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})\s+(\d{1,2}):(\d{2}):(\d{2})$/);
+  if (gfMatch) {
+    const [, month, day, year, hour, minute, second] = gfMatch;
+    return new Date(
+      parseInt(year), parseInt(month) - 1, parseInt(day),
+      parseInt(hour), parseInt(minute), parseInt(second)
+    );
+  }
+  // Fallback: native Date parser
+  const d = new Date(ts);
+  return isNaN(d.getTime()) ? null : d;
+}
+
 function getPullConfig(season: string): PullConfig {
   const cfg = getConfig();
   if (season === 'S1') {
@@ -97,24 +117,41 @@ export const POST = withRoles(['ChairMan'], async (request: NextRequest) => {
       });
     }
 
-    // 2. Read existing DB records to find already-pulled timestamps (dedup)
+    // 2. Read existing DB records, find the latest timestamp, and build timestamp set as fallback
     const existingRecords = await readAllWelcomeDayAttendees(season);
     const existingTimestamps = new Set<string>();
+    let latestTimestamp: Date | null = null;
     for (const rec of existingRecords) {
       if (rec.timestamp) {
-        existingTimestamps.add(rec.timestamp.trim());
+        const ts = rec.timestamp.trim();
+        existingTimestamps.add(ts);
+        const d = parseTimestamp(ts);
+        if (d && (!latestTimestamp || d > latestTimestamp)) {
+          latestTimestamp = d;
+        }
       }
     }
 
-    // 3. Process each origin row — skip if timestamp already exists in DB
+    // 3. Process each origin row — only pull rows newer than the latest in DB
     const newRecords: WelcomeDayAttendee[] = [];
     let skippedDuplicates = 0;
 
     for (const row of originRows) {
       const timestamp = (row[ORIGIN_COLS.TIMESTAMP] || '').trim();
+
+      // Skip if this exact timestamp already exists in DB (fallback dedup)
       if (timestamp && existingTimestamps.has(timestamp)) {
         skippedDuplicates++;
         continue;
+      }
+
+      // Skip if timestamp is not newer than the latest in DB
+      if (timestamp && latestTimestamp) {
+        const rowDate = parseTimestamp(timestamp);
+        if (rowDate && rowDate <= latestTimestamp) {
+          skippedDuplicates++;
+          continue;
+        }
       }
 
       const attendee: WelcomeDayAttendee = {
