@@ -97,8 +97,12 @@ export const POST = withRole('ChairMan', async (request: NextRequest, user) => {
         interviewTime: assignment.interviewTime,
         state: INTERVIEW_STATE.NOT_STARTED, // Not Started state (empty string)
         isEmailSend: false,
-        approved: APPROVAL_STATUS.PENDING,
       };
+
+      // Only set approved to Pending if it's not already set
+      if (!member.approved || member.approved.trim() === '') {
+        updates.approved = APPROVAL_STATUS.PENDING;
+      }
 
       batchUpdates.push({
         rowIndex: member.rowIndex,

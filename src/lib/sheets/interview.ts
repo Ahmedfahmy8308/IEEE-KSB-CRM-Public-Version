@@ -148,11 +148,11 @@ export interface InterviewApplicant {
  * Validate and normalize approved value
  */
 export function normalizeApproved(value: string): string | null {
-  const normalized = String(value).toLowerCase();
+  const normalized = String(value).toLowerCase().trim();
 
+  if (normalized === '' || normalized === 'pending') return APPROVED_VALUES.PENDING;
   if (normalized === 'approved' || normalized === 'yes') return APPROVED_VALUES.APPROVED;
   if (normalized === 'rejected' || normalized === 'no') return APPROVED_VALUES.REJECTED;
-  if (normalized === 'pending') return APPROVED_VALUES.PENDING;
 
   return null;
 }

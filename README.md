@@ -22,13 +22,24 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
 [![Node.js](https://img.shields.io/badge/Node.js-%E2%89%A5%2018.18-339933?style=flat-square&logo=node.js&logoColor=white)](https://nodejs.org/)
 [![Vercel](https://img.shields.io/badge/Deploy-Vercel-000?style=flat-square&logo=vercel&logoColor=white)](https://vercel.com/)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://github.com/Ahmedfahmy8308/IEEE-KSB/pulls)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://github.com/Ahmedfahmy8308/IEEE-KSB-CRM-Public-Version/pulls)
 
 </div>
 
 ---
 
+## 🎬 Video Demos
+
+| Video | Description |
+|---|---|
+| [▶️ Full System Explain](https://drive.google.com/file/d/1QI-BJKc6EPBEfKN_oHe83fL3_EIudNIb/view?usp=drive_link) | Complete walkthrough of the entire CRM system |
+| [▶️ Board System Explain](https://drive.google.com/file/d/1623X_vd6iWfo-kBZ2V9ZCz75up3t4zKN/view?usp=sharing) | Walkthrough focused on the Board-level features |
+
+---
+
 ## Table of Contents
+
+- [Video Demos](#-video-demos)
 
 - [Features](#features)
 - [System Functions](#system-functions)
@@ -387,7 +398,7 @@
 ## Project Structure
 
 ```
-IEEE-KSB/
+IEEE-KSB-CRM-Public-Version/
 ├── config.json                  # Runtime config (editable via Chairman UI)
 ├── .env                         # Secrets (never committed)
 ├── .env.example                 # Template for .env
@@ -444,8 +455,8 @@ IEEE-KSB/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/Ahmedfahmy8308/IEEE-KSB.git
-cd IEEE-KSB
+git clone https://github.com/Ahmedfahmy8308/IEEE-KSB-CRM-Public-Version.git
+cd IEEE-KSB-CRM-Public-Version
 ```
 
 ### 2. Install dependencies

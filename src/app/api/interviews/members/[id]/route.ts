@@ -181,7 +181,7 @@ export const PATCH = withAuth(async (request: NextRequest, user) => {
       return NextResponse.json({ error: 'isEmailSend must be a boolean' }, { status: 400 });
     }
 
-    if (updates.interviewMode !== undefined) {
+    if (updates.interviewMode !== undefined && season === 'S2') {
       const mode = String(updates.interviewMode);
       if (mode !== 'Physical' && mode !== 'Online') {
         return NextResponse.json(
@@ -190,6 +190,8 @@ export const PATCH = withAuth(async (request: NextRequest, user) => {
         );
       }
       updates.interviewMode = mode;
+    } else if (season !== 'S2') {
+      delete updates.interviewMode;
     }
 
     // Filter updates based on user role using helper function
