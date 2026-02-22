@@ -1,0 +1,272 @@
+<!-- 
+Copyright (c) 2025 Ahmed Fahmy
+Developed at Ufuq.tech
+Licensed under the MIT License. See LICENSE file in the project root for full license information.
+-->
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Welcome Day Confirmation</title>
+    <style>
+      body {
+        font-family: 'Segoe UI', Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #ffffff;
+        line-height: 1.6;
+        color: #333333;
+      }
+      .email-container {
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #ffffff;
+      }
+      .banner {
+        width: 100%;
+        height: auto;
+        display: block;
+        margin-bottom: 20px;
+      }
+      .content {
+        padding: 20px;
+        font-size: 15px;
+      }
+      .content p {
+        margin-bottom: 15px;
+        text-align: left;
+      }
+      .congratulations {
+        font-size: 18px;
+        font-weight: bold;
+        color: #003f7f;
+        font-style: italic;
+      }
+      .highlight {
+        font-weight: 600;
+      }
+      .committee-highlight {
+        font-weight: bold;
+        color: #003f7f;
+        font-style: italic;
+      }
+      .info-box {
+        background-color: #f0f7ff;
+        border-left: 4px solid #003f7f;
+        padding: 20px;
+        margin: 20px 0;
+      }
+      .info-box h3 {
+        margin-top: 0;
+        color: #003f7f;
+        font-size: 16px;
+      }
+      .info-row {
+        display: flex;
+        margin-bottom: 10px;
+      }
+      .info-label {
+        font-weight: bold;
+        min-width: 120px;
+        color: #003f7f;
+      }
+      .info-value {
+        color: #333333;
+      }
+      .ticket-box {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 25px;
+        margin: 25px 0;
+        border-radius: 10px;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+      .ticket-box h2 {
+        margin: 0 0 15px 0;
+        font-size: 20px;
+        font-weight: 600;
+      }
+      .ticket-id {
+        font-size: 28px;
+        font-weight: bold;
+        letter-spacing: 2px;
+        background-color: rgba(255, 255, 255, 0.2);
+        padding: 15px 20px;
+        border-radius: 8px;
+        display: inline-block;
+        margin: 10px 0;
+      }
+      .qr-code {
+        background-color: white;
+        padding: 15px;
+        border-radius: 10px;
+        display: inline-block;
+        margin: 15px 0;
+      }
+      .qr-code img {
+        display: block;
+        width: 200px;
+        height: 200px;
+      }
+      .location-link {
+        color: #ffffff;
+        text-decoration: underline;
+        font-weight: bold;
+      }
+      .location-link:hover {
+        color: #e0e0e0;
+      }
+      .best-regards {
+        font-weight: 600;
+      }
+      .footer {
+        padding: 20px;
+        margin-top: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+      }
+      .signature {
+        flex: 1;
+        font-size: 13px;
+      }
+      .signature-name {
+        font-weight: bold;
+        color: #003f7f;
+      }
+      .signature-title {
+        font-style: italic;
+        color: #0066cc;
+      }
+      .logo {
+        width: auto;
+        height: 60px;
+        margin-left: 20px;
+        flex-shrink: 0;
+      }
+      a {
+        color: #0066cc;
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .important-note {
+        background-color: #fff8e1;
+        border-left: 4px solid #ffa726;
+        padding: 15px;
+        margin: 20px 0;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="email-container">
+      <img
+        src="https://drive.google.com/uc?export=view&id=1Y8Lrw1vm8an8MxN2A_urYkW0__CRcbau"
+        alt="IEEE KSB Banner"
+        class="banner"
+      />
+
+      <div class="content">
+        <p>Dear <strong>{FIRST_NAME}</strong>,</p>
+
+        <p>
+          <span class="congratulations">Welcome to IEEE KSB!</span> We are excited to confirm your
+          registration for the <strong>IEEE KSB Welcome Day 2025 – 2026 season</strong>.
+        </p>
+
+        <p>
+          This is your opportunity to officially join our community, meet fellow members, and learn
+          more about the exciting activities and opportunities awaiting you at IEEE Kafr-Elsheikh
+          Student Branch.
+        </p>
+
+        <div class="ticket-box">
+          <h2>🎫 Your Welcome Day Ticket</h2>
+          <div class="qr-code">
+            <img src="cid:qrcode" alt="Ticket QR Code" />
+          </div>
+          <p style="margin: 10px 0 0 0; font-size: 14px">Scan this QR code at the entrance</p>
+        </div>
+
+        <div class="info-box">
+          <h3>📅 Event Details:</h3>
+          <div class="info-row">
+            <span class="info-label">Date:</span>
+            <span class="info-value">26 October 2025</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Time:</span>
+            <span class="info-value">01:00 PM</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Location:</span>
+            <span class="info-value">
+              <a
+                href="https://maps.app.goo.gl/VEDuTTZJgHNqC7QQA"
+                target="_blank"
+                style="color: #0066cc; font-weight: bold"
+              >
+                Mirage Palace (قصر ميراچ)
+              </a>
+            </span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Committee:</span>
+            <span class="info-value committee-highlight">{COMMITTEE}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Ticket ID:</span>
+            <span class="info-value"><strong>{TICKET_ID}</strong></span>
+          </div>
+        </div>
+
+        <div class="important-note">
+          <strong>⚠️ Important Notes:</strong>
+          <ul style="margin: 10px 0; padding-left: 20px">
+            <li>
+              Please <strong>keep this email</strong> and show your <strong>Ticket ID</strong> at
+              the entrance.
+            </li>
+            <li>Bring a <strong>valid ID</strong> for verification.</li>
+            <li>Arrive <strong>on time</strong> to ensure you don't miss any activities.</li>
+            <li>
+              <strong>Check your email regularly</strong> for updates and final event details.
+            </li>
+            <li>If you have any questions, feel free to contact us at any time.</li>
+          </ul>
+        </div>
+
+        <p>
+          We look forward to welcoming you and starting this amazing journey together with IEEE KSB!
+        </p>
+
+        <p>If you have any questions or concerns, please do not hesitate to reach out to us.</p>
+
+        <p class="best-regards">Best Regards,</p>
+      </div>
+
+      <div class="footer">
+        <div class="signature">
+          <p>
+            <span class="signature-name">Ahmed Fahmy</span>,<br />
+            <span class="signature-title">Chairman, IEEE Kafr-Elsheikh Student Branch</span><br />
+            <strong>Cell:</strong> +20 101 520 5654<br />
+            <strong>E-mail:</strong> ahmedfahmy@ieee.org<br />
+            <em>IEEE Kafrelsheikh Student Branch</em><br />
+            <em>IEEE - Student Branches - Egypt Section</em>
+          </p>
+        </div>
+        <img
+          src="https://drive.google.com/uc?export=view&id=1KFUefu_W0igjPmAPiXmmhHdsTKbgJHgy"
+          alt="IEEE Logo"
+          class="logo"
+        />
+      </div>
+    </div>
+  </body>
+</html>

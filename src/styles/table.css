@@ -1,0 +1,30 @@
+/*
+ * Ant Design Table Overrides
+ */
+
+.ant-table {
+  border-radius: 8px !important;
+}
+
+.ant-table-thead > tr > th {
+  background: #3b82f6 !important;
+  font-weight: 600 !important;
+  color: #ffffff !important;
+  border-bottom: 2px solid #2563eb !important;
+}
+
+.ant-table-thead > tr > th::before {
+  display: none !important;
+}
+
+.ant-table-tbody > tr:hover > td {
+  background: #f3f4f6 !important;
+}
+
+.ant-table-striped .ant-table-tbody > tr:nth-child(2n) > td {
+  background: #f9fafb;
+}
+
+.ant-table-striped .ant-table-tbody > tr:nth-child(2n):hover > td {
+  background: #f3f4f6 !important;
+}

@@ -1,0 +1,71 @@
+/*
+ * Ant Design Component Overrides
+ */
+
+/* ─── Card ─── */
+.ant-card {
+  border-radius: 12px !important;
+  transition: all 0.3s ease !important;
+}
+
+.ant-card:hover {
+  transform: translateY(-2px);
+}
+
+/* ─── Input / Select ─── */
+.ant-input,
+.ant-input-affix-wrapper,
+.ant-select-selector,
+.ant-input-textarea-show-count textarea {
+  border-radius: 8px !important;
+  transition: all 0.3s ease !important;
+}
+
+.ant-input:focus,
+.ant-input-affix-wrapper:focus,
+.ant-input-affix-wrapper-focused {
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1) !important;
+}
+
+/* ─── Button ─── */
+.ant-btn {
+  border-radius: 8px !important;
+  font-weight: 500 !important;
+  transition: all 0.3s ease !important;
+}
+
+.ant-btn-primary {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+}
+
+.ant-btn-primary:hover {
+  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
+}
+
+/* ─── Tag ─── */
+.ant-tag {
+  border-radius: 6px !important;
+  font-weight: 500 !important;
+  padding: 4px 12px !important;
+}
+
+/* ─── Select Dropdown ─── */
+.ant-select-dropdown {
+  border-radius: 8px !important;
+}
+
+/* ─── Empty & Skeleton ─── */
+.ant-empty {
+  padding: 40px 0 !important;
+}
+
+.ant-skeleton {
+  padding: 20px !important;
+}
+
+/* ─── Pagination ─── */
+.ant-pagination {
+  margin-top: 16px !important;
+}

@@ -1,0 +1,36 @@
+{
+  "sheetNames": {
+    "interview_s1": "Interview_Season_1",
+    "interview_s2": "Interview_Season_2",
+    "welcome_day_s1": "Welcome_Day_Season_1",
+    "welcome_day_s2": "Welcome_Day_Season_2",
+    "users": "Users"
+  },
+  "email": {
+    "batchSize": 21,
+    "batchDelayMs": 2000,
+    "testEmail": "fhmy8308@gmail.com"
+  },
+  "pull": {
+    "interview_s1": {
+      "active": true,
+      "originSheetId": "1SL85IFMl8UHwdEjkFXJFHRwoZ8SMQG1tlwWDsY7tfyg",
+      "originTabName": "Form Responses 1"
+    },
+    "interview_s2": {
+      "active": true,
+      "originSheetId": "1v9t65V3b-82togpBoIgTeC8wDr_JtZMEr-XDk8WdqHY",
+      "originTabName": "Form Responses 1"
+    },
+    "welcome_day_s1": {
+      "active": true,
+      "originSheetId": "1c-uY97s_7yoIuX9-4LlHhZigJL41L31iOzpuxDh1HJM",
+      "originTabName": "Form Responses 1"
+    },
+    "welcome_day_s2": {
+      "active": false,
+      "originSheetId": "",
+      "originTabName": ""
+    }
+  }
+}

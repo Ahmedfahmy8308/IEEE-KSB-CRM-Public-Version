@@ -1,0 +1,222 @@
+<!-- 
+Copyright (c) 2025 Ahmed Fahmy
+Developed at Ufuq.tech
+Licensed under the MIT License. See LICENSE file in the project root for full license information.
+-->
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Interview Invitation</title>
+    <style>
+      body {
+        font-family: 'Segoe UI', Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #ffffff;
+        line-height: 1.6;
+        color: #333333;
+      }
+      .email-container {
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #ffffff;
+      }
+      .banner {
+        width: 100%;
+        height: auto;
+        display: block;
+        margin-bottom: 20px;
+      }
+      .content {
+        padding: 20px;
+        font-size: 15px;
+      }
+      .content p {
+        margin-bottom: 15px;
+        text-align: left;
+      }
+      .congratulations {
+        font-size: 18px;
+        font-weight: bold;
+        color: #003f7f;
+        font-style: italic;
+      }
+      .highlight {
+        font-weight: 600;
+      }
+      .committee-highlight {
+        font-weight: bold;
+        color: #003f7f;
+        font-style: italic;
+      }
+      .info-box {
+        background-color: #f0f7ff;
+        border-left: 4px solid #003f7f;
+        padding: 20px;
+        margin: 20px 0;
+      }
+      .info-box h3 {
+        margin-top: 0;
+        color: #003f7f;
+        font-size: 16px;
+      }
+      .info-row {
+        display: flex;
+        margin-bottom: 10px;
+      }
+      .info-label {
+        font-weight: bold;
+        min-width: 100px;
+        color: #003f7f;
+      }
+      .info-value {
+        color: #333333;
+      }
+      .best-regards {
+        font-weight: 600;
+      }
+      .footer {
+        padding: 20px;
+        margin-top: 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+      }
+      .signature {
+        flex: 1;
+        font-size: 13px;
+      }
+      .signature-name {
+        font-weight: bold;
+        color: #003f7f;
+      }
+      .signature-title {
+        font-style: italic;
+        color: #0066cc;
+      }
+      .logo {
+        width: auto;
+        height: 60px;
+        margin-left: 20px;
+        flex-shrink: 0;
+      }
+      a {
+        color: #0066cc;
+        text-decoration: none;
+      }
+      a:hover {
+        text-decoration: underline;
+      }
+      .important-note {
+        background-color: #fff8e1;
+        border-left: 4px solid #ffa726;
+        padding: 15px;
+        margin: 20px 0;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="email-container">
+      <img
+        src="https://drive.google.com/uc?export=view&id=1Y8Lrw1vm8an8MxN2A_urYkW0__CRcbau"
+        alt="IEEE KSB Banner"
+        class="banner"
+      />
+
+      <div class="content">
+        <p>Dear <strong>{NAME}</strong>,</p>
+
+        <p>
+          <span class="congratulations">Congratulations!</span> We are pleased to inform you that
+          your application for the <span class="committee-highlight">{COMMITTEE}</span> committee
+          has been <strong>reviewed and accepted</strong>.
+        </p>
+
+        <p>
+          You are hereby invited to attend an interview as part of the final selection process for
+          the <strong>IEEE Kafr-Elsheikh Student Branch Member 2025 – 2026 season</strong>.
+        </p>
+
+        <div class="info-box">
+          <h3>📅 Interview Details:</h3>
+          <div class="info-row">
+            <span class="info-label">Date:</span>
+            <span class="info-value">{DATE}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Time:</span>
+            <span class="info-value">{TIME}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Location:</span>
+            <span class="info-value"
+              ><strong>IPA Academy</strong><br />كفرالشيخ - ميدان الـ 47<br /><a
+                href="https://maps.app.goo.gl/cU2ViLKqbe7ge4k49"
+                target="_blank"
+              >
+                View on Google Maps</a
+              ></span
+            >
+          </div>
+          <div class="info-row">
+            <span class="info-label">Your ID:</span>
+            <span class="info-value">{ID}</span>
+          </div>
+          <div class="info-row">
+            <span class="info-label">Committee:</span>
+            <span class="info-value">{COMMITTEE}</span>
+          </div>
+        </div>
+
+        <div class="important-note">
+          <strong>⚠️ Important Notes:</strong>
+          <ul style="margin: 10px 0; padding-left: 20px">
+            <li>
+              Please arrive <strong>10 minutes early</strong> to your scheduled interview time.
+            </li>
+            <li>Bring a <strong>valid ID</strong> for verification.</li>
+            <li>Make sure to remember your <strong>Applicant ID: {ID}</strong>.</li>
+            <li>If you need to <strong>reschedule</strong>, contact us as soon as possible.</li>
+            <li>
+              <strong>Check your email regularly</strong> for updates:
+              <a href="https://www.facebook.com/share/p/19kFE5yYo6/" target="_blank"
+                >Click here for instructions</a
+              >
+            </li>
+          </ul>
+        </div>
+
+        <p>
+          We look forward to meeting you and learning more about your skills, passion, and vision
+          for contributing to IEEE KSB.
+        </p>
+
+        <p>If you have any questions or concerns, please do not hesitate to reach out to us.</p>
+
+        <p class="best-regards">Best Regards,</p>
+      </div>
+
+      <div class="footer">
+        <div class="signature">
+          <p>
+            <span class="signature-name">Ahmed Fahmy</span>,<br />
+            <span class="signature-title">Chairman, IEEE Kafr-Elsheikh Student Branch</span><br />
+            <strong>Cell:</strong> +20 101 520 5654<br />
+            <strong>E-mail:</strong> ahmedfahmy@ieee.org<br />
+            <em>IEEE Kafrelsheikh Student Branch</em><br />
+            <em>IEEE - Student Branches - Egypt Section</em>
+          </p>
+        </div>
+        <img
+          src="https://drive.google.com/uc?export=view&id=1KFUefu_W0igjPmAPiXmmhHdsTKbgJHgy"
+          alt="IEEE Logo"
+          class="logo"
+        />
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,13 @@
+/*
+ * Copyright (c) 2025 Ahmed Fahmy
+ * Developed at Ufuq.tech
+ * Licensed under the MIT License. See LICENSE file in the project root for full license information.
+ *
+ * Global stylesheet — imports all partials.
+ */
+
+@import './base.css';
+@import './animations.css';
+@import './antd.css';
+@import './table.css';
+@import './utilities.css';
