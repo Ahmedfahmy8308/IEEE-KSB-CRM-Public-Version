@@ -34,7 +34,7 @@ export function normalizePhoneNumber(phone: string): string {
 export function findDuplicatePhones(applicants: ApplicantRow[]): Array<{
   phone: string;
   normalizedPhone: string;
-  members: Array<{ id: string; fullName: string; email: string }>;
+  members: Array<{ id: string; fullName: string; email: string; phoneNumber: string; committee: string }>;
 }> {
   const phoneMap = new Map<string, ApplicantRow[]>();
 
@@ -54,7 +54,7 @@ export function findDuplicatePhones(applicants: ApplicantRow[]): Array<{
   const duplicates: Array<{
     phone: string;
     normalizedPhone: string;
-    members: Array<{ id: string; fullName: string; email: string }>;
+    members: Array<{ id: string; fullName: string; email: string; phoneNumber: string; committee: string }>;
   }> = [];
 
   for (const [normalized, group] of phoneMap.entries()) {
@@ -66,6 +66,8 @@ export function findDuplicatePhones(applicants: ApplicantRow[]): Array<{
           id: applicant.id || 'N/A',
           fullName: applicant.fullName || 'Unknown',
           email: applicant.email || 'N/A',
+          phoneNumber: applicant.phoneNumber || 'N/A',
+          committee: applicant.trackApplying || 'N/A',
         })),
       });
     }
@@ -81,7 +83,7 @@ export function findDuplicatePhones(applicants: ApplicantRow[]): Array<{
  */
 export function findDuplicateEmails(applicants: ApplicantRow[]): Array<{
   email: string;
-  members: Array<{ id: string; fullName: string; email: string }>;
+  members: Array<{ id: string; fullName: string; email: string; emailAddress: string; committee: string }>;
 }> {
   const emailMap = new Map<string, ApplicantRow[]>();
 
@@ -100,7 +102,7 @@ export function findDuplicateEmails(applicants: ApplicantRow[]): Array<{
   // Filter to only include duplicates
   const duplicates: Array<{
     email: string;
-    members: Array<{ id: string; fullName: string; email: string }>;
+    members: Array<{ id: string; fullName: string; email: string; emailAddress: string; committee: string }>;
   }> = [];
 
   for (const [email, group] of emailMap.entries()) {
@@ -111,6 +113,8 @@ export function findDuplicateEmails(applicants: ApplicantRow[]): Array<{
           id: applicant.id || 'N/A',
           fullName: applicant.fullName || 'Unknown',
           email: applicant.email || 'N/A',
+          emailAddress: applicant.emailAddress || 'N/A',
+          committee: applicant.trackApplying || 'N/A',
         })),
       });
     }
@@ -126,7 +130,7 @@ export function findDuplicateEmails(applicants: ApplicantRow[]): Array<{
  */
 export function findDuplicateEmailAddresses(applicants: ApplicantRow[]): Array<{
   email: string;
-  members: Array<{ id: string; fullName: string; email: string }>;
+  members: Array<{ id: string; fullName: string; email: string; emailAddress: string; committee: string }>;
 }> {
   const emailMap = new Map<string, ApplicantRow[]>();
 
@@ -145,7 +149,7 @@ export function findDuplicateEmailAddresses(applicants: ApplicantRow[]): Array<{
   // Filter to only include duplicates
   const duplicates: Array<{
     email: string;
-    members: Array<{ id: string; fullName: string; email: string }>;
+    members: Array<{ id: string; fullName: string; email: string; emailAddress: string; committee: string }>;
   }> = [];
 
   for (const [email, group] of emailMap.entries()) {
@@ -156,6 +160,8 @@ export function findDuplicateEmailAddresses(applicants: ApplicantRow[]): Array<{
           id: applicant.id || 'N/A',
           fullName: applicant.fullName || 'Unknown',
           email: applicant.email || 'N/A',
+          emailAddress: applicant.emailAddress || 'N/A',
+          committee: applicant.trackApplying || 'N/A',
         })),
       });
     }
@@ -174,12 +180,14 @@ export function findEmailsMismatchEmailAddress(applicants: ApplicantRow[]): Arra
   fullName: string;
   email: string;
   emailAddress: string;
+  committee: string;
 }> {
   const mismatches: Array<{
     id: string;
     fullName: string;
     email: string;
     emailAddress: string;
+    committee: string;
   }> = [];
 
   for (const applicant of applicants) {
@@ -196,6 +204,7 @@ export function findEmailsMismatchEmailAddress(applicants: ApplicantRow[]): Arra
         fullName: applicant.fullName || 'Unknown',
         email: applicant.email,
         emailAddress: applicant.emailAddress,
+        committee: applicant.trackApplying || 'N/A',
       });
     }
   }

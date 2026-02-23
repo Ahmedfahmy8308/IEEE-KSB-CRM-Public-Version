@@ -26,6 +26,7 @@ interface StatsCardsProps {
     total: number;
     assigned: number;
     emailSent: number;
+    approvedEmailSent: number;
     approved: number;
     rejected: number;
     pending: number;
@@ -78,6 +79,13 @@ export default function StatsCards({ stats, season }: StatsCardsProps) {
       icon: <MailOutlined style={{ fontSize: '32px', color: '#fff' }} />,
       bgGradient: 'linear-gradient(135deg, #a855f7 0%, #9333ea 100%)',
       iconBgColor: 'rgba(216, 180, 254, 0.2)',
+    },
+    {
+      title: 'Approved Email Sent',
+      value: stats.approvedEmailSent,
+      icon: <MailOutlined style={{ fontSize: '32px', color: '#fff' }} />,
+      bgGradient: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)',
+      iconBgColor: 'rgba(103, 232, 249, 0.2)',
     },
     {
       title: 'Completed',

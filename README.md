@@ -65,7 +65,7 @@
   - [6. Run the development server](#6-run-the-development-server)
 - [Available Scripts](#available-scripts)
 - [Environment Variables](#environment-variables)
-- [Runtime Config (`config.json`)](#runtime-config-configjson)
+- [Runtime Config (Google Sheets `_Config!A1`)](#runtime-config-google-sheets-_configa1)
 - [Deployment](#deployment)
 - [License](#license)
 
@@ -104,7 +104,7 @@
 
 | Function | Description |
 |---|---|
-| **Multi-Season Support** | Separate sheet tabs for Season 1 (28 columns, A–AB) and Season 2 (30 columns, A–AD with extra S1 ID validation fields) |
+| **Multi-Season Support** | Separate sheet tabs for Season 1 (28 columns, A–AB) and Season 2 (31 columns, A–AE with extra S1 ID validation fields and Interview Mode) |
 | **Get Member by ID** | Lookup an applicant by their unique 5-digit ID |
 | **Search Members** | Fuzzy search across ID, phone, email, and full name |
 | **Update Member** | Role-gated field updates with automatic change logging (timestamp + actor username appended to the `log` column) |
@@ -113,6 +113,7 @@
 | **Schedule Assignment** | Auto-generate interview time slots (Sun–Thu) from a config: start/end date, start/end time, interval minutes, parallel seats. Assigns unassigned members sequentially. |
 | **ID Generation** | Generate unique random 5-digit numeric IDs for members without IDs, with collision checking |
 | **S2 ID Validation** | When pulling S2 records, cross-reference the `S1_ID_ENTERED` field against all S1 IDs to flag `Matched`, `Need Review`, or `Wrong ID` |
+| **Interview Mode (S2)** | Each S2 member has an `interviewMode` field (`Physical` 🏢 / `Online` 💻). Defaults to Physical on pull. Filterable in the committee members table |
 | **Active Interviews** | Real-time view of members currently in `Wait in Reception` or `In Interview` states, auto-refreshing every 30 seconds |
 | **Committee Breakdown** | Per-committee member counts with drill-down to member lists. Optional date-based filtering |
 
@@ -152,8 +153,11 @@
 |---|---|
 | **Interview Pull** | Read from an external Google Forms response sheet, map columns to the internal schema, generate 5-digit IDs, deduplicate by timestamp, and append new records. |
 | **S2 Pull with Validation** | For Season 2, the pull also reads the `S1_ID_ENTERED` column and cross-checks against all S1 IDs, tagging each record as `Matched` / `Need Review` / `Wrong ID`. Sets `pullSource = "pull"`. |
+| **Timestamp-Based Dedup** | After each pull, the maximum timestamp across **all** origin rows is saved to config as `lastPullTimestamp`. Future pulls skip any record with a timestamp ≤ the saved value — even if you delete records from the DB, they won't be re-imported. |
+| **Arabic Timestamp Parsing** | Supports Google Forms timestamps in Arabic locale (`10:30:16 م 2026/02/17` with ص=AM / م=PM) as well as US English (`M/D/YYYY H:MM:SS`) and ISO formats. |
+| **Pull Activity Logging** | Every pulled member receives an automatic log entry (`system` actor) recording: pull timestamp, S1 ID entered (if any), validation result (Matched / Need Review / Wrong ID), auto-approval status, and assigned/generated ID. Visible in each member's Activity Log. |
 | **Welcome Day Pull** | Import from a Google Forms sheet (11 columns: timestamp through referenceNumber), set `checked = "Not Checked"`, deduplicate by timestamp, append new rows. |
-| **Config-Driven** | Each pull source (interview S1/S2, welcome day S1/S2) is independently configured with `active` toggle, `originSheetId`, and `originTabName` in `config.json`. |
+| **Config-Driven** | Each pull source (interview S1/S2, welcome day S1/S2) is independently configured with `active` toggle, `originSheetId`, `originTabName`, and auto-saved `lastPullTimestamp` in the runtime config. |
 
 ### 6. Data Validation
 
@@ -163,15 +167,18 @@
 | **Duplicate Emails** | Find applicants sharing the same email address |
 | **Duplicate Form Email Addresses** | Find duplicates in the Google Forms `emailAddress` field |
 | **Email Mismatches** | Find applicants where the self-entered `email` differs from the Google Forms `emailAddress` |
+| **Email Mismatch Quick Fix** | One-click batch fix: sets each mismatched member's Contact Email to match their Form Email. Updates are logged in each member's Activity Log with `system` actor. |
 | **Combined Validation** | Run all 4 checks in a single API call and return grouped results |
 
 ### 7. Runtime Configuration
 
 | Function | Description |
 |---|---|
-| **Read Config** | Load `config.json` from disk, deep-merged with defaults so new fields are always present |
-| **Update Config** | Deep-merge a partial update into the existing config and write back to disk |
+| **Sheets-Based Config** | Config is stored in Google Sheets (`_Config!A1` cell as JSON). Works identically on local dev and Vercel — no filesystem dependency. |
+| **Read Config** | Loaded once per invocation via `ensureConfigLoaded()` in auth middleware, then served from in-memory cache. Deep-merged with defaults so new fields are always present. |
+| **Update Config** | Deep-merge a partial update into the current config, persist to `_Config!A1` (awaited), and update in-memory cache. |
 | **Config UI** | In-app modal (ChairMan only) with three tabs: Sheet Names, Email Settings, Pull Config. Supports edit/confirm/discard flow. |
+| **Auto-Created** | The `_Config` sheet tab is automatically created with defaults if it doesn't exist. |
 | **No Redeploy** | Config changes take effect immediately — no server restart or redeployment required |
 
 ### 8. Google Sheets Data Layer
@@ -185,7 +192,7 @@
 | **Update Range** | Overwrite a specific cell range |
 | **Batch Update** | Execute multiple range updates in a single API call |
 | **Auto-Expand Grid** | Automatically add rows or columns when the current sheet grid is too small |
-| **Column Mapping** | Typed column index constants for Interview (28/30 cols) and Welcome Day (17 cols) with `rowToObject` / `objectToRow` converters |
+| **Column Mapping** | Typed column index constants for Interview (28/31 cols) and Welcome Day (17 cols) with `rowToObject` / `objectToRow` converters |
 
 ---
 
@@ -258,6 +265,7 @@
 | `GET` | `/api/interviews/validation/duplicate-emails?season=` | Find duplicate emails | ChairMan, Highboard |
 | `GET` | `/api/interviews/validation/duplicate-email-addresses?season=` | Find duplicate form emails | ChairMan, Highboard |
 | `GET` | `/api/interviews/validation/email-mismatches?season=` | Find email mismatches | ChairMan, Highboard |
+| `POST` | `/api/interviews/validation/email-mismatches/quick-fix?season=` | Batch fix: set Contact Email = Form Email for all mismatches | ChairMan, Highboard |
 
 ### Welcome Day — Attendees
 
@@ -305,7 +313,7 @@
 | `GET` | `/api/Welcome-Day/validation/duplicate-email-addresses?season=` | Find duplicate form emails | ChairMan |
 | `GET` | `/api/Welcome-Day/validation/email-mismatches?season=` | Find email mismatches | ChairMan |
 
-> **Total: ~42 API endpoints**
+> **Total: ~43 API endpoints**
 
 ---
 
@@ -336,7 +344,7 @@
 | **SchedulePanel** | Schedule config form (dates, times, interval, parallel seats) + ID generation button |
 | **EmailPanel** | Interview invitation panel — send test, send all unsent, send by ID |
 | **ApprovedEmailPanel** | Accepted/rejected email panel — send test, send all, send by ID, filter by status |
-| **ValidationPanel** | Expandable sections showing duplicate phones/emails and mismatches |
+| **ValidationPanel** | Expandable sections showing duplicate phones/emails and mismatches, with Quick Fix button to batch-resolve email mismatches |
 | **PullPanel** | Pull trigger with config display, result summary (new/skipped/validated) |
 | **ConfigModal** | 3-tab runtime config editor (Sheet Names, Email, Pull) with edit/confirm/discard |
 | **ActiveInterviewsModal** | Quick modal view of active interviews without leaving dashboard |
@@ -399,7 +407,6 @@
 
 ```
 IEEE-KSB-CRM-Public-Version/
-├── config.json                  # Runtime config (editable via Chairman UI)
 ├── .env                         # Secrets (never committed)
 ├── .env.example                 # Template for .env
 ├── templates/                   # HTML email templates
@@ -424,7 +431,7 @@ IEEE-KSB-CRM-Public-Version/
 │   ├── components/              # Shared UI components
 │   └── lib/                     # Server utilities
 │       ├── auth.ts              # JWT helpers
-│       ├── config.ts            # config.json read/write
+│       ├── config.ts            # Runtime config (Google Sheets _Config!A1)
 │       ├── email.ts             # Nodemailer transporter
 │       ├── members.ts           # Interview business logic
 │       ├── welcomeDay.ts        # Welcome-Day business logic
@@ -506,7 +513,9 @@ node -e "console.log(require('crypto').randomBytes(128).toString('base64'))"
 
 ### 5. Configure runtime settings
 
-The file `config.json` at the project root controls sheet names, email batching, and pull-record sources. It ships with sensible defaults. The **Chairman** role can also edit these settings live from the in-app Config modal.
+Runtime config (sheet names, email batching, pull sources) is stored in Google Sheets at `_Config!A1` — **no config file on disk**. The `_Config` tab is auto-created with defaults on first run. The **Chairman** role can edit these settings live from the in-app Config modal.
+
+Default config structure:
 
 ```jsonc
 {
@@ -523,10 +532,10 @@ The file `config.json` at the project root controls sheet names, email batching,
     "testEmail": ""
   },
   "pull": {
-    "interview_s1":   { "active": false, "originSheetId": "", "originTabName": "" },
-    "interview_s2":   { "active": false, "originSheetId": "", "originTabName": "" },
-    "welcome_day_s1": { "active": false, "originSheetId": "", "originTabName": "" },
-    "welcome_day_s2": { "active": false, "originSheetId": "", "originTabName": "" }
+    "interview_s1":   { "active": false, "originSheetId": "", "originTabName": "", "lastPullTimestamp": "" },
+    "interview_s2":   { "active": false, "originSheetId": "", "originTabName": "", "lastPullTimestamp": "" },
+    "welcome_day_s1": { "active": false, "originSheetId": "", "originTabName": "", "lastPullTimestamp": "" },
+    "welcome_day_s2": { "active": false, "originSheetId": "", "originTabName": "", "lastPullTimestamp": "" }
   }
 }
 ```
@@ -574,15 +583,16 @@ All secrets live in `.env` (never committed). See [`.env.example`](.env.example)
 
 ---
 
-## Runtime Config (`config.json`)
+## Runtime Config (Google Sheets `_Config!A1`)
 
-Unlike `.env`, the `config.json` file contains **non-secret** settings that can be changed at runtime without redeploying:
+Unlike `.env`, the runtime config contains **non-secret** settings that can be changed at runtime without redeploying. It is stored as JSON in the `_Config!A1` cell of the main Google Spreadsheet — works identically on local dev and Vercel with no filesystem dependency.
 
 - **Sheet names** — map each season / module to a tab in the spreadsheet.
 - **Email settings** — batch size, delay between batches, test recipient.
 - **Pull sources** — toggle & configure which external Google Form response sheets to import from.
+- **Pull timestamps** — `lastPullTimestamp` per season, auto-saved after each pull to prevent re-importing deleted records.
 
-The Chairman can edit these from the **⚙ Config** button in the sidebar.
+The Chairman can edit these from the **⚙ Config** button in the sidebar. The `_Config` tab is auto-created with sensible defaults on first run.
 
 ---
 

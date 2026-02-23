@@ -86,6 +86,11 @@ export const POST = withRole('ChairMan', async (request: NextRequest, user) => {
       const member = membersNeedingSchedule[i];
       const assignment = assignments[i];
 
+      if (!assignment) {
+        console.warn(`No assignment slot available for member index ${i} (${member.fullName})`);
+        continue;
+      }
+
       if (!member.rowIndex) {
         console.error(`Member ${member.fullName} has no rowIndex`);
         continue;

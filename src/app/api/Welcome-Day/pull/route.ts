@@ -11,7 +11,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { withRoles } from '@/lib/middleware';
 import { readRangeExternal } from '@/lib/sheets/base';
-import { getConfig } from '@/lib/config';
+import { getConfig, updateConfig } from '@/lib/config';
 import {
   readAllWelcomeDayAttendees,
   batchAppendWelcomeDayAttendees,
@@ -44,12 +44,29 @@ interface PullConfig {
 }
 
 /**
- * Parse Google Forms timestamps that may be in M/D/YYYY H:MM:SS format.
- * Also handles ISO strings and other formats.
+ * Parse Google Forms timestamps in various locale formats.
+ * Handles:
+ *   - Arabic: "10:30:16 م 2026/02/17" (H:MM:SS [ص=AM/م=PM] YYYY/MM/DD)
+ *   - US English: "2/17/2026 22:30:16" (M/D/YYYY H:MM:SS)
+ *   - ISO strings and anything Date() can parse
  * Returns null if unparseable.
  */
 function parseTimestamp(ts: string): Date | null {
-  // Try Google Forms format: M/D/YYYY H:MM:SS or MM/DD/YYYY HH:MM:SS
+  // Arabic Google Forms format: H:MM:SS ص/م YYYY/MM/DD
+  // ص = صباحاً (AM), م = مساءً (PM)
+  const arMatch = ts.match(/^(\d{1,2}):(\d{2}):(\d{2})\s*([صم])\s+(\d{4})\/(\d{1,2})\/(\d{1,2})$/);
+  if (arMatch) {
+    const [, hourStr, minute, second, ampm, year, month, day] = arMatch;
+    let hour = parseInt(hourStr);
+    if (ampm === 'م' && hour < 12) hour += 12;      // PM
+    if (ampm === 'ص' && hour === 12) hour = 0;       // 12 AM = 0
+    return new Date(
+      parseInt(year), parseInt(month) - 1, parseInt(day),
+      hour, parseInt(minute), parseInt(second)
+    );
+  }
+
+  // US English Google Forms format: M/D/YYYY H:MM:SS
   const gfMatch = ts.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})\s+(\d{1,2}):(\d{2}):(\d{2})$/);
   if (gfMatch) {
     const [, month, day, year, hour, minute, second] = gfMatch;
@@ -58,6 +75,7 @@ function parseTimestamp(ts: string): Date | null {
       parseInt(hour), parseInt(minute), parseInt(second)
     );
   }
+
   // Fallback: native Date parser
   const d = new Date(ts);
   return isNaN(d.getTime()) ? null : d;
@@ -117,17 +135,28 @@ export const POST = withRoles(['ChairMan'], async (request: NextRequest) => {
       });
     }
 
-    // 2. Read existing DB records, find the latest timestamp, and build timestamp set as fallback
+    // 2. Read existing DB records and build timestamp set as fallback dedup
     const existingRecords = await readAllWelcomeDayAttendees(season);
     const existingTimestamps = new Set<string>();
-    let latestTimestamp: Date | null = null;
     for (const rec of existingRecords) {
       if (rec.timestamp) {
-        const ts = rec.timestamp.trim();
-        existingTimestamps.add(ts);
-        const d = parseTimestamp(ts);
-        if (d && (!latestTimestamp || d > latestTimestamp)) {
-          latestTimestamp = d;
+        existingTimestamps.add(rec.timestamp.trim());
+      }
+    }
+
+    // Use the saved lastPullTimestamp from config (survives record deletions)
+    const pullConfigKey = season === 'S1' ? 'welcome_day_s1' : 'welcome_day_s2';
+    const savedTimestamp = getConfig().pull[pullConfigKey].lastPullTimestamp;
+    let latestTimestamp: Date | null = savedTimestamp ? parseTimestamp(savedTimestamp) : null;
+
+    // If no saved timestamp, fall back to computing from DB records
+    if (!latestTimestamp) {
+      for (const rec of existingRecords) {
+        if (rec.timestamp) {
+          const d = parseTimestamp(rec.timestamp.trim());
+          if (d && (!latestTimestamp || d > latestTimestamp)) {
+            latestTimestamp = d;
+          }
         }
       }
     }
@@ -135,6 +164,18 @@ export const POST = withRoles(['ChairMan'], async (request: NextRequest) => {
     // 3. Process each origin row — only pull rows newer than the latest in DB
     const newRecords: WelcomeDayAttendee[] = [];
     let skippedDuplicates = 0;
+
+    // Compute max timestamp from ALL origin rows (what we've "seen")
+    let maxOriginTimestamp: Date | null = null;
+    for (const row of originRows) {
+      const ts = (row[ORIGIN_COLS.TIMESTAMP] || '').trim();
+      if (ts) {
+        const d = parseTimestamp(ts);
+        if (d && (!maxOriginTimestamp || d > maxOriginTimestamp)) {
+          maxOriginTimestamp = d;
+        }
+      }
+    }
 
     for (const row of originRows) {
       const timestamp = (row[ORIGIN_COLS.TIMESTAMP] || '').trim();
@@ -182,11 +223,27 @@ export const POST = withRoles(['ChairMan'], async (request: NextRequest) => {
       await batchAppendWelcomeDayAttendees(newRecords, season);
     }
 
+    // Always save the max timestamp from ALL origin rows we've seen.
+    // This ensures deleted records won't be re-imported on future pulls.
+    const finalTimestamp = maxOriginTimestamp && (!latestTimestamp || maxOriginTimestamp > latestTimestamp)
+      ? maxOriginTimestamp
+      : latestTimestamp;
+    if (finalTimestamp) {
+      await updateConfig({
+        pull: {
+          [pullConfigKey]: {
+            lastPullTimestamp: finalTimestamp.toISOString(),
+          },
+        },
+      } as Parameters<typeof updateConfig>[0]);
+    }
+
     return NextResponse.json({
       message: `Pull complete for Welcome Day ${season}`,
       totalInOrigin: originRows.length,
       pulled: newRecords.length,
       skippedDuplicates,
+      savedTimestamp: finalTimestamp?.toISOString() || null,
     });
   } catch (error) {
     console.error('Welcome Day pull error:', error);
@@ -204,15 +261,43 @@ export const GET = withRoles(['ChairMan'], async (request: NextRequest) => {
   try {
     const season = request.nextUrl.searchParams.get('season') || 'S1';
     const config = getPullConfig(season);
+    const pullConfigKey = season === 'S1' ? 'welcome_day_s1' : 'welcome_day_s2';
+    const lastPullTimestamp = getConfig().pull[pullConfigKey].lastPullTimestamp || null;
 
     return NextResponse.json({
       season,
       isActive: config.isActive,
       hasOriginSheet: !!config.originSheetId,
       hasTabName: !!config.originTabName,
+      lastPullTimestamp,
     });
   } catch (error) {
     console.error('Welcome Day pull config error:', error);
     return NextResponse.json({ error: 'Failed to get pull configuration' }, { status: 500 });
+  }
+});
+
+/**
+ * DELETE /api/Welcome-Day/pull - Reset lastPullTimestamp (allows fresh re-pull)
+ */
+export const DELETE = withRoles(['ChairMan'], async (request: NextRequest) => {
+  try {
+    const season = request.nextUrl.searchParams.get('season') || 'S1';
+    const pullConfigKey = season === 'S1' ? 'welcome_day_s1' : 'welcome_day_s2';
+
+    await updateConfig({
+      pull: {
+        [pullConfigKey]: {
+          lastPullTimestamp: '',
+        },
+      },
+    } as Parameters<typeof updateConfig>[0]);
+
+    return NextResponse.json({
+      message: `Pull timestamp reset for Welcome Day ${season}. Next pull will import all records not already in the database.`,
+    });
+  } catch (error) {
+    console.error('Reset timestamp error:', error);
+    return NextResponse.json({ error: 'Failed to reset pull timestamp' }, { status: 500 });
   }
 });

@@ -10,6 +10,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getUserFromCookie, type User, type UserRole } from '@/lib/auth';
 import { cookies } from 'next/headers';
+import { ensureConfigLoaded } from '@/lib/config';
 
 export const AUTH_COOKIE_NAME = 'ieee_auth_token';
 
@@ -34,6 +35,9 @@ export async function getAuthUser(_request?: NextRequest): Promise<User | null> 
  * Returns user if authenticated, or error response
  */
 export async function requireAuth(request: NextRequest): Promise<{ user: User } | NextResponse> {
+  // Ensure config is loaded from Google Sheets on Vercel cold starts
+  await ensureConfigLoaded();
+
   const user = await getAuthUser(request);
 
   if (!user) {

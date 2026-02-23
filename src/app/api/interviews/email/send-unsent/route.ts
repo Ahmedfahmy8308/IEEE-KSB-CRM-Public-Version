@@ -10,12 +10,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { withRole } from '@/lib/middleware';
 import { getMembersWithoutEmails, batchUpdateMembers } from '@/lib/members';
-import { sendBatchEmails, DEFAULT_INTERVIEW_EMAIL_TEMPLATE } from '@/lib/email';
+import {
+  sendBatchEmails,
+  DEFAULT_INTERVIEW_EMAIL_TEMPLATE,
+  ONLINE_INTERVIEW_EMAIL_TEMPLATE,
+} from '@/lib/email';
 
 export const POST = withRole('ChairMan', async (request: NextRequest, user) => {
   try {
     const season = request.nextUrl.searchParams.get('season') || undefined;
-    // Always use default template
     const emailSubject = 'Interview Invitation - IEEE KSB';
 
     // Get members without emails sent
@@ -38,16 +41,44 @@ export const POST = withRole('ChairMan', async (request: NextRequest, user) => {
       });
     }
 
-    // Send emails in batches
-    const result = await sendBatchEmails(
-      membersWithInterviews,
-      DEFAULT_INTERVIEW_EMAIL_TEMPLATE,
-      emailSubject
+    // Split members by interview mode (Online vs Physical)
+    const physicalMembers = membersWithInterviews.filter(
+      (m) => (m.interviewMode || '').trim() !== 'Online'
+    );
+    const onlineMembers = membersWithInterviews.filter(
+      (m) => (m.interviewMode || '').trim() === 'Online'
     );
 
+    // Send emails in batches — physical members with default template
+    let totalSuccess = 0;
+    let totalFailed = 0;
+    const allResults: Array<{ id: string; success: boolean; email: string }> = [];
+
+    if (physicalMembers.length > 0) {
+      const physicalResult = await sendBatchEmails(
+        physicalMembers,
+        DEFAULT_INTERVIEW_EMAIL_TEMPLATE,
+        emailSubject
+      );
+      totalSuccess += physicalResult.success;
+      totalFailed += physicalResult.failed;
+      allResults.push(...physicalResult.results);
+    }
+
+    // Send emails in batches — online members with online template
+    if (onlineMembers.length > 0) {
+      const onlineResult = await sendBatchEmails(
+        onlineMembers,
+        ONLINE_INTERVIEW_EMAIL_TEMPLATE,
+        emailSubject
+      );
+      totalSuccess += onlineResult.success;
+      totalFailed += onlineResult.failed;
+      allResults.push(...onlineResult.results);
+    }
+
     // Batch update isEmailSend for successful sends
-    // This uses only 2 API calls total (1 read, 1 batch write) instead of 500+
-    const successfulUpdates = result.results
+    const successfulUpdates = allResults
       .filter((r) => r.success)
       .map((r) => ({
         id: r.id,
@@ -59,10 +90,10 @@ export const POST = withRole('ChairMan', async (request: NextRequest, user) => {
     }
 
     return NextResponse.json({
-      message: `Sent ${result.success} emails, ${result.failed} failed`,
-      success: result.success,
-      failed: result.failed,
-      results: result.results,
+      message: `Sent ${totalSuccess} emails (${physicalMembers.length} physical, ${onlineMembers.length} online), ${totalFailed} failed`,
+      success: totalSuccess,
+      failed: totalFailed,
+      results: allResults,
     });
   } catch (error) {
     console.error('Send unsent emails error:', error);

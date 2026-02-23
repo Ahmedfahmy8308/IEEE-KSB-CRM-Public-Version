@@ -9,10 +9,10 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
-import { withRole } from '@/lib/middleware';
+import { withRole, withRoles } from '@/lib/middleware';
 import { getConfig, updateConfig } from '@/lib/config';
 
-export const GET = withRole('ChairMan', async () => {
+export const GET = withRoles(['ChairMan', 'highboard'], async () => {
   try {
     const config = getConfig();
     return NextResponse.json({ config });
@@ -25,7 +25,7 @@ export const GET = withRole('ChairMan', async () => {
 export const PATCH = withRole('ChairMan', async (request: NextRequest) => {
   try {
     const body = await request.json();
-    const updated = updateConfig(body);
+    const updated = await updateConfig(body);
     return NextResponse.json({ config: updated, message: 'Config updated successfully' });
   } catch (error) {
     console.error('Config update error:', error);

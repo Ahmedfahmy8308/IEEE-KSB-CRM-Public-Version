@@ -4,15 +4,16 @@
 
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useToast } from '@/components/ToastProvider';
 
 interface SchedulePanelProps {
   onSuccess?: () => void;
   season?: string;
+  readOnly?: boolean;
 }
 
-export default function SchedulePanel({ onSuccess, season }: SchedulePanelProps) {
+export default function SchedulePanel({ onSuccess, season, readOnly }: SchedulePanelProps) {
   const { showToast } = useToast();
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
@@ -24,6 +25,31 @@ export default function SchedulePanel({ onSuccess, season }: SchedulePanelProps)
   const [scheduleMessage, setScheduleMessage] = useState('');
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [confirmAction, setConfirmAction] = useState<'assign' | 'generateIds' | null>(null);
+  const [byDay, setByDay] = useState<Record<string, { total: number; physical: number; online: number }> | null>(null);
+  const [physicalCount, setPhysicalCount] = useState(0);
+  const [onlineCount, setOnlineCount] = useState(0);
+  const [totalAssigned, setTotalAssigned] = useState(0);
+
+  const fetchByDayStats = useCallback(async () => {
+    try {
+      const res = await fetch(`/api/interviews/members/stats${season ? `?season=${season}` : ''}`);
+      if (res.ok) {
+        const data = await res.json();
+        if (data.stats?.byDay) {
+          setByDay(data.stats.byDay);
+        }
+        setPhysicalCount(data.stats?.physical ?? 0);
+        setOnlineCount(data.stats?.online ?? 0);
+        setTotalAssigned(data.stats?.assigned ?? 0);
+      }
+    } catch {
+      // silently fail
+    }
+  }, [season]);
+
+  useEffect(() => {
+    fetchByDayStats();
+  }, [fetchByDayStats]);
 
   const openConfirmDialog = (action: 'assign' | 'generateIds') => {
     // For assign action, check if dates are filled
@@ -73,6 +99,7 @@ export default function SchedulePanel({ onSuccess, season }: SchedulePanelProps)
       if (res.ok) {
         setScheduleMessage(' ' + data.message);
         showToast(data.message, 'success');
+        await fetchByDayStats();
         onSuccess?.();
       } else {
         setScheduleMessage(' ' + data.error);
@@ -99,6 +126,7 @@ export default function SchedulePanel({ onSuccess, season }: SchedulePanelProps)
       if (res.ok) {
         setScheduleMessage(data.message);
         showToast(data.message, 'success');
+        await fetchByDayStats();
         onSuccess?.();
       } else {
         setScheduleMessage(data.error);
@@ -242,18 +270,18 @@ export default function SchedulePanel({ onSuccess, season }: SchedulePanelProps)
             <div className="flex flex-col sm:flex-row gap-3">
               <button
                 type="submit"
-                disabled={scheduleLoading}
+                disabled={scheduleLoading || readOnly}
                 className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
               >
-                {scheduleLoading ? '⏳ Scheduling...' : 'Assign Interview Schedule'}
+                {readOnly ? '🔒 View Only' : scheduleLoading ? '⏳ Scheduling...' : 'Assign Interview Schedule'}
               </button>
               <button
                 type="button"
                 onClick={() => openConfirmDialog('generateIds')}
-                disabled={scheduleLoading}
+                disabled={scheduleLoading || readOnly}
                 className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
               >
-                {scheduleLoading ? '⏳ Generating IDs...' : 'Generate IDs Only'}
+                {readOnly ? '🔒 View Only' : scheduleLoading ? '⏳ Generating IDs...' : 'Generate IDs Only'}
               </button>
             </div>
           </form>
@@ -266,6 +294,63 @@ export default function SchedulePanel({ onSuccess, season }: SchedulePanelProps)
               }
             >
               {scheduleMessage}
+            </div>
+          )}
+
+          {/* Online / Physical Stats */}
+          {totalAssigned > 0 && (
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="bg-gradient-to-br from-emerald-50 to-emerald-100 border border-emerald-200 rounded-lg p-4 text-center hover:shadow-md transition-shadow">
+                <p className="text-xs font-medium text-emerald-600 uppercase mb-1">Physical</p>
+                <p className="text-3xl font-bold text-emerald-900">{physicalCount}</p>
+                <p className="text-xs text-emerald-600 mt-1">in-person interviews</p>
+              </div>
+              <div className="bg-gradient-to-br from-violet-50 to-violet-100 border border-violet-200 rounded-lg p-4 text-center hover:shadow-md transition-shadow">
+                <p className="text-xs font-medium text-violet-600 uppercase mb-1">Online</p>
+                <p className="text-3xl font-bold text-violet-900">{onlineCount}</p>
+                <p className="text-xs text-violet-600 mt-1">Google Meet interviews</p>
+              </div>
+              <div className="bg-gradient-to-br from-slate-50 to-slate-100 border border-slate-200 rounded-lg p-4 text-center hover:shadow-md transition-shadow">
+                <p className="text-xs font-medium text-slate-600 uppercase mb-1">Total Assigned</p>
+                <p className="text-3xl font-bold text-slate-900">{totalAssigned}</p>
+                <p className="text-xs text-slate-600 mt-1">scheduled interviews</p>
+              </div>
+            </div>
+          )}
+
+          {/* Per-Day Interview Cards */}
+          {byDay && Object.keys(byDay).length > 0 && (
+            <div>
+              <h3 className="text-lg font-semibold text-gray-800 mb-3">Interviews Per Day</h3>
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                {Object.entries(byDay)
+                  .sort(([a], [b]) => a.localeCompare(b))
+                  .map(([day, counts]) => {
+                    const date = new Date(day + 'T00:00:00');
+                    const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
+                    const monthDay = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    return (
+                      <div
+                        key={day}
+                        className="bg-gradient-to-br from-indigo-50 to-indigo-100 border border-indigo-200 rounded-lg p-3 text-center hover:shadow-md transition-shadow"
+                      >
+                        <p className="text-xs font-medium text-indigo-600 uppercase">{dayName}</p>
+                        <p className="text-sm font-semibold text-indigo-800 mb-1">{monthDay}</p>
+                        <p className="text-2xl font-bold text-indigo-900">{counts.total}</p>
+                        <div className="flex justify-center gap-2 mt-1">
+                          <span className="text-xs text-emerald-700 bg-emerald-50 rounded px-1.5 py-0.5">Physical {counts.physical}</span>
+                          <span className="text-xs text-violet-700 bg-violet-50 rounded px-1.5 py-0.5">Online {counts.online}</span>
+                        </div>
+                      </div>
+                    );
+                  })}
+              </div>
+              <div className="mt-3 bg-indigo-50 border border-indigo-200 rounded-lg p-3 flex items-center justify-between">
+                <span className="text-sm font-medium text-indigo-800">Total Scheduled</span>
+                <span className="text-lg font-bold text-indigo-900">
+                  {Object.values(byDay).reduce((sum, c) => sum + c.total, 0)}
+                </span>
+              </div>
             </div>
           )}
         </div>

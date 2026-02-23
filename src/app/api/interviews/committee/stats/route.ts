@@ -72,6 +72,7 @@ async function handler(request: NextRequest, user: User) {
       total: fullStats.total,
       assigned: fullStats.assigned,
       emailSent: fullStats.emailSent,
+      approvedEmailSent: fullStats.approvedEmailSent,
       approved: fullStats.approved,
       rejected: rejected,
       pendingApproval: pendingApproval,

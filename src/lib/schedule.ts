@@ -11,8 +11,7 @@ import { format, addDays, parse, addMinutes } from 'date-fns';
 
 export interface TimeSlot {
   time: string; // Format: "HH:mm"
-  seat1: string | null; // Applicant ID or null
-  seat2: string | null; // Applicant ID or null
+  seats: (string | null)[]; // Array of applicant IDs (length = parallelSeats)
 }
 
 export interface DaySchedule {
@@ -27,6 +26,7 @@ export interface Schedule {
   days: DaySchedule[];
   totalSlots: number;
   assignedSlots: number;
+  parallelSeats: number;
 }
 
 /**
@@ -34,12 +34,14 @@ export interface Schedule {
  * @param startTime Start time in HH:mm format (default: "13:00")
  * @param endTime End time in HH:mm format (default: "17:00")
  * @param intervalMinutes Interval between slots in minutes (default: 5)
+ * @param parallelSeats Number of concurrent seats per timeslot (default: 2)
  * @returns Array of TimeSlot objects
  */
 function generateTimeSlots(
   startTime: string = '13:00',
   endTime: string = '17:00',
-  intervalMinutes: number = 5
+  intervalMinutes: number = 5,
+  parallelSeats: number = 2
 ): TimeSlot[] {
   const slots: TimeSlot[] = [];
   const baseDate = '2025-01-01'; // Arbitrary date for parsing
@@ -50,8 +52,7 @@ function generateTimeSlots(
   while (currentTime < end) {
     slots.push({
       time: format(currentTime, 'HH:mm'),
-      seat1: null,
-      seat2: null,
+      seats: Array(parallelSeats).fill(null),
     });
     currentTime = addMinutes(currentTime, intervalMinutes);
   }
@@ -96,7 +97,7 @@ export function generateSchedule(
   while (currentDate <= end) {
     // Only include Sun-Thu
     if (isValidInterviewDay(currentDate)) {
-      const slots = generateTimeSlots(startTime, endTime, intervalMinutes);
+      const slots = generateTimeSlots(startTime, endTime, intervalMinutes, parallelSeats);
 
       days.push({
         date: format(currentDate, 'yyyy-MM-dd'),
@@ -117,6 +118,7 @@ export function generateSchedule(
     days,
     totalSlots,
     assignedSlots: 0,
+    parallelSeats,
   };
 }
 
@@ -133,22 +135,14 @@ export function assignApplicantsToSchedule(schedule: Schedule, applicantIds: str
   // Iterate through all days and slots
   outerLoop: for (const day of schedule.days) {
     for (const slot of day.slots) {
-      // Assign to seat1
-      if (applicantIndex < applicantIds.length) {
-        slot.seat1 = applicantIds[applicantIndex];
-        applicantIndex++;
-        assignedCount++;
-      } else {
-        break outerLoop;
-      }
-
-      // Assign to seat2
-      if (applicantIndex < applicantIds.length) {
-        slot.seat2 = applicantIds[applicantIndex];
-        applicantIndex++;
-        assignedCount++;
-      } else {
-        break outerLoop;
+      for (let s = 0; s < slot.seats.length; s++) {
+        if (applicantIndex < applicantIds.length) {
+          slot.seats[s] = applicantIds[applicantIndex];
+          applicantIndex++;
+          assignedCount++;
+        } else {
+          break outerLoop;
+        }
       }
     }
   }
@@ -171,11 +165,10 @@ export function getApplicantAssignment(
 ): { date: string; time: string; seat: number } | null {
   for (const day of schedule.days) {
     for (const slot of day.slots) {
-      if (slot.seat1 === applicantId) {
-        return { date: day.date, time: slot.time, seat: 1 };
-      }
-      if (slot.seat2 === applicantId) {
-        return { date: day.date, time: slot.time, seat: 2 };
+      for (let s = 0; s < slot.seats.length; s++) {
+        if (slot.seats[s] === applicantId) {
+          return { date: day.date, time: slot.time, seat: s + 1 };
+        }
       }
     }
   }
@@ -196,19 +189,14 @@ export function scheduleToAssignments(schedule: Schedule): Array<{
 
   for (const day of schedule.days) {
     for (const slot of day.slots) {
-      if (slot.seat1) {
-        assignments.push({
-          id: slot.seat1,
-          interviewDay: day.date,
-          interviewTime: slot.time,
-        });
-      }
-      if (slot.seat2) {
-        assignments.push({
-          id: slot.seat2,
-          interviewDay: day.date,
-          interviewTime: slot.time,
-        });
+      for (const seatId of slot.seats) {
+        if (seatId) {
+          assignments.push({
+            id: seatId,
+            interviewDay: day.date,
+            interviewTime: slot.time,
+          });
+        }
       }
     }
   }

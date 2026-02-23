@@ -11,7 +11,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { withRole } from '@/lib/middleware';
 import { searchMembers } from '@/lib/members';
-import { sendEmail, fillTemplate, DEFAULT_INTERVIEW_EMAIL_TEMPLATE } from '@/lib/email';
+import { sendEmail, fillTemplate, getInterviewTemplate } from '@/lib/email';
 import { getConfig } from '@/lib/config';
 
 export const POST = withRole('ChairMan', async (request: NextRequest) => {
@@ -55,43 +55,59 @@ export const POST = withRole('ChairMan', async (request: NextRequest) => {
       committeeGroups.get(committee)!.push(member);
     }
 
-    // Send one test email per committee
+    // Send one test email per committee per interview mode
     const results: Array<{
       committee: string;
       memberName: string;
       memberId: string;
+      mode: string;
       success: boolean;
       error?: string;
     }> = [];
 
     for (const [committee, members] of committeeGroups.entries()) {
-      // Pick the first member from this committee
-      const testMember = members[0];
+      // Find one physical and one online member per committee
+      const physicalMember = members.find((m) => (m.interviewMode || '').trim() !== 'Online');
+      const onlineMember = members.find((m) => (m.interviewMode || '').trim() === 'Online');
 
-      try {
-        // Fill template with member data
-        const html = fillTemplate(DEFAULT_INTERVIEW_EMAIL_TEMPLATE, testMember);
+      const testCandidates: Array<{ member: typeof members[0]; mode: string }> = [];
+      if (physicalMember) testCandidates.push({ member: physicalMember, mode: 'Physical' });
+      if (onlineMember) testCandidates.push({ member: onlineMember, mode: 'Online' });
+      // Fallback: if neither matched explicitly, use the first member
+      if (testCandidates.length === 0) testCandidates.push({ member: members[0], mode: 'Physical' });
 
-        // Create subject with committee info
-        const subject = `[TEST] Interview Invitation - IEEE KSB - ${committee}`;
+      for (const { member: testMember, mode } of testCandidates) {
+        try {
+          // Pick template based on interview mode (Online vs Physical)
+          const template = getInterviewTemplate(testMember.interviewMode);
+          const modeLabel = mode === 'Online' ? ' [ONLINE]' : '';
 
-        // Send to TEST_EMAIL instead of member's actual email
-        const success = await sendEmail(TEST_EMAIL, subject, html);
+          // Fill template with member data
+          const html = fillTemplate(template, testMember);
 
-        results.push({
-          committee,
-          memberName: testMember.fullName,
-          memberId: testMember.id || 'N/A',
-          success,
-        });
-      } catch (error) {
-        results.push({
-          committee,
-          memberName: testMember.fullName,
-          memberId: testMember.id || 'N/A',
-          success: false,
-          error: error instanceof Error ? error.message : 'Unknown error',
-        });
+          // Create subject with committee info
+          const subject = `[TEST]${modeLabel} Interview Invitation - IEEE KSB - ${committee}`;
+
+          // Send to TEST_EMAIL instead of member's actual email
+          const success = await sendEmail(TEST_EMAIL, subject, html);
+
+          results.push({
+            committee,
+            memberName: testMember.fullName,
+            memberId: testMember.id || 'N/A',
+            mode,
+            success,
+          });
+        } catch (error) {
+          results.push({
+            committee,
+            memberName: testMember.fullName,
+            memberId: testMember.id || 'N/A',
+            mode,
+            success: false,
+            error: error instanceof Error ? error.message : 'Unknown error',
+          });
+        }
       }
     }
 

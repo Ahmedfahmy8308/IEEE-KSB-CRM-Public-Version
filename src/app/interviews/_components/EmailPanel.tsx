@@ -10,9 +10,10 @@ import { useToast } from '@/components/ToastProvider';
 interface EmailFormProps {
   onSuccess?: () => void;
   season?: string;
+  readOnly?: boolean;
 }
 
-export default function EmailPanel({ onSuccess, season }: EmailFormProps) {
+export default function EmailPanel({ onSuccess, season, readOnly }: EmailFormProps) {
   const { showToast } = useToast();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState('');
@@ -178,10 +179,10 @@ export default function EmailPanel({ onSuccess, season }: EmailFormProps) {
             />
             <button
               onClick={() => openConfirmDialog('single')}
-              disabled={loading || !memberId.trim()}
+              disabled={loading || !memberId.trim() || readOnly}
               className="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center justify-center gap-2 w-full sm:w-auto whitespace-nowrap"
             >
-              {loading ? <span className="animate-spin">⏳</span> : <span>Send</span>}
+              {readOnly ? <span>🔒 View Only</span> : loading ? <span className="animate-spin">⏳</span> : <span>Send</span>}
             </button>
           </div>
           <p className="text-xs text-indigo-700 mt-2">
@@ -193,7 +194,7 @@ export default function EmailPanel({ onSuccess, season }: EmailFormProps) {
         <div className="space-y-3">
           <button
             onClick={() => openConfirmDialog('test')}
-            disabled={loading}
+            disabled={loading || readOnly}
             className="w-full bg-purple-600 text-white py-3 px-4 rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium text-left flex items-center justify-between group"
           >
             <div className="flex items-center gap-3">
@@ -225,7 +226,7 @@ export default function EmailPanel({ onSuccess, season }: EmailFormProps) {
 
           <button
             onClick={() => openConfirmDialog('unsent')}
-            disabled={loading}
+            disabled={loading || readOnly}
             className="w-full bg-orange-600 text-white py-3 px-4 rounded-lg hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium text-left flex items-center justify-between group"
           >
             <div className="flex items-center gap-3">

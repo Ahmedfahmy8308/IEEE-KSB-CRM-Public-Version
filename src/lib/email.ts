@@ -340,6 +340,24 @@ function loadTemplate(templateName: string): string {
 export const DEFAULT_INTERVIEW_EMAIL_TEMPLATE = loadTemplate('interview_invitation');
 
 /**
+ * Email template for online interview invitations via Google Meet (loaded from file)
+ */
+export const ONLINE_INTERVIEW_EMAIL_TEMPLATE = loadTemplate('interview_invitation_online');
+
+/**
+ * Pick the correct interview email template based on interview mode
+ * @param interviewMode The member's interview mode ('Online', 'Physical', or undefined)
+ * @returns The appropriate email template string
+ */
+export function getInterviewTemplate(interviewMode?: string): string {
+  const mode = (interviewMode || '').trim();
+  if (mode === 'Online') {
+    return ONLINE_INTERVIEW_EMAIL_TEMPLATE;
+  }
+  return DEFAULT_INTERVIEW_EMAIL_TEMPLATE;
+}
+
+/**
  * Default email template for Welcome Day confirmations (loaded from file)
  */
 export const DEFAULT_WELCOME_DAY_EMAIL_TEMPLATE = loadTemplate('welcome_day_confirmation');

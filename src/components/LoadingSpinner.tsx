@@ -6,7 +6,7 @@ import Image from 'next/image';
 
 export default function LoadingSpinner() {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-blue-50">
       <div className="text-center">
         <div className="relative inline-block">
           {/* Outer glow ring */}
@@ -15,7 +15,7 @@ export default function LoadingSpinner() {
           {/* Spinning ring */}
           <div className="relative w-24 h-24 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin">
             {/* Inner accent ring */}
-            <div className="absolute inset-2 border-2 border-blue-100 border-b-blue-400 rounded-full animate-spin-reverse"></div>
+            <div className="absolute inset-2 border-2 border-blue-100 border-b-blue-400 rounded-full animate-[spin-reverse_1.5s_linear_infinite]"></div>
           </div>
 
           {/* IEEE Logo in center */}
@@ -27,6 +27,7 @@ export default function LoadingSpinner() {
                 width={40}
                 height={40}
                 className="object-contain"
+                priority
               />
             </div>
           </div>
@@ -60,10 +61,6 @@ export default function LoadingSpinner() {
           to {
             transform: rotate(0deg);
           }
-        }
-
-        .animate-spin-reverse {
-          animation: spin-reverse 1.5s linear infinite;
         }
       `}</style>
     </div>

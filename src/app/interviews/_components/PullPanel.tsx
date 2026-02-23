@@ -9,6 +9,7 @@ import { useState, useEffect, useCallback } from 'react';
 interface PullPanelProps {
   onSuccess?: () => void;
   season?: string;
+  readOnly?: boolean;
 }
 
 interface PullConfig {
@@ -16,6 +17,7 @@ interface PullConfig {
   isActive: boolean;
   hasOriginSheet: boolean;
   hasTabName: boolean;
+  lastPullTimestamp: string | null;
 }
 
 interface PullResult {
@@ -31,10 +33,12 @@ interface PullResult {
   };
 }
 
-export default function PullPanel({ onSuccess, season }: PullPanelProps) {
+export default function PullPanel({ onSuccess, season, readOnly }: PullPanelProps) {
   const [config, setConfig] = useState<PullConfig | null>(null);
   const [loading, setLoading] = useState(true);
   const [pulling, setPulling] = useState(false);
+  const [resetting, setResetting] = useState(false);
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [result, setResult] = useState<PullResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -74,6 +78,7 @@ export default function PullPanel({ onSuccess, season }: PullPanelProps) {
 
       if (res.ok) {
         setResult(data);
+        fetchConfig(); // Refresh to show updated timestamp
         if (data.pulled > 0 && onSuccess) {
           onSuccess();
         }
@@ -84,6 +89,29 @@ export default function PullPanel({ onSuccess, season }: PullPanelProps) {
       setError('Failed to pull records');
     } finally {
       setPulling(false);
+    }
+  };
+
+  const handleResetTimestamp = async () => {
+    setShowResetConfirm(false);
+    try {
+      setResetting(true);
+      setError(null);
+
+      const res = await fetch(`/api/interviews/pull${season ? `?season=${season}` : ''}`, {
+        method: 'DELETE',
+      });
+
+      if (res.ok) {
+        fetchConfig(); // Refresh to show cleared timestamp
+      } else {
+        const data = await res.json();
+        setError(data.error || 'Failed to reset timestamp');
+      }
+    } catch {
+      setError('Failed to reset timestamp');
+    } finally {
+      setResetting(false);
     }
   };
 
@@ -100,6 +128,39 @@ export default function PullPanel({ onSuccess, season }: PullPanelProps) {
 
   return (
     <div className="space-y-6">
+      {/* Reset Confirmation Dialog */}
+      {showResetConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowResetConfirm(false)} />
+          <div className="relative bg-white rounded-2xl shadow-2xl p-6 max-w-md mx-4 animate-in fade-in zoom-in">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
+                <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900">Reset Pull Timestamp</h3>
+            </div>
+            <p className="text-sm text-gray-600 mb-6">
+              This will clear the timestamp filter. The next pull will re-import all records from the origin sheet that are not already in the database.
+            </p>
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setShowResetConfirm(false)}
+                className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleResetTimestamp}
+                className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors"
+              >
+                Reset Timestamp
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Header */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
         <div className="flex items-center gap-3 mb-4">
@@ -208,34 +269,71 @@ export default function PullPanel({ onSuccess, season }: PullPanelProps) {
         )}
 
         {/* Pull Button */}
-        <button
-          onClick={handlePull}
-          disabled={pulling || !config?.isActive}
-          className={`w-full flex items-center justify-center gap-3 px-6 py-3 rounded-lg font-semibold text-white transition-all duration-200 ${
-            pulling || !config?.isActive
-              ? 'bg-gray-400 cursor-not-allowed'
-              : 'bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 shadow-lg hover:shadow-xl'
-          }`}
-        >
-          {pulling ? (
-            <>
-              <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
-              <span>Pulling records...</span>
-            </>
-          ) : (
-            <>
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                />
-              </svg>
-              <span>Pull New Records</span>
-            </>
+        <div className="flex gap-3">
+          <button
+            onClick={handlePull}
+            disabled={pulling || !config?.isActive || readOnly}
+            className={`flex-1 flex items-center justify-center gap-3 px-6 py-3 rounded-lg font-semibold text-white transition-all duration-200 ${
+              pulling || !config?.isActive
+                ? 'bg-gray-400 cursor-not-allowed'
+                : 'bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 shadow-lg hover:shadow-xl'
+            }`}
+          >
+            {pulling ? (
+              <>
+                <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
+                <span>Pulling records...</span>
+              </>
+            ) : (
+              <>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                  />
+                </svg>
+                <span>Pull New Records</span>
+              </>
+            )}
+          </button>
+
+          {config?.lastPullTimestamp && (
+            <button
+              onClick={() => setShowResetConfirm(true)}
+              disabled={resetting || readOnly}
+              className={`flex items-center gap-2 px-4 py-3 rounded-lg font-medium transition-all duration-200 ${
+                resetting
+                  ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                  : 'bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 hover:border-red-300'
+              }`}
+              title="Reset the timestamp filter to allow re-importing all records"
+            >
+              {resetting ? (
+                <div className="animate-spin rounded-full h-4 w-4 border-2 border-red-400 border-t-transparent"></div>
+              ) : (
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+              )}
+              <span className="text-sm">Reset</span>
+            </button>
           )}
-        </button>
+        </div>
+
+        {/* Last Pull Timestamp */}
+        {config?.lastPullTimestamp && (
+          <div className="mt-3 bg-blue-50 border border-blue-200 rounded-lg p-3 flex items-center gap-2">
+            <svg className="w-4 h-4 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span className="text-sm text-blue-700">
+              Last pull cutoff: <strong>{new Date(config.lastPullTimestamp).toLocaleString()}</strong>
+              <span className="text-blue-500 ml-1">(only records newer than this will be imported)</span>
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Error */}

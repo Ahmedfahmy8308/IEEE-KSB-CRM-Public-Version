@@ -33,6 +33,7 @@ interface Stats {
   total: number;
   assigned: number;
   emailSent: number;
+  approvedEmailSent: number;
   approved: number;
   rejected: number;
   pending: number;
@@ -40,6 +41,7 @@ interface Stats {
   notStarted: number;
   notAttended: number;
   byCommittee: Record<string, number>;
+  byDay?: Record<string, number>;
   idMatched?: number;
   idNew?: number;
   idMismatch?: number;
@@ -262,29 +264,29 @@ function DashboardContent() {
           {/* Search Tab */}
           {activeTab === 'search' && <SearchPanel season={season} />}
 
-          {/* Schedule Tab - Chairman Only */}
-          {activeTab === 'schedule' && user.role === 'ChairMan' && (
-            <SchedulePanel onSuccess={handleSuccess} season={season} />
+          {/* Schedule Tab - Chairman & Highboard */}
+          {activeTab === 'schedule' && (user.role === 'ChairMan' || user.role === 'highboard') && (
+            <SchedulePanel onSuccess={handleSuccess} season={season} readOnly={user.role !== 'ChairMan'} />
           )}
 
-          {/* Email Tab - Chairman Only */}
-          {activeTab === 'email' && user.role === 'ChairMan' && (
-            <EmailPanel onSuccess={handleSuccess} season={season} />
+          {/* Email Tab - Chairman & Highboard */}
+          {activeTab === 'email' && (user.role === 'ChairMan' || user.role === 'highboard') && (
+            <EmailPanel onSuccess={handleSuccess} season={season} readOnly={user.role !== 'ChairMan'} />
           )}
 
-          {/* Approved Email Tab - Chairman Only */}
-          {activeTab === 'approved-email' && user.role === 'ChairMan' && (
-            <ApprovedEmailPanel onSuccess={handleSuccess} season={season} />
+          {/* Approved Email Tab - Chairman & Highboard */}
+          {activeTab === 'approved-email' && (user.role === 'ChairMan' || user.role === 'highboard') && (
+            <ApprovedEmailPanel onSuccess={handleSuccess} season={season} readOnly={user.role !== 'ChairMan'} />
           )}
 
-          {/* Validation Tab - Chairman Only */}
-          {activeTab === 'validation' && user.role === 'ChairMan' && (
-            <ValidationPanel season={season} />
+          {/* Validation Tab - Chairman & Highboard */}
+          {activeTab === 'validation' && (user.role === 'ChairMan' || user.role === 'highboard') && (
+            <ValidationPanel season={season} readOnly={user.role !== 'ChairMan'} />
           )}
 
-          {/* Pull Records Tab - Chairman Only */}
-          {activeTab === 'pull' && user.role === 'ChairMan' && (
-            <PullPanel onSuccess={handleSuccess} season={season} />
+          {/* Pull Records Tab - Chairman & Highboard */}
+          {activeTab === 'pull' && (user.role === 'ChairMan' || user.role === 'highboard') && (
+            <PullPanel onSuccess={handleSuccess} season={season} readOnly={user.role !== 'ChairMan'} />
           )}
         </main>
 

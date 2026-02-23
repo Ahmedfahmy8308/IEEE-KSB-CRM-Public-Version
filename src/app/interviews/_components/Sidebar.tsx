@@ -36,6 +36,7 @@ export default function Sidebar({ user, activeTab, onTabChange, onLogout, season
   const [isOpen, setIsOpen] = useState(false);
   const [configOpen, setConfigOpen] = useState(false);
   const router = useRouter();
+  const canAccessTools = user.role === 'ChairMan' || user.role === 'highboard';
 
   return (
     <>
@@ -246,7 +247,7 @@ export default function Sidebar({ user, activeTab, onTabChange, onLogout, season
               <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
                 Chairman Tools
               </p>
-              {user.role !== 'ChairMan' && (
+              {user.role !== 'ChairMan' && user.role !== 'highboard' && (
                 <svg
                   className="w-4 h-4 text-gray-400"
                   fill="none"
@@ -266,14 +267,14 @@ export default function Sidebar({ user, activeTab, onTabChange, onLogout, season
             {/* Schedule Management */}
             <button
               onClick={() => {
-                if (user.role === 'ChairMan') {
+                if (canAccessTools) {
                   onTabChange('schedule');
                   setIsOpen(false);
                 }
               }}
-              disabled={user.role !== 'ChairMan'}
+              disabled={!canAccessTools}
               className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 group text-sm ${
-                user.role === 'ChairMan'
+                canAccessTools
                   ? activeTab === 'schedule'
                     ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30'
                     : 'text-gray-700 hover:bg-gray-100 cursor-pointer'
@@ -294,14 +295,14 @@ export default function Sidebar({ user, activeTab, onTabChange, onLogout, season
             {/* Interview Email Management */}
             <button
               onClick={() => {
-                if (user.role === 'ChairMan') {
+                if (canAccessTools) {
                   onTabChange('email');
                   setIsOpen(false);
                 }
               }}
-              disabled={user.role !== 'ChairMan'}
+              disabled={!canAccessTools}
               className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 group text-sm ${
-                user.role === 'ChairMan'
+                canAccessTools
                   ? activeTab === 'email'
                     ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30'
                     : 'text-gray-700 hover:bg-gray-100 cursor-pointer'
@@ -322,14 +323,14 @@ export default function Sidebar({ user, activeTab, onTabChange, onLogout, season
             {/* Approved Email Management */}
             <button
               onClick={() => {
-                if (user.role === 'ChairMan') {
+                if (canAccessTools) {
                   onTabChange('approved-email');
                   setIsOpen(false);
                 }
               }}
-              disabled={user.role !== 'ChairMan'}
+              disabled={!canAccessTools}
               className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 group text-sm ${
-                user.role === 'ChairMan'
+                canAccessTools
                   ? activeTab === 'approved-email'
                     ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30'
                     : 'text-gray-700 hover:bg-gray-100 cursor-pointer'
@@ -350,14 +351,14 @@ export default function Sidebar({ user, activeTab, onTabChange, onLogout, season
             {/* Validation */}
             <button
               onClick={() => {
-                if (user.role === 'ChairMan') {
+                if (canAccessTools) {
                   onTabChange('validation');
                   setIsOpen(false);
                 }
               }}
-              disabled={user.role !== 'ChairMan'}
+              disabled={!canAccessTools}
               className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 group text-sm ${
-                user.role === 'ChairMan'
+                canAccessTools
                   ? activeTab === 'validation'
                     ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30'
                     : 'text-gray-700 hover:bg-gray-100 cursor-pointer'
@@ -378,14 +379,14 @@ export default function Sidebar({ user, activeTab, onTabChange, onLogout, season
             {/* Pull Records */}
             <button
               onClick={() => {
-                if (user.role === 'ChairMan') {
+                if (canAccessTools) {
                   onTabChange('pull');
                   setIsOpen(false);
                 }
               }}
-              disabled={user.role !== 'ChairMan'}
+              disabled={!canAccessTools}
               className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 group text-sm ${
-                user.role === 'ChairMan'
+                canAccessTools
                   ? activeTab === 'pull'
                     ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30'
                     : 'text-gray-700 hover:bg-gray-100 cursor-pointer'
@@ -406,14 +407,14 @@ export default function Sidebar({ user, activeTab, onTabChange, onLogout, season
             {/* System Config */}
             <button
               onClick={() => {
-                if (user.role === 'ChairMan') {
+                if (canAccessTools) {
                   setConfigOpen(true);
                   setIsOpen(false);
                 }
               }}
-              disabled={user.role !== 'ChairMan'}
+              disabled={!canAccessTools}
               className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 group text-sm ${
-                user.role === 'ChairMan'
+                canAccessTools
                   ? 'text-gray-700 hover:bg-gray-100 cursor-pointer'
                   : 'text-gray-400 cursor-not-allowed opacity-60'
               }`}
@@ -481,7 +482,7 @@ export default function Sidebar({ user, activeTab, onTabChange, onLogout, season
       </aside>
 
       {/* Config Modal */}
-      <ConfigModal isOpen={configOpen} onClose={() => setConfigOpen(false)} season={season} />
+      <ConfigModal isOpen={configOpen} onClose={() => setConfigOpen(false)} season={season} readOnly={user.role !== 'ChairMan'} />
     </>
   );
 }

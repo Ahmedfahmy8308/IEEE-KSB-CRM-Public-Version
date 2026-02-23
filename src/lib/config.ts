@@ -4,31 +4,14 @@
 
 /**
  * Runtime Config Module
- * Reads/writes config.json for settings that the Chairman can edit via UI.
+ * Reads/writes config from Google Sheets "_Config!A1" tab.
+ * Works identically on local dev and Vercel.
  * Secrets (API keys, SMTP credentials, JWT) stay in .env.
  */
 
-import * as fs from 'fs';
-import * as path from 'path';
-
-// On Vercel the project root is read-only (/var/task).
-// We keep a writable copy in /tmp and seed it from the bundled file on cold start.
-const BUNDLED_CONFIG_PATH = path.join(process.cwd(), 'config.json');
-const isVercel = !!process.env.VERCEL;
-const CONFIG_PATH = isVercel ? '/tmp/config.json' : BUNDLED_CONFIG_PATH;
-
-/** Ensure a writable config exists in /tmp on Vercel cold starts */
-function ensureWritableConfig(): void {
-  if (!isVercel) return;
-  if (!fs.existsSync(CONFIG_PATH)) {
-    try {
-      const bundled = fs.readFileSync(BUNDLED_CONFIG_PATH, 'utf-8');
-      fs.writeFileSync(CONFIG_PATH, bundled, 'utf-8');
-    } catch {
-      // Bundled file missing → will fall back to defaults in getConfig()
-    }
-  }
-}
+// In-memory cache — avoids hitting Sheets API on every call within the same invocation
+let memoryCache: AppConfig | null = null;
+let sheetsLoadAttempted = false;
 
 export interface AppConfig {
   sheetNames: {
@@ -55,6 +38,7 @@ export interface PullSeasonConfig {
   active: boolean;
   originSheetId: string;
   originTabName: string;
+  lastPullTimestamp?: string;
 }
 
 const DEFAULT_CONFIG: AppConfig = {
@@ -79,37 +63,114 @@ const DEFAULT_CONFIG: AppConfig = {
 };
 
 /**
- * Read the current config from disk.
- * Falls back to defaults if config.json is missing or malformed.
+ * Read the current config from in-memory cache.
+ * Must call ensureConfigLoaded() first (done automatically in middleware).
+ * Falls back to defaults if not yet loaded.
  */
 export function getConfig(): AppConfig {
-  ensureWritableConfig();
+  if (memoryCache) return memoryCache;
+  return { ...DEFAULT_CONFIG };
+}
+
+/**
+ * Load config from Google Sheets _Config!A1 on startup.
+ * Called once per invocation from the auth middleware.
+ * Creates the _Config tab with defaults if it doesn't exist.
+ */
+export async function ensureConfigLoaded(): Promise<void> {
+  if (sheetsLoadAttempted) return;
+  sheetsLoadAttempted = true;
+
   try {
-    const raw = fs.readFileSync(CONFIG_PATH, 'utf-8');
-    const parsed = JSON.parse(raw);
-    // Deep merge with defaults so new fields are always present
-    return deepMerge(
-      DEFAULT_CONFIG as unknown as Record<string, unknown>,
-      parsed
-    ) as unknown as AppConfig;
+    const { getSheets, getSpreadsheetId } = await import('@/lib/sheets/base');
+    const sheets = getSheets();
+    const spreadsheetId = getSpreadsheetId();
+
+    const response = await sheets.spreadsheets.values.get({
+      spreadsheetId,
+      range: '_Config!A1',
+    });
+
+    const cell = response.data.values?.[0]?.[0];
+    if (cell) {
+      const parsed = JSON.parse(cell);
+      memoryCache = deepMerge(
+        DEFAULT_CONFIG as unknown as Record<string, unknown>,
+        parsed
+      ) as unknown as AppConfig;
+    } else {
+      // Cell empty — write defaults
+      memoryCache = { ...DEFAULT_CONFIG };
+      await persistConfigToSheets(memoryCache);
+    }
   } catch {
-    return { ...DEFAULT_CONFIG };
+    // _Config sheet likely doesn't exist — create it with defaults
+    try {
+      memoryCache = { ...DEFAULT_CONFIG };
+      await createConfigSheet();
+      await persistConfigToSheets(memoryCache);
+    } catch (createErr) {
+      console.error('Failed to create _Config sheet:', createErr);
+      memoryCache = { ...DEFAULT_CONFIG };
+    }
   }
 }
 
 /**
- * Write updated config to disk.
- * Merges the partial update with the current config.
+ * Write updated config.
+ * Merges the partial update with the current config, then persists to Sheets.
  */
-export function updateConfig(partial: Partial<AppConfig>): AppConfig {
-  ensureWritableConfig();
+export async function updateConfig(partial: Partial<AppConfig>): Promise<AppConfig> {
   const current = getConfig();
   const merged = deepMerge(
     current as unknown as Record<string, unknown>,
     partial as unknown as Record<string, unknown>
   ) as unknown as AppConfig;
-  fs.writeFileSync(CONFIG_PATH, JSON.stringify(merged, null, 2), 'utf-8');
+  memoryCache = merged;
+
+  // Persist to Google Sheets (awaited to ensure it completes)
+  await persistConfigToSheets(merged);
+
   return merged;
+}
+
+/**
+ * Create the _Config sheet tab in the main spreadsheet.
+ */
+async function createConfigSheet(): Promise<void> {
+  const { getSheets, getSpreadsheetId } = await import('@/lib/sheets/base');
+  const sheets = getSheets();
+  await sheets.spreadsheets.batchUpdate({
+    spreadsheetId: getSpreadsheetId(),
+    requestBody: {
+      requests: [
+        {
+          addSheet: {
+            properties: { title: '_Config' },
+          },
+        },
+      ],
+    },
+  });
+}
+
+/**
+ * Write the full config JSON to Google Sheets _Config!A1.
+ */
+async function persistConfigToSheets(config: AppConfig): Promise<void> {
+  const { getSheets, getSpreadsheetId } = await import('@/lib/sheets/base');
+  const sheets = getSheets();
+  const json = JSON.stringify(config);
+  console.log('[Config] Persisting to Sheets, length:', json.length);
+  await sheets.spreadsheets.values.update({
+    spreadsheetId: getSpreadsheetId(),
+    range: '_Config!A1',
+    valueInputOption: 'RAW',
+    requestBody: {
+      values: [[json]],
+    },
+  });
+  console.log('[Config] Successfully persisted to Sheets');
 }
 
 function deepMerge(

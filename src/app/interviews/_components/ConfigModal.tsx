@@ -37,9 +37,10 @@ interface ConfigModalProps {
   isOpen: boolean;
   onClose: () => void;
   season?: string;
+  readOnly?: boolean;
 }
 
-export default function ConfigModal({ isOpen, onClose }: ConfigModalProps) {
+export default function ConfigModal({ isOpen, onClose, readOnly }: ConfigModalProps) {
   const [config, setConfig] = useState<AppConfig | null>(null);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -568,7 +569,11 @@ export default function ConfigModal({ isOpen, onClose }: ConfigModalProps) {
           </button>
 
           <div className="flex items-center gap-2">
-            {!editing ? (
+            {readOnly ? (
+              <span className="px-4 py-2 text-sm font-medium text-gray-500 bg-gray-100 rounded-lg border border-gray-200 flex items-center gap-2">
+                🔒 View Only
+              </span>
+            ) : !editing ? (
               <button
                 onClick={() => setEditing(true)}
                 disabled={loading || !config}

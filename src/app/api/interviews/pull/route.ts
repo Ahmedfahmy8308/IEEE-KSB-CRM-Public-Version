@@ -15,7 +15,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { withRoles } from '@/lib/middleware';
 import { readRangeExternal } from '@/lib/sheets/base';
-import { getConfig } from '@/lib/config';
+import { getConfig, updateConfig } from '@/lib/config';
 import {
   readAllInterviewApplicants,
   batchAppendInterviewApplicants,
@@ -107,12 +107,29 @@ function generateUniqueIdSync(existingSet: Set<string>): string {
 }
 
 /**
- * Parse Google Forms timestamps that may be in M/D/YYYY H:MM:SS format.
- * Also handles ISO strings and other formats.
+ * Parse Google Forms timestamps in various locale formats.
+ * Handles:
+ *   - Arabic: "10:30:16 م 2026/02/17" (H:MM:SS [ص=AM/م=PM] YYYY/MM/DD)
+ *   - US English: "2/17/2026 22:30:16" (M/D/YYYY H:MM:SS)
+ *   - ISO strings and anything Date() can parse
  * Returns null if unparseable.
  */
 function parseTimestamp(ts: string): Date | null {
-  // Try Google Forms format: M/D/YYYY H:MM:SS or MM/DD/YYYY HH:MM:SS
+  // Arabic Google Forms format: H:MM:SS ص/م YYYY/MM/DD
+  // ص = صباحاً (AM), م = مساءً (PM)
+  const arMatch = ts.match(/^(\d{1,2}):(\d{2}):(\d{2})\s*([صم])\s+(\d{4})\/(\d{1,2})\/(\d{1,2})$/);
+  if (arMatch) {
+    const [, hourStr, minute, second, ampm, year, month, day] = arMatch;
+    let hour = parseInt(hourStr);
+    if (ampm === 'م' && hour < 12) hour += 12;      // PM
+    if (ampm === 'ص' && hour === 12) hour = 0;       // 12 AM = 0
+    return new Date(
+      parseInt(year), parseInt(month) - 1, parseInt(day),
+      hour, parseInt(minute), parseInt(second)
+    );
+  }
+
+  // US English Google Forms format: M/D/YYYY H:MM:SS
   const gfMatch = ts.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})\s+(\d{1,2}):(\d{2}):(\d{2})$/);
   if (gfMatch) {
     const [, month, day, year, hour, minute, second] = gfMatch;
@@ -121,6 +138,7 @@ function parseTimestamp(ts: string): Date | null {
       parseInt(hour), parseInt(minute), parseInt(second)
     );
   }
+
   // Fallback: native Date parser
   const d = new Date(ts);
   return isNaN(d.getTime()) ? null : d;
@@ -183,17 +201,28 @@ export const POST = withRoles(['ChairMan'], async (request: NextRequest) => {
       return NextResponse.json({ message: 'No records found in origin sheet', pulled: 0 });
     }
 
-    // 2. Read existing DB records, find the latest timestamp, and build timestamp set as fallback
+    // 2. Read existing DB records and build timestamp set as fallback dedup
     const existingRecords = await readAllInterviewApplicants(season);
     const existingTimestamps = new Set<string>();
-    let latestTimestamp: Date | null = null;
     for (const rec of existingRecords) {
       if (rec.timestamp) {
-        const ts = rec.timestamp.trim();
-        existingTimestamps.add(ts);
-        const d = parseTimestamp(ts);
-        if (d && (!latestTimestamp || d > latestTimestamp)) {
-          latestTimestamp = d;
+        existingTimestamps.add(rec.timestamp.trim());
+      }
+    }
+
+    // Use the saved lastPullTimestamp from config (survives record deletions)
+    const pullConfigKey = season === 'S1' ? 'interview_s1' : 'interview_s2';
+    const savedTimestamp = getConfig().pull[pullConfigKey].lastPullTimestamp;
+    let latestTimestamp: Date | null = savedTimestamp ? parseTimestamp(savedTimestamp) : null;
+
+    // If no saved timestamp, fall back to computing from DB records
+    if (!latestTimestamp) {
+      for (const rec of existingRecords) {
+        if (rec.timestamp) {
+          const d = parseTimestamp(rec.timestamp.trim());
+          if (d && (!latestTimestamp || d > latestTimestamp)) {
+            latestTimestamp = d;
+          }
         }
       }
     }
@@ -227,6 +256,26 @@ export const POST = withRoles(['ChairMan'], async (request: NextRequest) => {
 
     // Pick the correct origin column mapping based on season
     const COLS = season === 'S1' ? ORIGIN_S1_COLS : ORIGIN_S2_COLS;
+
+    // Compute max timestamp from ALL origin rows (what we've "seen")
+    let maxOriginTimestamp: Date | null = null;
+    // Log first 3 timestamps to debug format issues
+    const sampleTimestamps: string[] = [];
+    for (const row of originRows) {
+      const ts = (row[COLS.TIMESTAMP] || '').trim();
+      if (ts) {
+        if (sampleTimestamps.length < 3) {
+          sampleTimestamps.push(JSON.stringify(ts));
+        }
+        const d = parseTimestamp(ts);
+        if (d && (!maxOriginTimestamp || d > maxOriginTimestamp)) {
+          maxOriginTimestamp = d;
+        }
+      }
+    }
+    console.log('[Pull] Sample timestamps from origin:', sampleTimestamps.join(', '));
+    console.log('[Pull] COLS.TIMESTAMP index:', COLS.TIMESTAMP);
+    console.log('[Pull] First row raw:', JSON.stringify(originRows[0]?.slice(0, 3)));
 
     for (const row of originRows) {
       const timestamp = (row[COLS.TIMESTAMP] || '').trim();
@@ -264,7 +313,7 @@ export const POST = withRoles(['ChairMan'], async (request: NextRequest) => {
           const s2Phone = normalizePhone(phoneNumber);
 
           if (s1Phone && s2Phone && s1Phone === s2Phone) {
-            // ID + Phone match → Matched, auto-approve, carry over same ID
+            // ID + Phone match → Matched, auto-approve, mark as complete, email already sent
             validationStatus = VALIDATION_STATUS.MATCHED;
             approvedStatus = 'approved';
             assignedId = enteredS1Id;
@@ -291,6 +340,27 @@ export const POST = withRoles(['ChairMan'], async (request: NextRequest) => {
         assignedId = generateUniqueIdSync(allExistingIds);
       }
 
+      // Build log entries for this pulled member
+      // Format: "TIMESTAMP | actor | action" per line (parsed by member page)
+      const pullTimestamp = new Date().toISOString();
+      const logLines: string[] = [];
+
+      if (season === 'S2' && enteredS1Id) {
+        if (validationStatus === VALIDATION_STATUS.MATCHED) {
+          logLines.push(`${pullTimestamp} | system | Pulled from origin form; S1 ID entered: ${enteredS1Id}; ID validation: Matched (ID + phone matched S1); Auto-approved: yes; ID carried over from S1: ${assignedId}`);
+        } else if (validationStatus === VALIDATION_STATUS.NEED_REVIEW) {
+          logLines.push(`${pullTimestamp} | system | Pulled from origin form; S1 ID entered: ${enteredS1Id}; ID validation: Need Review (ID matched S1 but phone mismatch); ID carried over: ${assignedId}`);
+        } else if (validationStatus === VALIDATION_STATUS.WRONG_ID) {
+          logLines.push(`${pullTimestamp} | system | Pulled from origin form; S1 ID entered: ${enteredS1Id}; ID validation: Wrong ID (no matching S1 record); New ID generated: ${assignedId}`);
+        }
+      } else if (season === 'S2') {
+        logLines.push(`${pullTimestamp} | system | Pulled from origin form; No S1 ID entered; New ID generated: ${assignedId}`);
+      } else {
+        logLines.push(`${pullTimestamp} | system | Pulled from origin form; New ID generated: ${assignedId}`);
+      }
+
+      const pullLog = logLines.join('\n');
+
       const applicant: InterviewApplicant = {
         timestamp: row[COLS.TIMESTAMP] || '',
         emailAddress: row[COLS.EMAIL_ADDRESS] || '',
@@ -313,13 +383,13 @@ export const POST = withRoles(['ChairMan'], async (request: NextRequest) => {
         whyIEEEKSB: row[COLS.WHY_IEEE_KSB] || '',
         interviewDay: '',
         interviewTime: '',
-        state: '',
+        state: validationStatus === VALIDATION_STATUS.MATCHED ? 'Complete Interview' : '',
         note: '',
         id: assignedId,
         approved: approvedStatus,
-        isEmailSend: false,
+        isEmailSend: validationStatus === VALIDATION_STATUS.MATCHED,
         isApprovedEmailSend: false,
-        log: '',
+        log: pullLog,
         s1IdEntered: enteredS1Id,
         idValidationStatus: validationStatus,
         pullSource: `pull-${new Date().toISOString().split('T')[0]}`,
@@ -344,11 +414,32 @@ export const POST = withRoles(['ChairMan'], async (request: NextRequest) => {
       await batchAppendInterviewApplicants(newRecords, season);
     }
 
+    // Always save the max timestamp from ALL origin rows we've seen.
+    // This ensures deleted records won't be re-imported on future pulls.
+    const finalTimestamp = maxOriginTimestamp && (!latestTimestamp || maxOriginTimestamp > latestTimestamp)
+      ? maxOriginTimestamp
+      : latestTimestamp;
+    console.log('[Pull] maxOriginTimestamp:', maxOriginTimestamp?.toISOString(), 'latestTimestamp:', latestTimestamp?.toISOString(), 'finalTimestamp:', finalTimestamp?.toISOString());
+    if (finalTimestamp) {
+      console.log('[Pull] Saving lastPullTimestamp to config for', pullConfigKey);
+      await updateConfig({
+        pull: {
+          [pullConfigKey]: {
+            lastPullTimestamp: finalTimestamp.toISOString(),
+          },
+        },
+      } as Parameters<typeof updateConfig>[0]);
+      console.log('[Pull] Config saved successfully');
+    } else {
+      console.log('[Pull] WARNING: No finalTimestamp to save!');
+    }
+
     return NextResponse.json({
       message: `Pull complete for Interview ${season}`,
       totalInOrigin: originRows.length,
       pulled: newRecords.length,
       skippedDuplicates,
+      savedTimestamp: finalTimestamp?.toISOString() || null,
       validation: {
         matched,
         needReview,
@@ -372,15 +463,43 @@ export const GET = withRoles(['ChairMan'], async (request: NextRequest) => {
   try {
     const season = request.nextUrl.searchParams.get('season') || 'S2';
     const config = getPullConfig(season);
+    const pullConfigKey = season === 'S1' ? 'interview_s1' : 'interview_s2';
+    const lastPullTimestamp = getConfig().pull[pullConfigKey].lastPullTimestamp || null;
 
     return NextResponse.json({
       season,
       isActive: config.isActive,
       hasOriginSheet: !!config.originSheetId,
       hasTabName: !!config.originTabName,
+      lastPullTimestamp,
     });
   } catch (error) {
     console.error('Pull config error:', error);
     return NextResponse.json({ error: 'Failed to get pull configuration' }, { status: 500 });
+  }
+});
+
+/**
+ * DELETE /api/interviews/pull - Reset lastPullTimestamp (allows fresh re-pull)
+ */
+export const DELETE = withRoles(['ChairMan'], async (request: NextRequest) => {
+  try {
+    const season = request.nextUrl.searchParams.get('season') || 'S2';
+    const pullConfigKey = season === 'S1' ? 'interview_s1' : 'interview_s2';
+
+    await updateConfig({
+      pull: {
+        [pullConfigKey]: {
+          lastPullTimestamp: '',
+        },
+      },
+    } as Parameters<typeof updateConfig>[0]);
+
+    return NextResponse.json({
+      message: `Pull timestamp reset for Interview ${season}. Next pull will import all records not already in the database.`,
+    });
+  } catch (error) {
+    console.error('Reset timestamp error:', error);
+    return NextResponse.json({ error: 'Failed to reset pull timestamp' }, { status: 500 });
   }
 });

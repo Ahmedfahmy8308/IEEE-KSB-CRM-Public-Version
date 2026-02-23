@@ -10,7 +10,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { withRole } from '@/lib/middleware';
 import { getMemberById, updateMember } from '@/lib/members';
-import { sendInterviewEmail, DEFAULT_INTERVIEW_EMAIL_TEMPLATE } from '@/lib/email';
+import { sendInterviewEmail, getInterviewTemplate } from '@/lib/email';
 
 export const POST = withRole('ChairMan', async (request: NextRequest, user) => {
   try {
@@ -39,10 +39,13 @@ export const POST = withRole('ChairMan', async (request: NextRequest, user) => {
     // Always use default template
     const emailSubject = 'Interview Invitation - IEEE KSB';
 
+    // Pick template based on interview mode (Online vs Physical)
+    const template = getInterviewTemplate(member.interviewMode);
+
     // Send email
     const success = await sendInterviewEmail(
       member,
-      DEFAULT_INTERVIEW_EMAIL_TEMPLATE,
+      template,
       emailSubject
     );
 

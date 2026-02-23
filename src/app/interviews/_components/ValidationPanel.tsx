@@ -10,17 +10,17 @@ import { useToast } from '@/components/ToastProvider';
 interface ValidationResult {
   duplicatePhones: Array<{
     phone: string;
-    members: Array<{ id: string; fullName: string; email: string }>;
+    members: Array<{ id: string; fullName: string; email: string; phoneNumber: string; committee: string }>;
   }>;
   duplicateEmails: Array<{
     email: string;
-    members: Array<{ id: string; fullName: string; email: string }>;
+    members: Array<{ id: string; fullName: string; email: string; emailAddress: string; committee: string }>;
   }>;
   duplicateEmailAddresses: Array<{
     emailAddress: string;
-    members: Array<{ id: string; fullName: string; email: string }>;
+    members: Array<{ id: string; fullName: string; email: string; emailAddress: string; committee: string }>;
   }>;
-  emailMismatches: Array<{ id: string; fullName: string; email: string; emailAddress: string }>;
+  emailMismatches: Array<{ id: string; fullName: string; email: string; emailAddress: string; committee: string }>;
 }
 
 interface ValidationSummary {
@@ -31,11 +31,12 @@ interface ValidationSummary {
   totalIssues: number;
 }
 
-export default function ValidationPanel({ season }: { season?: string }) {
+export default function ValidationPanel({ season, readOnly }: { season?: string; readOnly?: boolean }) {
   const { showToast } = useToast();
   const [validationResults, setValidationResults] = useState<ValidationResult | null>(null);
   const [summary, setSummary] = useState<ValidationSummary | null>(null);
   const [loading, setLoading] = useState(false);
+  const [fixing, setFixing] = useState(false);
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
 
   const runValidations = async () => {
@@ -60,6 +61,33 @@ export default function ValidationPanel({ season }: { season?: string }) {
 
   const toggleSection = (section: string) => {
     setExpandedSection(expandedSection === section ? null : section);
+  };
+
+  const quickFixEmails = async () => {
+    setFixing(true);
+    try {
+      const res = await fetch(
+        `/api/interviews/validation/email-mismatches/quick-fix${season ? `?season=${season}` : ''}`,
+        { method: 'POST' }
+      );
+      if (res.ok) {
+        const data = await res.json();
+        showToast(
+          `Fixed ${data.fixed} email mismatch${data.fixed !== 1 ? 'es' : ''}${data.failed ? ` (${data.failed} failed)` : ''}`,
+          'success'
+        );
+        // Re-run validations to refresh the results
+        await runValidations();
+      } else {
+        const err = await res.json();
+        showToast(err.error || 'Failed to fix email mismatches', 'error');
+      }
+    } catch (error: unknown) {
+      console.error('Quick fix failed:', error);
+      showToast('Failed to fix email mismatches', 'error');
+    } finally {
+      setFixing(false);
+    }
   };
 
   return (
@@ -238,7 +266,7 @@ export default function ValidationPanel({ season }: { season?: string }) {
                               <li key={idx} className="text-blue-700 pl-4 py-1">
                                 <div className="font-medium">{member.fullName}</div>
                                 <div className="text-xs text-blue-600">
-                                  ID: {member.id} | Email: {member.email}
+                                  ID: {member.id} | Phone: {member.phoneNumber} | Email: {member.email} | Committee: {member.committee}
                                 </div>
                               </li>
                             ))}
@@ -295,7 +323,9 @@ export default function ValidationPanel({ season }: { season?: string }) {
                             {dup.members.map((member, idx) => (
                               <li key={idx} className="text-yellow-700 pl-4 py-1">
                                 <div className="font-medium">{member.fullName}</div>
-                                <div className="text-xs text-yellow-600">ID: {member.id}</div>
+                                <div className="text-xs text-yellow-600">
+                                  ID: {member.id} | Form Email: {member.emailAddress} | Committee: {member.committee}
+                                </div>
                               </li>
                             ))}
                           </ul>
@@ -354,7 +384,7 @@ export default function ValidationPanel({ season }: { season?: string }) {
                               <li key={idx} className="text-purple-700 pl-4 py-1">
                                 <div className="font-medium">{member.fullName}</div>
                                 <div className="text-xs text-purple-600">
-                                  ID: {member.id} | Contact Email: {member.email}
+                                  ID: {member.id} | Form Email: {member.emailAddress} | Committee: {member.committee}
                                 </div>
                               </li>
                             ))}
@@ -399,12 +429,33 @@ export default function ValidationPanel({ season }: { season?: string }) {
                   </button>
                   {expandedSection === 'mismatches' && (
                     <div className="p-4 bg-white space-y-3 max-h-96 overflow-y-auto">
+                      {/* Quick Fix Button */}
+                      <button
+                        onClick={quickFixEmails}
+                        disabled={fixing || readOnly}
+                        className="w-full bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center justify-center gap-2 text-sm"
+                      >
+                        {fixing ? (
+                          <>
+                            <span className="animate-spin text-base">⏳</span>
+                            <span>Fixing...</span>
+                          </>
+                        ) : (
+                          <>
+                            <span>🔧</span>
+                            <span>Quick Fix — Set Contact Email to Form Email for All</span>
+                          </>
+                        )}
+                      </button>
                       {validationResults.emailMismatches.map((mismatch, index) => (
                         <div key={index} className="bg-red-50 p-4 rounded-lg border border-red-200">
                           <p className="font-semibold text-red-900 mb-2">{mismatch.fullName}</p>
                           <div className="space-y-1 text-sm">
                             <p className="text-red-700 pl-4">
                               <span className="font-medium">ID:</span> {mismatch.id}
+                            </p>
+                            <p className="text-red-700 pl-4">
+                              <span className="font-medium">Committee:</span> {mismatch.committee}
                             </p>
                             <p className="text-red-700 pl-4">
                               <span className="font-medium">Contact Email:</span> {mismatch.email}

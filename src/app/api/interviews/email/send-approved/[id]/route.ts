@@ -11,6 +11,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { requireRole } from '@/lib/middleware';
 import { findRowById, updateRow } from '@/lib/sheets';
 import { sendEmail } from '@/lib/email';
 import { INTERVIEW_STATE, APPROVAL_STATUS } from '@/lib/constants';
@@ -79,6 +80,10 @@ function fillTemplate(
 }
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  // Auth: ChairMan only
+  const authResult = await requireRole(request, 'ChairMan');
+  if (authResult instanceof NextResponse) return authResult;
+
   try {
     const season = request.nextUrl.searchParams.get('season') || undefined;
     const { id: memberId } = await params;

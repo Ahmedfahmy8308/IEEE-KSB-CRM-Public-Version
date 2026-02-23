@@ -223,6 +223,7 @@ export function calculateMemberStats(members: ApplicantRow[]): {
   total: number;
   assigned: number;
   emailSent: number;
+  approvedEmailSent: number;
   approved: number;
   completed: number;
   inProgress: number;
@@ -239,6 +240,7 @@ export function calculateMemberStats(members: ApplicantRow[]): {
     total: members.length,
     assigned: 0,
     emailSent: 0,
+    approvedEmailSent: 0,
     approved: 0,
     completed: 0,
     inProgress: 0,
@@ -261,6 +263,11 @@ export function calculateMemberStats(members: ApplicantRow[]): {
     // Count emails sent
     if (member.isEmailSend) {
       stats.emailSent++;
+    }
+
+    // Count approved emails sent
+    if (member.isApprovedEmailSend) {
+      stats.approvedEmailSent++;
     }
 
     // Count approved
@@ -324,6 +331,7 @@ export async function getMemberStats(season?: string): Promise<{
   total: number;
   assigned: number;
   emailSent: number;
+  approvedEmailSent: number;
   approved: number;
   rejected: number;
   pending: number;
@@ -331,6 +339,7 @@ export async function getMemberStats(season?: string): Promise<{
   notStarted: number;
   notAttended: number;
   byCommittee: Record<string, number>;
+  byDay: Record<string, { total: number; physical: number; online: number }>;
   idMatched: number;
   idNew: number;
   idMismatch: number;
@@ -363,11 +372,30 @@ export async function getMemberStats(season?: string): Promise<{
     }
   }
 
+  // Count per-day interviews with online/physical breakdown
+  const byDay: Record<string, { total: number; physical: number; online: number }> = {};
+  for (const member of members) {
+    if (member.interviewDay && member.interviewDay.trim()) {
+      const day = member.interviewDay.trim();
+      if (!byDay[day]) {
+        byDay[day] = { total: 0, physical: 0, online: 0 };
+      }
+      byDay[day].total++;
+      const mode = (member.interviewMode || '').trim();
+      if (mode === 'Online') {
+        byDay[day].online++;
+      } else {
+        byDay[day].physical++;
+      }
+    }
+  }
+
   // Return all stats for overall view
   return {
     total: fullStats.total,
     assigned: fullStats.assigned,
     emailSent: fullStats.emailSent,
+    approvedEmailSent: fullStats.approvedEmailSent,
     approved: fullStats.approved,
     rejected: rejected,
     pending: members.filter((m) => m.approved === 'pending' || !m.approved || m.approved === '')
@@ -376,6 +404,7 @@ export async function getMemberStats(season?: string): Promise<{
     notStarted: notStarted,
     notAttended: notAttended,
     byCommittee: fullStats.byCommittee,
+    byDay,
     idMatched: fullStats.idMatched,
     idNew: fullStats.idNew,
     idMismatch: fullStats.idMismatch,

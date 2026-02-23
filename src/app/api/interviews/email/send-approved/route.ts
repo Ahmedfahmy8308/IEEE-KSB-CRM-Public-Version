@@ -12,6 +12,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server';
+import { withRole } from '@/lib/middleware';
 import { readAllRows } from '@/lib/sheets';
 import { batchUpdateMembers } from '@/lib/members';
 import { INTERVIEW_STATE, APPROVAL_STATUS } from '@/lib/constants';
@@ -94,7 +95,7 @@ function fillTemplate(
   return filled;
 }
 
-export async function POST(request: NextRequest) {
+export const POST = withRole('ChairMan', async (request: NextRequest) => {
   try {
     const season = request.nextUrl.searchParams.get('season') || undefined;
     const body = await request.json();
@@ -312,4 +313,4 @@ export async function POST(request: NextRequest) {
       { status: 500 }
     );
   }
-}
+});

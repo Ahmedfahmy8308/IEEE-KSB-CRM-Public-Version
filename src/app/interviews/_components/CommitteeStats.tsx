@@ -34,6 +34,7 @@ interface Stats {
   total: number;
   assigned: number;
   emailSent: number;
+  approvedEmailSent: number;
   approved: number;
   rejected: number;
   pendingApproval: number;
@@ -138,6 +139,14 @@ export default function CommitteeStats({ committee, season }: CommitteeStatsProp
       color: 'purple',
       bgColor: 'bg-purple-50',
       iconColor: 'text-purple-600',
+    },
+    {
+      title: 'Approved Email Sent',
+      value: stats.approvedEmailSent,
+      icon: <MailOutlined className="text-2xl" />,
+      color: 'cyan',
+      bgColor: 'bg-cyan-50',
+      iconColor: 'text-cyan-600',
     },
     {
       title: 'Completed',

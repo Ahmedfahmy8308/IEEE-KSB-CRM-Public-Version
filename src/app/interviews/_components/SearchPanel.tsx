@@ -31,7 +31,9 @@ interface Member {
   trackApplying?: string;
   interviewDay?: string;
   interviewTime?: string;
+  interviewMode?: string;
   isEmailSend?: boolean;
+  isApprovedEmailSend?: boolean;
   state?: string;
   approved?: string;
 }
@@ -137,6 +139,46 @@ export default function SearchPanel({ season }: { season?: string }) {
         <Space>
           <BankOutlined className="text-purple-500" />
           <span>{text || '-'}</span>
+        </Space>
+      ),
+    },
+    {
+      title: 'Day',
+      dataIndex: 'interviewDay',
+      key: 'interviewDay',
+      width: 110,
+      render: (text: string) => <span>{text || '-'}</span>,
+    },
+    {
+      title: 'Time',
+      dataIndex: 'interviewTime',
+      key: 'interviewTime',
+      width: 100,
+      render: (text: string) => <span>{text || '-'}</span>,
+    },
+    {
+      title: 'Mode',
+      dataIndex: 'interviewMode',
+      key: 'interviewMode',
+      width: 90,
+      render: (text: string) =>
+        text ? (
+          <Tag color={text === 'Online' ? 'blue' : 'green'}>{text}</Tag>
+        ) : (
+          <span>-</span>
+        ),
+    },
+    {
+      title: 'Email Sent',
+      key: 'emailSent',
+      width: 100,
+      render: (_: unknown, record: Member) => (
+        <Space direction="vertical" size={4}>
+          {record.isEmailSend ? (
+            <Tag color="success">Sent</Tag>
+          ) : (
+            <Tag color="default">Not Sent</Tag>
+          )}
         </Space>
       ),
     },
@@ -298,10 +340,31 @@ export default function SearchPanel({ season }: { season?: string }) {
                                 <span className="font-medium">Committee:</span>{' '}
                                 {member.trackApplying || '-'}
                               </div>
+                              <div className="flex items-center gap-2">
+                                <span className="font-medium">Day:</span>{' '}
+                                {member.interviewDay || '-'}
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className="font-medium">Time:</span>{' '}
+                                {member.interviewTime || '-'}
+                              </div>
+                              {member.interviewMode && (
+                                <div className="flex items-center gap-2">
+                                  <span className="font-medium">Mode:</span>{' '}
+                                  <Tag color={member.interviewMode === 'Online' ? 'blue' : 'green'} style={{ margin: 0 }}>
+                                    {member.interviewMode}
+                                  </Tag>
+                                </div>
+                              )}
                             </div>
                             <Space size="small" wrap>
                               {getStatusTag(member.state || '')}
                               {getApprovalTag(member.approved || '')}
+                              {member.isEmailSend ? (
+                                <Tag color="success">Email Sent</Tag>
+                              ) : (
+                                <Tag color="default">Email Not Sent</Tag>
+                              )}
                             </Space>
                           </Space>
                         </Card>
@@ -321,7 +384,7 @@ export default function SearchPanel({ season }: { season?: string }) {
                       showSizeChanger: true,
                       showTotal: (total) => `Total ${total} members`,
                     }}
-                    scroll={{ x: 900 }}
+                    scroll={{ x: 1300 }}
                     className="ant-table-striped custom-table-header"
                     rowClassName={(_, index) => (index % 2 === 0 ? 'bg-white' : 'bg-gray-50')}
                   />
