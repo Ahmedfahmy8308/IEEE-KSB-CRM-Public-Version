@@ -155,11 +155,11 @@ export async function sendBatchEmails(
 ): Promise<{
   success: number;
   failed: number;
-  results: Array<{ id: string; success: boolean; email: string }>;
+  results: Array<{ id: string; success: boolean; email: string; name: string; committee: string; error?: string }>;
 }> {
   let successCount = 0;
   let failedCount = 0;
-  const results: Array<{ id: string; success: boolean; email: string }> = [];
+  const results: Array<{ id: string; success: boolean; email: string; name: string; committee: string; error?: string }> = [];
 
   console.log(`📧 Starting email batch send: ${applicants.length} total emails`);
   const EMAIL_BATCH_SIZE = getEmailBatchSize();
@@ -202,6 +202,8 @@ export async function sendBatchEmails(
             id: applicant.id || '',
             success: true,
             email: applicant.emailAddress,
+            name: applicant.fullName || '',
+            committee: applicant.trackApplying || '',
           };
         } catch (error) {
           console.error(
@@ -212,6 +214,9 @@ export async function sendBatchEmails(
             id: applicant.id || '',
             success: false,
             email: applicant.emailAddress,
+            name: applicant.fullName || '',
+            committee: applicant.trackApplying || '',
+            error: error instanceof Error ? error.message : 'Unknown error',
           };
         }
       });

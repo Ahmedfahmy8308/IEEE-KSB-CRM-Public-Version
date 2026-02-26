@@ -167,9 +167,8 @@ export const POST = withRole('ChairMan', async (request: NextRequest) => {
 
           results.push({
             success: true,
-            memberName: member.fullName,
-            memberEmail: member.email,
-            testEmail: TEST_EMAIL,
+            name: member.fullName,
+            email: TEST_EMAIL,
             committee: committeeName,
             status: 'approved',
           });
@@ -181,9 +180,8 @@ export const POST = withRole('ChairMan', async (request: NextRequest) => {
           console.error(`Failed to send approved test email for ${committeeName}:`, error);
           results.push({
             success: false,
-            memberName: member.fullName,
-            memberEmail: member.email,
-            testEmail: TEST_EMAIL,
+            name: member.fullName,
+            email: TEST_EMAIL,
             committee: committeeName,
             status: 'approved',
             error: error instanceof Error ? error.message : 'Unknown error',
@@ -209,9 +207,8 @@ export const POST = withRole('ChairMan', async (request: NextRequest) => {
 
           results.push({
             success: true,
-            memberName: member.fullName,
-            memberEmail: member.email,
-            testEmail: TEST_EMAIL,
+            name: member.fullName,
+            email: TEST_EMAIL,
             committee: committeeName,
             status: 'rejected',
           });
@@ -223,9 +220,8 @@ export const POST = withRole('ChairMan', async (request: NextRequest) => {
           console.error(`Failed to send rejected test email for ${committeeName}:`, error);
           results.push({
             success: false,
-            memberName: member.fullName,
-            memberEmail: member.email,
-            testEmail: TEST_EMAIL,
+            name: member.fullName,
+            email: TEST_EMAIL,
             committee: committeeName,
             status: 'rejected',
             error: error instanceof Error ? error.message : 'Unknown error',

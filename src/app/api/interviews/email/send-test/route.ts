@@ -57,8 +57,9 @@ export const POST = withRole('ChairMan', async (request: NextRequest) => {
 
     // Send one test email per committee per interview mode
     const results: Array<{
+      name: string;
+      email: string;
       committee: string;
-      memberName: string;
       memberId: string;
       mode: string;
       success: boolean;
@@ -92,16 +93,18 @@ export const POST = withRole('ChairMan', async (request: NextRequest) => {
           const success = await sendEmail(TEST_EMAIL, subject, html);
 
           results.push({
+            name: testMember.fullName,
+            email: TEST_EMAIL,
             committee,
-            memberName: testMember.fullName,
             memberId: testMember.id || 'N/A',
             mode,
             success,
           });
         } catch (error) {
           results.push({
+            name: testMember.fullName,
+            email: TEST_EMAIL,
             committee,
-            memberName: testMember.fullName,
             memberId: testMember.id || 'N/A',
             mode,
             success: false,
