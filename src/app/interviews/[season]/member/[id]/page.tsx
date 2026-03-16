@@ -68,7 +68,7 @@ interface MemberData {
   isEmailSend?: boolean;
   isApprovedEmailSend?: boolean;
   log?: string;
-  // S2-specific fields
+  // Season-specific tracking fields
   s1IdEntered?: string;
   idValidationStatus?: string;
   pullSource?: string;
@@ -296,7 +296,7 @@ export default function MemberDetailPage() {
     { id: 'ieee', label: 'IEEE', icon: <TeamOutlined /> },
     { id: 'interview', label: 'Interview', icon: <CalendarOutlined /> },
     ...(season === 'S2'
-      ? [{ id: 's2tracking', label: 'S2 Tracking', icon: <SafetyOutlined /> }]
+      ? [{ id: 's2tracking', label: 'S2 Validation', icon: <SafetyOutlined /> }]
       : []),
     { id: 'additional', label: 'Additional', icon: <FileTextOutlined /> },
   ];
@@ -705,6 +705,21 @@ export default function MemberDetailPage() {
                         />
                       </div>
 
+                      {season === 'S1' && (
+                        <div className="md:col-span-2">
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            Previous IEEE Role
+                          </label>
+                          <Input
+                            prefix={<HistoryOutlined className="text-gray-400" />}
+                            size="large"
+                            value={member.ifYesRole || ''}
+                            onChange={(e) => handleInputChange('ifYesRole', e.target.value)}
+                            disabled={!isEditing || !canEditField('ifYesRole')}
+                          />
+                        </div>
+                      )}
+
                       <div className="md:col-span-2">
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           Why this Committee?
@@ -824,27 +839,25 @@ export default function MemberDetailPage() {
                         </Select>
                       </div>
 
-                      {season === 'S2' && (
-                        <div>
-                          <label className="block text-sm font-medium text-gray-700 mb-2">
-                            Interview Mode
-                          </label>
-                          <Select
-                            size="large"
-                            value={member.interviewMode || INTERVIEW_MODE.PHYSICAL}
-                            onChange={(value) => handleInputChange('interviewMode', value)}
-                            disabled={!isEditing || !canEditField('interviewMode')}
-                            className="w-full"
-                          >
-                            <Option value={INTERVIEW_MODE.PHYSICAL}>
-                              🏢 Physical
-                            </Option>
-                            <Option value={INTERVIEW_MODE.ONLINE}>
-                              💻 Online
-                            </Option>
-                          </Select>
-                        </div>
-                      )}
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Interview Mode
+                        </label>
+                        <Select
+                          size="large"
+                          value={member.interviewMode || INTERVIEW_MODE.PHYSICAL}
+                          onChange={(value) => handleInputChange('interviewMode', value)}
+                          disabled={!isEditing || !canEditField('interviewMode')}
+                          className="w-full"
+                        >
+                          <Option value={INTERVIEW_MODE.PHYSICAL}>
+                            🏢 Physical
+                          </Option>
+                          <Option value={INTERVIEW_MODE.ONLINE}>
+                            💻 Online
+                          </Option>
+                        </Select>
+                      </div>
 
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -859,6 +872,52 @@ export default function MemberDetailPage() {
                             {member.isEmailSend ? 'Yes' : 'No'}
                           </Tag>
                         </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Approved Email Sent
+                        </label>
+                        <div className="mt-2">
+                          <Tag
+                            color={member.isApprovedEmailSend ? 'success' : 'error'}
+                            icon={
+                              member.isApprovedEmailSend ? (
+                                <CheckCircleOutlined />
+                              ) : (
+                                <CloseOutlined />
+                              )
+                            }
+                            className="text-base px-4 py-2"
+                          >
+                            {member.isApprovedEmailSend ? 'Yes' : 'No'}
+                          </Tag>
+                        </div>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Pull Source
+                        </label>
+                        {isEditing && canEditField('pullSource') ? (
+                          <Input
+                            size="large"
+                            value={member.pullSource || ''}
+                            onChange={(e) => handleInputChange('pullSource', e.target.value)}
+                          />
+                        ) : (
+                          <div className="mt-2">
+                            {member.pullSource ? (
+                              <Tag color="blue" className="text-base px-4 py-2">
+                                {member.pullSource}
+                              </Tag>
+                            ) : (
+                              <Tag color="default" className="text-base px-4 py-2">
+                                Manual
+                              </Tag>
+                            )}
+                          </div>
+                        )}
                       </div>
 
                       <div className="md:col-span-2 lg:col-span-3">
@@ -892,11 +951,11 @@ export default function MemberDetailPage() {
                     title={
                       <Space>
                         <SafetyOutlined className="text-indigo-600" />
-                        <span className="text-xl font-semibold">S2 Tracking Information</span>
+                        <span className="text-xl font-semibold">S2 ID Validation</span>
                       </Space>
                     }
                   >
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                           S1 ID Entered
@@ -959,52 +1018,6 @@ export default function MemberDetailPage() {
                             )}
                           </div>
                         )}
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Pull Source
-                        </label>
-                        {isEditing && canEditField('pullSource') ? (
-                          <Input
-                            size="large"
-                            value={member.pullSource || ''}
-                            onChange={(e) => handleInputChange('pullSource', e.target.value)}
-                          />
-                        ) : (
-                          <div className="mt-2">
-                            {member.pullSource ? (
-                              <Tag color="blue" className="text-base px-4 py-2">
-                                {member.pullSource}
-                              </Tag>
-                            ) : (
-                              <Tag color="default" className="text-base px-4 py-2">
-                                Manual
-                              </Tag>
-                            )}
-                          </div>
-                        )}
-                      </div>
-
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                          Approved Email Sent
-                        </label>
-                        <div className="mt-2">
-                          <Tag
-                            color={member.isApprovedEmailSend ? 'success' : 'error'}
-                            icon={
-                              member.isApprovedEmailSend ? (
-                                <CheckCircleOutlined />
-                              ) : (
-                                <CloseOutlined />
-                              )
-                            }
-                            className="text-base px-4 py-2"
-                          >
-                            {member.isApprovedEmailSend ? 'Yes' : 'No'}
-                          </Tag>
-                        </div>
                       </div>
                     </div>
                   </Card>

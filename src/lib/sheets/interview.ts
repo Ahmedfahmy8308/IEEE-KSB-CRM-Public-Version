@@ -11,9 +11,9 @@ import { readRange, appendToSheet, updateRange, batchUpdate, expandSheetColumns 
 import { INTERVIEW_STATE, APPROVAL_STATUS } from '../constants';
 import { getInterviewSheetName } from '../season';
 
-// Column mapping for the interview applicant data
-// Columns 0-14 are shared between S1 and S2.
-// S1 has col 15 = "If yes, mention your role"; S2 removes that column entirely.
+// Column mapping for the interview applicant data.
+// Columns 0-14 are shared between S1 and S2 DB sheets.
+// S1 keeps the previous IEEE role column, while S2 replaces it with S1 ID tracking fields later on.
 const BASE_COLUMNS = {
   TIMESTAMP: 0,
   EMAIL_ADDRESS: 1,
@@ -32,7 +32,7 @@ const BASE_COLUMNS = {
   BEEN_IEEEAN_BEFORE: 14,
 };
 
-// S1 layout: 28 columns (A–AB)
+// S1 layout: 30 columns (A–AD)
 const S1_COLUMNS = {
   ...BASE_COLUMNS,
   IF_YES_ROLE: 15,
@@ -41,18 +41,17 @@ const S1_COLUMNS = {
   WHY_IEEE_KSB: 18,
   INTERVIEW_DAY: 19,
   INTERVIEW_TIME: 20,
-  STATE: 21,
-  NOTE: 22,
-  ID: 23,
-  APPROVED: 24,
-  IS_EMAIL_SEND: 25,
-  IS_APPROVED_EMAIL_SEND: 26,
-  LOG: 27,
-  // S2 fields don't exist in S1
+  INTERVIEW_MODE: 21,
+  STATE: 22,
+  NOTE: 23,
+  ID: 24,
+  APPROVED: 25,
+  IS_EMAIL_SEND: 26,
+  IS_APPROVED_EMAIL_SEND: 27,
+  PULL_SOURCE: 28,
+  LOG: 29,
   S1_ID_ENTERED: -1,
   ID_VALIDATION_STATUS: -1,
-  PULL_SOURCE: -1,
-  INTERVIEW_MODE: -1,
 };
 
 // S2 layout: 31 columns (A–AE)
@@ -81,6 +80,77 @@ const S2_COLUMNS = {
 
 type ColumnMap = typeof S1_COLUMNS | typeof S2_COLUMNS;
 
+const S1_HEADERS = [
+  'Timestamp',
+  'Email Address',
+  'Full Name',
+  'Email',
+  'Phone Number',
+  'National ID',
+  'Age',
+  'City',
+  'Address',
+  'Personal Photo',
+  'Faculty',
+  'Department',
+  'Level',
+  'What do you know about IEEE KSB?',
+  'Have you been IEEEian before ?',
+  'If yes , mention your role (if no, write N/A)',
+  'Which Track are you applying for?',
+  'Why are you interested in joining this committee?',
+  'Why do you want to join IEEE KSB?',
+  'Interview Day',
+  'Interview Time',
+  'Interview Mode',
+  'state',
+  'Note',
+  'ID',
+  'Approved',
+  'IS EmailSend',
+  'Is Approved Email Send',
+  'Pull Source',
+  'Log',
+] as const;
+
+const S2_HEADERS = [
+  'Timestamp',
+  'Email Address',
+  'Full Name',
+  'Email',
+  'Phone Number',
+  'National ID',
+  'Age',
+  'City',
+  'Address',
+  'Personal Photo',
+  'Faculty',
+  'Department',
+  'Level',
+  'What do you know about IEEE KSB?',
+  'Have you been IEEEian before ?',
+  'Which Track are you applying for?',
+  'Why are you interested in joining this committee?',
+  'Why do you want to join IEEE KSB?',
+  'Interview Day',
+  'Interview Time',
+  'Interview Mode',
+  'state',
+  'Note',
+  'ID',
+  'S1 ID Entered',
+  'ID Validation Status',
+  'Approved',
+  'IS EmailSend',
+  'Is Approved Email Send',
+  'Pull Source',
+  'Log',
+] as const;
+
+function getInterviewHeaders(season?: string): readonly string[] {
+  return season === 'S2' ? S2_HEADERS : S1_HEADERS;
+}
+
 /** Return the correct column mapping for the given season */
 export function getInterviewColumns(season?: string): ColumnMap {
   return season === 'S2' ? S2_COLUMNS : S1_COLUMNS;
@@ -88,12 +158,12 @@ export function getInterviewColumns(season?: string): ColumnMap {
 
 /** Return the sheet end-column letter for the given season */
 function getEndCol(season?: string): string {
-  return season === 'S2' ? 'AE' : 'AB';
+  return season === 'S2' ? 'AE' : 'AD';
 }
 
 /** Return the total column count for the given season */
 function getColCount(season?: string): number {
-  return season === 'S2' ? 31 : 28;
+  return season === 'S2' ? 31 : 30;
 }
 
 // Default export for backward compatibility (S1 layout)
@@ -136,11 +206,11 @@ export interface InterviewApplicant {
   isEmailSend?: boolean;
   isApprovedEmailSend?: boolean;
   log?: string;
-  // S2-specific: S1 ID validation fields
+  // Season-specific tracking fields
   s1IdEntered?: string;
   idValidationStatus?: string;
   pullSource?: string;
-  interviewMode?: string; // S2-only: 'Physical' or 'Online'
+  interviewMode?: string;
   rowIndex?: number; // Internal: actual row index in sheet (1-based)
 }
 
@@ -202,7 +272,7 @@ function rowToApplicant(row: string[], rowIndex: number, season?: string): Inter
     level: row[COLS.LEVEL] || '',
     whatKnowIEEE: row[COLS.WHAT_KNOW_IEEE] || '',
     beenIEEEanBefore: row[COLS.BEEN_IEEEAN_BEFORE] || '',
-    ifYesRole: row[COLS.IF_YES_ROLE] || '',
+    ifYesRole: COLS.IF_YES_ROLE >= 0 ? row[COLS.IF_YES_ROLE] || '' : '',
     trackApplying: row[COLS.COMMITTEE_APPLYING] || '',
     whyCommittee: row[COLS.WHY_COMMITTEE] || '',
     whyIEEEKSB: row[COLS.WHY_IEEE_KSB] || '',
@@ -246,7 +316,7 @@ function applicantToRow(applicant: InterviewApplicant, season?: string): (string
   if (applicant.level) row[COLS.LEVEL] = applicant.level;
   if (applicant.whatKnowIEEE) row[COLS.WHAT_KNOW_IEEE] = applicant.whatKnowIEEE;
   if (applicant.beenIEEEanBefore) row[COLS.BEEN_IEEEAN_BEFORE] = applicant.beenIEEEanBefore;
-  if (applicant.ifYesRole) row[COLS.IF_YES_ROLE] = applicant.ifYesRole;
+  if (COLS.IF_YES_ROLE >= 0 && applicant.ifYesRole) row[COLS.IF_YES_ROLE] = applicant.ifYesRole;
   if (applicant.trackApplying) row[COLS.COMMITTEE_APPLYING] = applicant.trackApplying;
   if (applicant.whyCommittee) row[COLS.WHY_COMMITTEE] = applicant.whyCommittee;
   if (applicant.whyIEEEKSB) row[COLS.WHY_IEEE_KSB] = applicant.whyIEEEKSB;
@@ -327,46 +397,28 @@ export async function batchAppendInterviewApplicants(
 }
 
 /**
- * Ensure the S2 sheet has 30 columns with correct headers.
- * Expands the grid if needed, then verifies headers exist.
+ * Ensure the interview sheet has the required columns and headers for the selected season.
  */
-export async function ensureS2Headers(season?: string): Promise<void> {
+export async function ensureInterviewHeaders(season?: string): Promise<void> {
   const sheetName = getInterviewSheetName(season);
+  const endCol = getEndCol(season);
+  const expectedHeaders = getInterviewHeaders(season);
 
-  // 31 columns needed (A=1 ... AE=31)
-  await expandSheetColumns(sheetName, 31);
+  await expandSheetColumns(sheetName, expectedHeaders.length);
 
-  // Read current header row
-  const headerRows = await readRange(sheetName, 'A1:AE1');
+  const headerRows = await readRange(sheetName, `A1:${endCol}1`);
   const headers = headerRows[0] || [];
 
-  // Check if S2-specific columns have headers
-  const COLS = getInterviewColumns('S2');
   const needsUpdate =
-    !headers[COLS.INTERVIEW_MODE] ||
-    !headers[COLS.S1_ID_ENTERED] ||
-    !headers[COLS.ID_VALIDATION_STATUS] ||
-    !headers[COLS.PULL_SOURCE];
+    headers.length < expectedHeaders.length ||
+    expectedHeaders.some((header, index) => (headers[index] || '').trim() !== header);
 
   if (needsUpdate) {
-    // Write headers from U (col 20 = Interview Mode) through AE (col 30 = Log)
-    await updateRange(sheetName, 'U1:AE1', [
-      [
-        'Interview Mode',
-        'state',
-        'Note',
-        'ID',
-        'S1 ID Entered',
-        'ID Validation Status',
-        'Approved',
-        'IS EmailSend',
-        'Is Approved Email Send',
-        'Pull Source',
-        'Log',
-      ],
-    ]);
+    await updateRange(sheetName, `A1:${endCol}1`, [[...expectedHeaders]]);
   }
 }
+
+export const ensureS2Headers = ensureInterviewHeaders;
 
 /**
  * Update a specific interview applicant row

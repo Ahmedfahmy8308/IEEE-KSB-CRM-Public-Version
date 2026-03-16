@@ -249,31 +249,28 @@ export default function CommitteeMembersList({ committee, season }: CommitteeMem
                 </select>
               </div>
 
-              {/* Interview Mode Filter (S2 only) */}
-              {season === 'S2' && (
-                <div className="flex items-center gap-2">
-                  <label
-                    htmlFor="mode-filter"
-                    className="text-sm text-gray-600 font-medium whitespace-nowrap"
-                  >
-                    Mode:
-                  </label>
-                  <select
-                    id="mode-filter"
-                    value={selectedMode}
-                    onChange={(e) => updateQueryParams({ mode: e.target.value })}
-                    className="px-3 py-1.5 rounded-lg border border-gray-300 text-sm font-medium text-gray-700 bg-white hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                  >
-                    <option value="all">All ({members.length})</option>
-                    <option value="Physical">
-                      🏢 Physical ({members.filter((m) => (m.interviewMode || 'Physical') === 'Physical').length})
-                    </option>
-                    <option value="Online">
-                      💻 Online ({members.filter((m) => m.interviewMode === 'Online').length})
-                    </option>
-                  </select>
-                </div>
-              )}
+              <div className="flex items-center gap-2">
+                <label
+                  htmlFor="mode-filter"
+                  className="text-sm text-gray-600 font-medium whitespace-nowrap"
+                >
+                  Mode:
+                </label>
+                <select
+                  id="mode-filter"
+                  value={selectedMode}
+                  onChange={(e) => updateQueryParams({ mode: e.target.value })}
+                  className="px-3 py-1.5 rounded-lg border border-gray-300 text-sm font-medium text-gray-700 bg-white hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                >
+                  <option value="all">All ({members.length})</option>
+                  <option value="Physical">
+                    🏢 Physical ({members.filter((m) => (m.interviewMode || 'Physical') === 'Physical').length})
+                  </option>
+                  <option value="Online">
+                    💻 Online ({members.filter((m) => m.interviewMode === 'Online').length})
+                  </option>
+                </select>
+              </div>
 
               {/* Sort Options */}
               <div className="flex items-center gap-2 flex-wrap">
@@ -417,17 +414,15 @@ export default function CommitteeMembersList({ committee, season }: CommitteeMem
                           {member.idValidationStatus || 'New'}
                         </span>
                       )}
-                      {season === 'S2' && (
-                        <span
-                          className={`px-2 py-1 rounded-full text-xs font-medium ${
-                            member.interviewMode === 'Online'
-                              ? 'bg-indigo-100 text-indigo-800'
-                              : 'bg-teal-100 text-teal-800'
-                          }`}
-                        >
-                          {member.interviewMode === 'Online' ? '💻 Online' : '🏢 Physical'}
-                        </span>
-                      )}
+                      <span
+                        className={`px-2 py-1 rounded-full text-xs font-medium ${
+                          member.interviewMode === 'Online'
+                            ? 'bg-indigo-100 text-indigo-800'
+                            : 'bg-teal-100 text-teal-800'
+                        }`}
+                      >
+                        {member.interviewMode === 'Online' ? '💻 Online' : '🏢 Physical'}
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -465,11 +460,9 @@ export default function CommitteeMembersList({ committee, season }: CommitteeMem
                         ID Validation
                       </th>
                     )}
-                    {season === 'S2' && (
-                      <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                        Mode
-                      </th>
-                    )}
+                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Mode
+                    </th>
                     <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Actions
                     </th>
@@ -552,19 +545,17 @@ export default function CommitteeMembersList({ committee, season }: CommitteeMem
                           </span>
                         </td>
                       )}
-                      {season === 'S2' && (
-                        <td className="px-4 py-4 whitespace-nowrap text-sm">
-                          <span
-                            className={`px-2 py-1 rounded-full text-xs font-medium ${
-                              member.interviewMode === 'Online'
-                                ? 'bg-indigo-100 text-indigo-800'
-                                : 'bg-teal-100 text-teal-800'
-                            }`}
-                          >
-                            {member.interviewMode === 'Online' ? '💻 Online' : '🏢 Physical'}
-                          </span>
-                        </td>
-                      )}
+                      <td className="px-4 py-4 whitespace-nowrap text-sm">
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs font-medium ${
+                            member.interviewMode === 'Online'
+                              ? 'bg-indigo-100 text-indigo-800'
+                              : 'bg-teal-100 text-teal-800'
+                          }`}
+                        >
+                          {member.interviewMode === 'Online' ? '💻 Online' : '🏢 Physical'}
+                        </span>
+                      </td>
                       <td className="px-4 py-4 whitespace-nowrap text-sm">
                         <Link
                           href={`/interviews/${season}/member/${member.id}`}

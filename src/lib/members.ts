@@ -9,7 +9,7 @@
 
 import type { ApplicantRow } from './sheets';
 import { readAllRows, findRowById, updateRow, batchUpdateRows } from './sheets';
-import { INTERVIEW_STATE } from './constants';
+import { INTERVIEW_STATE, INTERVIEW_MODE } from './constants';
 
 /**
  * Get member by ID
@@ -315,9 +315,9 @@ export function calculateMemberStats(members: ApplicantRow[]): {
     else if (!vs) stats.idNew++;
 
     // Interview mode counts (S2)
-    const mode = (member.interviewMode || '').trim();
-    if (mode === 'Online') stats.online++;
-    else if (mode === 'Physical') stats.physical++;
+    const mode = (member.interviewMode || INTERVIEW_MODE.PHYSICAL).trim();
+    if (mode === INTERVIEW_MODE.ONLINE) stats.online++;
+    else stats.physical++;
   }
 
   return stats;

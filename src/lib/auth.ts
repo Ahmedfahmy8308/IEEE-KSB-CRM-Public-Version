@@ -238,7 +238,8 @@ export function getAllowedEditFields(user: User): string[] | 'all' {
 
   if (user.role === 'highboard' || user.role === 'board') {
     // Both highboard and board can only edit these fields
-    return ['state', 'note', 'approved'];
+    // return ['state', 'note', 'approved'];
+    return [];
   }
 
   return []; // No edit permissions

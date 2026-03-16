@@ -172,8 +172,8 @@ export default function CommitteeStats({ committee, season }: CommitteeStatsProp
       bgColor: 'bg-red-50',
       iconColor: 'text-red-600',
     },
-    // S2-only cards
-    ...(season === 'S2'
+    // ID validation cards (shown in both seasons for fixed 15-card layout)
+    ...(season === 'S2' || season === 'S1'
       ? [
           {
             title: 'ID Matched',
@@ -207,24 +207,24 @@ export default function CommitteeStats({ committee, season }: CommitteeStatsProp
             bgColor: 'bg-orange-50',
             iconColor: 'text-orange-600',
           },
-          {
-            title: 'Physical',
-            value: stats.physical ?? 0,
-            icon: <HomeOutlined className="text-2xl" />,
-            color: 'teal',
-            bgColor: 'bg-teal-50',
-            iconColor: 'text-teal-600',
-          },
-          {
-            title: 'Online',
-            value: stats.online ?? 0,
-            icon: <LaptopOutlined className="text-2xl" />,
-            color: 'violet',
-            bgColor: 'bg-violet-50',
-            iconColor: 'text-violet-600',
-          },
         ]
       : []),
+    {
+      title: 'Physical',
+      value: stats.physical ?? 0,
+      icon: <HomeOutlined className="text-2xl" />,
+      color: 'teal',
+      bgColor: 'bg-teal-50',
+      iconColor: 'text-teal-600',
+    },
+    {
+      title: 'Online',
+      value: stats.online ?? 0,
+      icon: <LaptopOutlined className="text-2xl" />,
+      color: 'violet',
+      bgColor: 'bg-violet-50',
+      iconColor: 'text-violet-600',
+    },
   ];
 
   return (

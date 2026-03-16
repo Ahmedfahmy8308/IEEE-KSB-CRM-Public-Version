@@ -108,8 +108,8 @@ export default function StatsCards({ stats, season }: StatsCardsProps) {
       bgGradient: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)',
       iconBgColor: 'rgba(252, 165, 165, 0.2)',
     },
-    // S2-only cards
-    ...(season === 'S2'
+    // ID validation cards (shown in both seasons for fixed 15-card layout)
+    ...(season === 'S2' || season === 'S1'
       ? [
           {
             title: 'ID Matched',
@@ -139,22 +139,22 @@ export default function StatsCards({ stats, season }: StatsCardsProps) {
             bgGradient: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
             iconBgColor: 'rgba(253, 186, 116, 0.2)',
           },
-          {
-            title: 'Physical',
-            value: stats.physical ?? 0,
-            icon: <HomeOutlined style={{ fontSize: '32px', color: '#fff' }} />,
-            bgGradient: 'linear-gradient(135deg, #14b8a6 0%, #0d9488 100%)',
-            iconBgColor: 'rgba(94, 234, 212, 0.2)',
-          },
-          {
-            title: 'Online',
-            value: stats.online ?? 0,
-            icon: <LaptopOutlined style={{ fontSize: '32px', color: '#fff' }} />,
-            bgGradient: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
-            iconBgColor: 'rgba(165, 180, 252, 0.2)',
-          },
         ]
       : []),
+    {
+      title: 'Physical',
+      value: stats.physical ?? 0,
+      icon: <HomeOutlined style={{ fontSize: '32px', color: '#fff' }} />,
+      bgGradient: 'linear-gradient(135deg, #14b8a6 0%, #0d9488 100%)',
+      iconBgColor: 'rgba(94, 234, 212, 0.2)',
+    },
+    {
+      title: 'Online',
+      value: stats.online ?? 0,
+      icon: <LaptopOutlined style={{ fontSize: '32px', color: '#fff' }} />,
+      bgGradient: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
+      iconBgColor: 'rgba(165, 180, 252, 0.2)',
+    },
   ];
 
   return (

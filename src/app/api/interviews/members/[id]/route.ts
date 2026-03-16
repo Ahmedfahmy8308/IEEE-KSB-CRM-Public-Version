@@ -56,13 +56,13 @@ export const PATCH = withAuth(async (request: NextRequest, user) => {
       return NextResponse.json({ error: 'Member not found' }, { status: 404 });
     }
 
-    // if (user.role !== 'ChairMan') {
-    //   // Only ChairMan can edit now
-    //   return NextResponse.json(
-    //     { error: 'Forbidden: Only ChairMan can edit members' },
-    //     { status: 403 }
-    //   );
-    // }
+    if (user.role !== 'ChairMan') {
+      // Only ChairMan can edit now
+      return NextResponse.json(
+        { error: 'Forbidden: Only ChairMan can edit members' },
+        { status: 403 }
+      );
+    }
 
     // Check if user can edit
     // if (!canEdit(user)) {
@@ -181,8 +181,8 @@ export const PATCH = withAuth(async (request: NextRequest, user) => {
       return NextResponse.json({ error: 'isEmailSend must be a boolean' }, { status: 400 });
     }
 
-    if (updates.interviewMode !== undefined && season === 'S2') {
-      const mode = String(updates.interviewMode);
+    if (updates.interviewMode !== undefined) {
+      const mode = String(updates.interviewMode).trim();
       if (mode !== 'Physical' && mode !== 'Online') {
         return NextResponse.json(
           { error: 'interviewMode must be either "Physical" or "Online"' },
@@ -190,8 +190,6 @@ export const PATCH = withAuth(async (request: NextRequest, user) => {
         );
       }
       updates.interviewMode = mode;
-    } else if (season !== 'S2') {
-      delete updates.interviewMode;
     }
 
     // Filter updates based on user role using helper function

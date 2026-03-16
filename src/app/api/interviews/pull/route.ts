@@ -19,7 +19,7 @@ import { getConfig, updateConfig } from '@/lib/config';
 import {
   readAllInterviewApplicants,
   batchAppendInterviewApplicants,
-  ensureS2Headers,
+  ensureInterviewHeaders,
   type InterviewApplicant,
   getAllInterviewIds,
 } from '@/lib/sheets/interview';
@@ -31,10 +31,10 @@ const ORIGIN_S1_COLS = {
   FULL_NAME: 2,
   EMAIL: 3,
   PHONE_NUMBER: 4,
-  NATIONAL_ID: 5,
-  AGE: 6,
-  CITY: 7,
-  ADDRESS: 8,
+  AGE: 5,
+  CITY: 6,
+  ADDRESS: 7,
+  NATIONAL_ID: 8,
   PERSONAL_PHOTO: 9,
   FACULTY: 10,
   DEPARTMENT: 11,
@@ -229,7 +229,7 @@ export const POST = withRoles(['ChairMan'], async (request: NextRequest) => {
 
     // 3. Collect all existing IDs across BOTH seasons to prevent ID duplicates
     const existingS1Ids = await getAllInterviewIds('S1');
-    const existingS2Ids = await getAllInterviewIds(season);
+    const existingS2Ids = await getAllInterviewIds('S2');
     const allExistingIds = new Set([...existingS1Ids, ...existingS2Ids]);
 
     // 4. For S2: load S1 data for ID validation
@@ -294,8 +294,6 @@ export const POST = withRoles(['ChairMan'], async (request: NextRequest) => {
           continue;
         }
       }
-
-      const _emailAddress = (row[COLS.EMAIL_ADDRESS] || '').toLowerCase().trim();
 
       // Map origin columns to DB format
       const enteredS1Id = season === 'S2' ? (row[ORIGIN_S2_COLS.S1_ID_IF_EXISTS] || '').trim() : '';
@@ -393,7 +391,7 @@ export const POST = withRoles(['ChairMan'], async (request: NextRequest) => {
         s1IdEntered: enteredS1Id,
         idValidationStatus: validationStatus,
         pullSource: `pull-${new Date().toISOString().split('T')[0]}`,
-        interviewMode: season === 'S2' ? 'Physical' : '',
+        interviewMode: 'Physical',
       };
 
       newRecords.push(applicant);
@@ -405,10 +403,8 @@ export const POST = withRoles(['ChairMan'], async (request: NextRequest) => {
       else noId++;
     }
 
-    // 6. Ensure S2-specific column headers exist, then batch-append
-    if (season === 'S2') {
-      await ensureS2Headers(season);
-    }
+    // 6. Ensure the destination sheet matches the selected season schema, then batch-append
+    await ensureInterviewHeaders(season);
 
     if (newRecords.length > 0) {
       await batchAppendInterviewApplicants(newRecords, season);
