@@ -37,9 +37,21 @@
 
 ---
 
+## 📁 Google Drive Resources
+
+| Resource | Link |
+|---|---|
+| **Main Folder** (all project data) | [Open in Drive](https://drive.google.com/drive/folders/1cpxpDejDjHklKV54yYt2zrfrf3ICRfYa?usp=drive_link) |
+| **DB Templates** | [Open in Drive](https://drive.google.com/drive/folders/1MPq6a1yDNz_-2t7Vcnrdfzq14zFGIcc5?usp=drive_link) |
+| **Forms Folder** (requirements) | [Open in Drive](https://drive.google.com/drive/folders/1iSiyJwbayA1Wx_bJ4kkoHTFa1mkBhNGz?usp=drive_link) |
+| **Videos Folder** (explanations) | [Open in Drive](https://drive.google.com/drive/folders/1yGkRMqCMPk6_OOsH5i9z13vtGcIUa-OE?usp=drive_link) |
+
+---
+
 ## Table of Contents
 
 - [Video Demos](#-video-demos)
+- [Google Drive Resources](#-google-drive-resources)
 
 - [Features](#features)
 - [System Functions](#system-functions)
