@@ -1,18 +1,19 @@
 <div align="center">
 
-<img src="https://upload.wikimedia.org/wikipedia/commons/2/21/IEEE_logo.svg" alt="IEEE Logo" width="100" />
+<img src="https://upload.wikimedia.org/wikipedia/commons/2/21/IEEE_logo.svg" alt="IEEE Logo" width="120" />
 
 # ⚡ IEEE KSB CRM
 
-### Applicant Management System
+### Enterprise Candidate & Event Operations Platform
 
-**A full-stack management system for IEEE KSB — handling applicant interviews, Welcome-Day events, attendance, email campaigns, QR codes, and more.**
+**Official CRM and Operations Management Platform for IEEE Kafr El-Sheikh Student Branch (IEEE KSB) — streamlining applicant recruitment, multi-season interviews, Welcome Day attendee logistics, live QR check-ins, automated email dispatch, and Google Sheets integration.**
 
 <br/>
 
-[![Next.js](https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
-[![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
+[![Next.js](https://img.shields.io/badge/Next.js-16.3-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19.2-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![pnpm](https://img.shields.io/badge/pnpm-11-F69220?style=for-the-badge&logo=pnpm&logoColor=white)](https://pnpm.io/)
 [![Google Sheets](https://img.shields.io/badge/Google%20Sheets-API%20v4-34A853?style=for-the-badge&logo=googlesheets&logoColor=white)](https://developers.google.com/sheets/api)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 [![Ant Design](https://img.shields.io/badge/Ant%20Design-5-0170FE?style=for-the-badge&logo=antdesign&logoColor=white)](https://ant.design/)
@@ -22,9 +23,20 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
 [![Node.js](https://img.shields.io/badge/Node.js-%E2%89%A5%2018.18-339933?style=flat-square&logo=node.js&logoColor=white)](https://nodejs.org/)
 [![Vercel](https://img.shields.io/badge/Deploy-Vercel-000?style=flat-square&logo=vercel&logoColor=white)](https://vercel.com/)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](https://github.com/Ahmedfahmy8308/IEEE-KSB-CRM-Public-Version/pulls)
+[![Engineered by UFUQ Tech](https://img.shields.io/badge/Engineered%20by-UFUQ%20Tech-0A84FF?style=flat-square)](https://ufuq-tech.com)
 
 </div>
+
+---
+
+## 🌐 Official Production & Mirror Domains
+
+| Domain Type | URL | Description |
+|---|---|---|
+| **Primary Domain** | [crm.ieee-ksb.org](https://crm.ieee-ksb.org) | Official IEEE KSB CRM Production Portal |
+| **Mirror Domain** | [ieee-ksb.ufuq-tech.com](https://ieee-ksb.ufuq-tech.com) | UFUQ Tech Dedicated Cloud Mirror |
+| **IEEE KSB Website** | [ieee-ksb.org](https://ieee-ksb.org) | IEEE Kafr El-Sheikh Student Branch Official Website |
+| **Parent Organization** | [ieee.org](https://www.ieee.org) | Institute of Electrical and Electronics Engineers (IEEE) |
 
 ---
 
@@ -32,8 +44,8 @@
 
 | Video | Description |
 |---|---|
-| [▶️ Full System Explain](https://drive.google.com/file/d/1QI-BJKc6EPBEfKN_oHe83fL3_EIudNIb/view?usp=drive_link) | Complete walkthrough of the entire CRM system |
-| [▶️ Board System Explain](https://drive.google.com/file/d/1623X_vd6iWfo-kBZ2V9ZCz75up3t4zKN/view?usp=sharing) | Walkthrough focused on the Board-level features |
+| [▶️ Full System Walkthrough](https://drive.google.com/file/d/1QI-BJKc6EPBEfKN_oHe83fL3_EIudNIb/view?usp=drive_link) | Complete walkthrough of the entire CRM system architecture |
+| [▶️ Board System Features](https://drive.google.com/file/d/1623X_vd6iWfo-kBZ2V9ZCz75up3t4zKN/view?usp=sharing) | Walkthrough focused on the Board & Committee-level workflows |
 
 ---
 
@@ -41,44 +53,37 @@
 
 | Resource | Link |
 |---|---|
-| **Main Folder** (all project data) | [Open in Drive](https://drive.google.com/drive/folders/1cpxpDejDjHklKV54yYt2zrfrf3ICRfYa?usp=drive_link) |
-| **DB Templates** | [Open in Drive](https://drive.google.com/drive/folders/1MPq6a1yDNz_-2t7Vcnrdfzq14zFGIcc5?usp=drive_link) |
+| **Main Folder** (all project assets) | [Open in Drive](https://drive.google.com/drive/folders/1cpxpDejDjHklKV54yYt2zrfrf3ICRfYa?usp=drive_link) |
+| **Database Templates** | [Open in Drive](https://drive.google.com/drive/folders/1MPq6a1yDNz_-2t7Vcnrdfzq14zFGIcc5?usp=drive_link) |
 | **Forms Folder** (requirements) | [Open in Drive](https://drive.google.com/drive/folders/1iSiyJwbayA1Wx_bJ4kkoHTFa1mkBhNGz?usp=drive_link) |
-| **Videos Folder** (explanations) | [Open in Drive](https://drive.google.com/drive/folders/1yGkRMqCMPk6_OOsH5i9z13vtGcIUa-OE?usp=drive_link) |
+| **Videos Folder** (tutorials & demos) | [Open in Drive](https://drive.google.com/drive/folders/1yGkRMqCMPk6_OOsH5i9z13vtGcIUa-OE?usp=drive_link) |
 
 ---
 
 ## Table of Contents
 
+- [Official Production & Mirror Domains](#-official-production--mirror-domains)
 - [Video Demos](#-video-demos)
 - [Google Drive Resources](#-google-drive-resources)
-
 - [Features](#features)
-- [System Functions](#system-functions)
-  - [Authentication & Authorization](#1-authentication--authorization)
-  - [Interview Management](#2-interview-management)
-  - [Welcome Day Management](#3-welcome-day-management)
-  - [Email System](#4-email-system)
-  - [Pull Records](#5-pull-records-google-forms-import)
-  - [Data Validation](#6-data-validation)
-  - [Runtime Configuration](#7-runtime-configuration)
-  - [Google Sheets Layer](#8-google-sheets-data-layer)
+- [System Architecture & Modules](#system-architecture--modules)
+  - [1. Authentication & Role-Based Access (RBAC)](#1-authentication--role-based-access-rbac)
+  - [2. Interview Management](#2-interview-management)
+  - [3. Welcome Day Event Management](#3-welcome-day-event-management)
+  - [4. Automated Email Dispatch Engine](#4-automated-email-dispatch-engine)
+  - [5. Google Forms Pull Engine (Real-Time Import)](#5-google-forms-pull-engine-real-time-import)
+  - [6. Data Integrity & Validation System](#6-data-integrity--validation-system)
+  - [7. Cloud Runtime Configuration](#7-cloud-runtime-configuration)
+  - [8. Google Sheets Enterprise Data Layer](#8-google-sheets-enterprise-data-layer)
 - [API Reference](#api-reference)
 - [Pages & UI Components](#pages--ui-components)
 - [Tech Stack](#tech-stack)
 - [Project Structure](#project-structure)
-- [Prerequisites](#prerequisites)
-- [Getting Started](#getting-started)
-  - [1. Clone the repository](#1-clone-the-repository)
-  - [2. Install dependencies](#2-install-dependencies)
-  - [3. Set up Google Sheets](#3-set-up-google-sheets)
-  - [4. Configure environment variables](#4-configure-environment-variables)
-  - [5. Configure runtime settings](#5-configure-runtime-settings)
-  - [6. Run the development server](#6-run-the-development-server)
+- [Getting Started with pnpm](#getting-started-with-pnpm)
 - [Available Scripts](#available-scripts)
 - [Environment Variables](#environment-variables)
-- [Runtime Config (Google Sheets `_Config!A1`)](#runtime-config-google-sheets-_configa1)
 - [Deployment](#deployment)
+- [Authors & Acknowledgments](#authors--acknowledgments)
 - [License](#license)
 
 ---
@@ -87,316 +92,141 @@
 
 | Module | Highlights |
 |---|---|
-| **Interviews** | Multi-season (S1 / S2) applicant tracking, committee breakdown, schedule assignment, search & filter, per-member detail pages with role-based editing |
-| **Welcome Day** | Attendee management, QR-code generation & download, live attendance scanning, payment validation |
-| **Email Campaigns** | Batch email sending with HTML templates (invitation, accepted, rejected), test-send mode, approved-email flow |
-| **Pull Records** | One-click import from external Google Forms response sheets into the main spreadsheet |
-| **Validation** | Duplicate detection (email, phone, national ID), email-mismatch reports |
-| **Auth & RBAC** | JWT cookie-based authentication, role hierarchy (ChairMan → Highboard → Board → Member), field-level edit permissions |
-| **Chairman Config** | In-app modal to edit sheet names, email settings, and pull-source config — no redeployment needed |
-| **Stats & Charts** | Live stats cards, committee breakdowns with animated UI |
+| **Interviews** | Multi-season (`S1` / `S2`) applicant tracking, committee breakdown, automated schedule slotting, fuzzy search & filter, detailed applicant profiles with field-level role gating |
+| **Welcome Day** | Attendee lifecycle management, automated ticket ID & QR-code generation, batch ZIP export, real-time camera scanner, payment verification |
+| **Email Engine** | High-throughput batch email dispatch with responsive HTML templates (invitation, acceptance, rejection), test mode, approved-email queue, WhatsApp group link injection |
+| **Pull Engine** | Real-time import from external Google Forms response sheets into the centralized database with timestamp deduplication and Arabic/English locale parsing |
+| **Validation** | Duplicate detection (emails, phone numbers, form addresses), email-mismatch reports with 1-click batch auto-resolution |
+| **Auth & RBAC** | Secure JWT HTTP-only cookies, granular role hierarchy (`ChairMan` → `Highboard` → `Board` → `Member`), field-level editing permissions |
+| **Chairman Config** | In-app modal to modify sheet mappings, email throttling, and pull endpoints on the fly with zero redeployment |
+| **Analytics** | Real-time interactive dashboard statistics cards, committee breakdowns with responsive data tables |
 
 ---
 
-## System Functions
+## System Architecture & Modules
 
-### 1. Authentication & Authorization
+### 1. Authentication & Role-Based Access (RBAC)
 
 | Function | Description |
 |---|---|
-| **Login** | Verify username/password against the Users sheet (bcrypt or plaintext), issue a signed JWT stored in an HTTP-only cookie (7-day expiry) |
-| **Logout** | Clear the auth cookie |
-| **Session Check** | Decode the JWT from the request cookie and return the authenticated user |
-| **Role Hierarchy** | `ChairMan` (full access) → `highboard` (read stats, limited edits) → `board` (committee-scoped view, minimal edits) |
-| **Field-level Permissions** | ChairMan can edit all fields. Highboard/Board can only edit `state`, `note`, and `approved` |
-| **Committee Scoping** | Board users only see members belonging to their own committee |
-| **Season Access** | Each user has an `accessSeason` field (`S1`, `S2`, `S1,S2`, or `all`) controlling which seasons they can access |
+| **Login & Verification** | Authenticates credentials against the centralized `Users` sheet with salted bcrypt hashing, issuing a signed JWT in an HTTP-only cookie (7-day validity). |
+| **Role Hierarchy** | `ChairMan` (unrestricted access) → `highboard` (branch-wide analytics, restricted fields) → `board` (committee-scoped view and evaluations). |
+| **Field-level Security** | `ChairMan` can edit all 31 columns. `Highboard`/`Board` can only modify `state`, `note`, and `approved`. |
+| **Committee Scoping** | Board members only access candidate records assigned to their specific committee. |
+| **Season Access Gate** | Each user profile defines season permissions (`S1`, `S2`, `S1,S2`, or `all`). |
 
 ### 2. Interview Management
 
 | Function | Description |
 |---|---|
-| **Multi-Season Support** | Separate sheet tabs for Season 1 (28 columns, A–AB) and Season 2 (31 columns, A–AE with extra S1 ID validation fields and Interview Mode) |
-| **Get Member by ID** | Lookup an applicant by their unique 5-digit ID |
-| **Search Members** | Fuzzy search across ID, phone, email, and full name |
-| **Update Member** | Role-gated field updates with automatic change logging (timestamp + actor username appended to the `log` column) |
-| **Batch Update** | Update multiple member rows in a single API call |
-| **Statistics** | Compute totals, state distribution (Not Started / Wait in Reception / In Interview / Complete / Not Attended), email-sent counts, schedule-assigned counts, approval breakdown |
-| **Schedule Assignment** | Auto-generate interview time slots (Sun–Thu) from a config: start/end date, start/end time, interval minutes, parallel seats. Assigns unassigned members sequentially. |
-| **ID Generation** | Generate unique random 5-digit numeric IDs for members without IDs, with collision checking |
-| **S2 ID Validation** | When pulling S2 records, cross-reference the `S1_ID_ENTERED` field against all S1 IDs to flag `Matched`, `Need Review`, or `Wrong ID` |
-| **Interview Mode (S2)** | Each S2 member has an `interviewMode` field (`Physical` 🏢 / `Online` 💻). Defaults to Physical on pull. Filterable in the committee members table |
-| **Active Interviews** | Real-time view of members currently in `Wait in Reception` or `In Interview` states, auto-refreshing every 30 seconds |
-| **Committee Breakdown** | Per-committee member counts with drill-down to member lists. Optional date-based filtering |
+| **Multi-Season Architecture** | Dual independent schema tabs for Season 1 (28 columns, A–AB) and Season 2 (31 columns, A–AE with cross-season S1 ID validation and Interview Mode). |
+| **Candidate Search & Filter** | Real-time fuzzy query across candidate ID, phone number, email address, and full name. |
+| **Audit Logging** | Every modification appends a timestamped log entry with the actor's username to the candidate's `log` column. |
+| **Automated Slot Scheduler** | Auto-calculates interview time slots across active days (Sun–Thu) given start/end dates, work hours, slot duration, and parallel interview panels. |
+| **Automated ID Generation** | Generates collision-free 5-digit numeric IDs for applicants upon pull or manual creation. |
+| **Cross-Season S1 ID Matcher** | For Season 2 applicants, cross-verifies self-reported S1 IDs against Season 1 records to classify as `Matched`, `Need Review`, or `Wrong ID`. |
+| **Active Interviews Room** | Live status feed of candidates currently in `Wait in Reception` or `In Interview`, polling automatically every 30 seconds. |
 
-### 3. Welcome Day Management
+### 3. Welcome Day Event Management
 
 | Function | Description |
 |---|---|
-| **Attendee Tracking** | 17-column schema per attendee: personal info, committee, payment details, check status, QR code, attendance, email status, notes, log |
-| **Get Attendee** | Lookup by row index or ticket ID. Sensitive data (`nationalId`, `paymentScreenshot`) hidden for non-ChairMan roles |
-| **Search Attendees** | Search by name, email, phone, or ticket ID with role-based data filtering |
-| **Update Attendee** | Protected fields (`nationalId`, `paymentScreenshot`, `qrCode`) cannot be edited via API. ChairMan: 12 editable fields. Others: `checked`, `attended`, `note` only. All changes logged. |
-| **QR Code Generation** | Generate unique ticket IDs (`WD-{timestamp}-{random}-{index}`) and render QR code PNG images saved to `public/Welcome-Day/qrcode/` |
-| **QR Code Download** | Download all generated QR codes as a single ZIP archive |
-| **Attendance Scanning** | Scan a QR code via device camera (using `html5-qrcode`) to mark attendance. Detects already-attended status. Manual ID entry also supported. |
-| **Mark Attendance** | Mark attendance by ticket ID or attendee row ID |
-| **Payment Validation** | Track payment method (Instapay / Vodafone Cash), reference number, and screenshot. Validation status: `Passed`, `Not Checked`, `Failed` |
-| **Statistics** | Total attendees, emails sent, attended count, validation passed/failed/unchecked, payment method breakdown, QR codes generated |
-| **Committee Breakdown** | Per-committee stats with drill-down |
+| **Attendee Tracking** | 17-column structured schema: personal information, committee preference, transaction reference, check-in status, QR payload, and audit logs. |
+| **Sensitive Data Protection** | Protected attributes (national IDs, payment proof attachments) are masked for non-executive roles. |
+| **Dynamic QR Generation** | Computes cryptographic ticket IDs (`WD-{timestamp}-{random}-{index}`) and renders high-density QR code PNGs. |
+| **Batch QR Export** | Compiles all generated ticket QR images into an organized ZIP archive for bulk download. |
+| **Hardware & Camera Scanner** | Browser-based QR scanning via device camera (`html5-qrcode`) with duplicate check-in prevention. |
+| **Payment Verification** | Manages payment channels (InstaPay, Vodafone Cash), tracking verification states (`Passed`, `Not Checked`, `Failed`). |
 
-### 4. Email System
+### 4. Automated Email Dispatch Engine
 
 | Function | Description |
 |---|---|
-| **SMTP Transport** | Nodemailer with Gmail SMTP (configurable host/port/TLS). Connection pooling for batch sends. |
-| **Interview Invitation** | Send interview schedule email using `interview_invitation.html` template with placeholders for name, date, time, etc. |
-| **Batch Send (Unsent)** | Send to all members where `isEmailSend ≠ TRUE`. Configurable batch size and delay between batches. Updates sheet in batch after all sends. |
-| **Test Send** | Send one test email per committee to the configured `testEmail` address |
-| **Approved/Rejected Emails** | Send acceptance or rejection emails using role-specific templates (`accepted_board`, `accepted_committee`, `rejected_board`, `rejected_committee`). Accepted committee emails include WhatsApp group invite links loaded from `WhatsAppGroup.csv`. |
-| **Approved Test Send** | Send 2 test emails per committee (1 accepted + 1 rejected) to `testEmail` |
-| **Send to Specific Member** | Send invitation or approved/rejected email to a single member by ID. Supports resending. |
-| **Welcome Day Confirmation** | Send confirmation email with the attendee's QR code image embedded inline (CID attachment) using `welcome_day_confirmation.html` |
-| **Template Engine** | Fill HTML template placeholders (`{{fullName}}`, `{{interviewDay}}`, `{{committee}}`, `{{whatsappLink}}`, etc.) |
+| **SMTP Transport Layer** | High-performance Nodemailer connection pooling with Gmail SMTP and TLS. |
+| **Interview Invitations** | Dispatches personalized interview schedule emails with candidate name, interview slot, date, and venue. |
+| **Acceptance & Rejection Campaigns** | Dispatches tailored decision notices. Accepted applicant emails automatically embed committee-specific WhatsApp invitation links. |
+| **Inline QR Code Embedding** | Welcome Day confirmations attach the unique QR code inline via CID attachments for instant rendering in email clients. |
+| **Safe Test-Send Mode** | Allows ChairMan to simulate email campaigns by routing test emails to a dedicated sandbox inbox. |
 
-### 5. Pull Records (Google Forms Import)
+### 5. Google Forms Pull Engine (Real-Time Import)
 
 | Function | Description |
 |---|---|
-| **Interview Pull** | Read from an external Google Forms response sheet, map columns to the internal schema, generate 5-digit IDs, deduplicate by timestamp, and append new records. |
-| **S2 Pull with Validation** | For Season 2, the pull also reads the `S1_ID_ENTERED` column and cross-checks against all S1 IDs, tagging each record as `Matched` / `Need Review` / `Wrong ID`. Sets `pullSource = "pull"`. |
-| **Timestamp-Based Dedup** | After each pull, the maximum timestamp across **all** origin rows is saved to config as `lastPullTimestamp`. Future pulls skip any record with a timestamp ≤ the saved value — even if you delete records from the DB, they won't be re-imported. |
-| **Arabic Timestamp Parsing** | Supports Google Forms timestamps in Arabic locale (`10:30:16 م 2026/02/17` with ص=AM / م=PM) as well as US English (`M/D/YYYY H:MM:SS`) and ISO formats. |
-| **Pull Activity Logging** | Every pulled member receives an automatic log entry (`system` actor) recording: pull timestamp, S1 ID entered (if any), validation result (Matched / Need Review / Wrong ID), auto-approval status, and assigned/generated ID. Visible in each member's Activity Log. |
-| **Welcome Day Pull** | Import from a Google Forms sheet (11 columns: timestamp through referenceNumber), set `checked = "Not Checked"`, deduplicate by timestamp, append new rows. |
-| **Config-Driven** | Each pull source (interview S1/S2, welcome day S1/S2) is independently configured with `active` toggle, `originSheetId`, `originTabName`, and auto-saved `lastPullTimestamp` in the runtime config. |
+| **Automated Ingestion** | Connects to external Google Forms response sheets, transforms column structures, assigns candidate IDs, and appends records. |
+| **High-Precision Deduplication** | Tracks the global maximum timestamp (`lastPullTimestamp`) to ensure zero duplicate entries even if records are pruned. |
+| **Multilingual Date Normalizer** | Parses timestamps in Arabic (`10:30:16 م 2026/02/17`) and English formats (`M/D/YYYY H:MM:SS`, ISO 8601). |
 
-### 6. Data Validation
+### 6. Data Integrity & Validation System
 
 | Function | Description |
 |---|---|
-| **Duplicate Phone Numbers** | Find applicants sharing the same phone (Egyptian numbers normalized: strip `+20` / leading `0`) |
-| **Duplicate Emails** | Find applicants sharing the same email address |
-| **Duplicate Form Email Addresses** | Find duplicates in the Google Forms `emailAddress` field |
-| **Email Mismatches** | Find applicants where the self-entered `email` differs from the Google Forms `emailAddress` |
-| **Email Mismatch Quick Fix** | One-click batch fix: sets each mismatched member's Contact Email to match their Form Email. Updates are logged in each member's Activity Log with `system` actor. |
-| **Combined Validation** | Run all 4 checks in a single API call and return grouped results |
+| **Duplicate Phones** | Normalizes Egyptian telephone numbers (strips `+20` and leading zeroes) to locate duplicates. |
+| **Duplicate Emails** | Identifies duplicated primary email addresses across applicants. |
+| **Form vs. Contact Mismatches** | Detects discrepancies between the Google Account email and candidate-provided contact email. |
+| **1-Click Quick Fix** | Automatically synchronizes contact emails to verified Google Form submission emails in bulk. |
 
-### 7. Runtime Configuration
+### 7. Cloud Runtime Configuration
 
 | Function | Description |
 |---|---|
-| **Sheets-Based Config** | Config is stored in Google Sheets (`_Config!A1` cell as JSON). Works identically on local dev and Vercel — no filesystem dependency. |
-| **Read Config** | Loaded once per invocation via `ensureConfigLoaded()` in auth middleware, then served from in-memory cache. Deep-merged with defaults so new fields are always present. |
-| **Update Config** | Deep-merge a partial update into the current config, persist to `_Config!A1` (awaited), and update in-memory cache. |
-| **Config UI** | In-app modal (ChairMan only) with three tabs: Sheet Names, Email Settings, Pull Config. Supports edit/confirm/discard flow. |
-| **Auto-Created** | The `_Config` sheet tab is automatically created with defaults if it doesn't exist. |
-| **No Redeploy** | Config changes take effect immediately — no server restart or redeployment required |
+| **Sheets-Backed Config** | Configuration resides in `_Config!A1` as serialized JSON, operating identically in local environments and serverless Vercel deployments. |
+| **In-App Control Center** | Visual modal interface for the ChairMan to configure sheet tab bindings, email throttling, and pull targets in real time. |
 
-### 8. Google Sheets Data Layer
+### 8. Google Sheets Enterprise Data Layer
 
 | Function | Description |
 |---|---|
-| **Singleton Client** | Google Sheets API v4 client with two auth modes: service-account key file (local dev) or inline credentials (Vercel/production) |
-| **Read Range** | Read a cell range from the main spreadsheet with auto sheet-name validation |
-| **Read External** | Read from a different spreadsheet (used by Pull Records) |
-| **Append Rows** | Find the first empty row after existing data and write via `values.update` (avoids unreliable `values.append` boundary detection) |
-| **Update Range** | Overwrite a specific cell range |
-| **Batch Update** | Execute multiple range updates in a single API call |
-| **Auto-Expand Grid** | Automatically add rows or columns when the current sheet grid is too small |
-| **Column Mapping** | Typed column index constants for Interview (28/31 cols) and Welcome Day (17 cols) with `rowToObject` / `objectToRow` converters |
+| **Dual Auth Modes** | Supports local service-account key files (`GOOGLE_SERVICE_ACCOUNT_KEY_PATH`) and serverless inline private keys (`GOOGLE_PRIVATE_KEY`). |
+| **Safe Appending** | Evaluates exact row bounds before executing `values.update` to prevent boundary corruption. |
+| **Auto Grid Expansion** | Automatically provisions extra rows or columns when sheet grid limits are exceeded. |
 
 ---
 
 ## API Reference
 
 ### Auth
-
-| Method | Endpoint | Description | Auth |
-|---|---|---|---|
-| `POST` | `/api/auth/login` | Verify credentials, set JWT cookie | None |
-| `POST` | `/api/auth/logout` | Clear auth cookie | None |
-| `GET` | `/api/auth/me` | Get current user | Any |
+- `POST /api/auth/login` — Authenticate and issue HTTP-only JWT
+- `POST /api/auth/logout` — Revoke authentication session
+- `GET /api/auth/me` — Inspect current session context
 
 ### Config
+- `GET /api/config` — Retrieve runtime configuration
+- `PATCH /api/config` — Update runtime configuration
 
-| Method | Endpoint | Description | Auth |
-|---|---|---|---|
-| `GET` | `/api/config` | Read runtime config | ChairMan |
-| `PATCH` | `/api/config` | Update runtime config (deep merge) | ChairMan |
+### Interviews
+- `GET /api/interviews/members/[id]` — Retrieve member details
+- `PATCH /api/interviews/members/[id]` — Update member record
+- `GET /api/interviews/members/active` — Active interview states
+- `GET /api/interviews/members/search` — Search members
+- `GET /api/interviews/members/stats` — Overall interview metrics
+- `GET /api/interviews/committee/stats` — Committee-specific metrics
+- `GET /api/interviews/committee/members` — Committee member roster
+- `POST /api/interviews/email/send/[id]` — Send invitation to single member
+- `POST /api/interviews/email/send-unsent` — Batch send interview invitations
+- `POST /api/interviews/email/send-test` — Send test invitations
+- `POST /api/interviews/email/send-approved` — Batch send acceptance/rejection
+- `POST /api/interviews/email/send-approved-test` — Test decision notices
+- `POST /api/interviews/schedule/assign` — Auto-assign interview time slots
+- `POST /api/interviews/schedule/Id` — Auto-generate candidate IDs
+- `GET /api/interviews/pull` — Pull configuration status
+- `POST /api/interviews/pull` — Ingest records from Google Forms
+- `GET /api/interviews/validation` — Comprehensive validation scan
+- `POST /api/interviews/validation/email-mismatches/quick-fix` — Batch fix email mismatches
 
-### Image Proxy
-
-| Method | Endpoint | Description | Auth |
-|---|---|---|---|
-| `GET` | `/api/image-proxy?url=` | Proxy Google Drive images (1-year cache) | None |
-
-### Interview — Members
-
-| Method | Endpoint | Description | Auth |
-|---|---|---|---|
-| `GET` | `/api/interviews/members/[id]?season=` | Get member by ID | Any (scoped) |
-| `PATCH` | `/api/interviews/members/[id]?season=` | Update member (field-restricted) | Any (scoped) |
-| `GET` | `/api/interviews/members/active?season=` | Members in active interview states | Any (scoped) |
-| `GET` | `/api/interviews/members/search?q=&season=` | Search by ID / phone / email / name | Any (scoped) |
-| `GET` | `/api/interviews/members/stats?season=` | Overall statistics | ChairMan, Highboard |
-
-### Interview — Committee
-
-| Method | Endpoint | Description | Auth |
-|---|---|---|---|
-| `GET` | `/api/interviews/committee/stats?committee=&season=` | Committee statistics (optional date filter) | Any |
-| `GET` | `/api/interviews/committee/members?committee=&season=` | Committee member list | Any |
-
-### Interview — Email
-
-| Method | Endpoint | Description | Auth |
-|---|---|---|---|
-| `POST` | `/api/interviews/email/send/[id]?season=` | Send invitation to specific member | ChairMan |
-| `POST` | `/api/interviews/email/send-unsent?season=` | Batch send to all unsent members | ChairMan |
-| `POST` | `/api/interviews/email/send-test?season=` | Send test emails (1 per committee) | ChairMan |
-| `POST` | `/api/interviews/email/send-approved?season=` | Batch send accepted/rejected emails | ChairMan |
-| `POST` | `/api/interviews/email/send-approved-test?season=` | Test accepted/rejected emails | ChairMan |
-| `POST` | `/api/interviews/email/send-approved/[id]?season=` | Send accepted/rejected to specific member | ChairMan |
-
-### Interview — Schedule & IDs
-
-| Method | Endpoint | Description | Auth |
-|---|---|---|---|
-| `POST` | `/api/interviews/schedule/assign?season=` | Auto-assign interview slots | ChairMan |
-| `POST` | `/api/interviews/schedule/Id?season=` | Generate unique 5-digit IDs | ChairMan |
-
-### Interview — Pull & Validation
-
-| Method | Endpoint | Description | Auth |
-|---|---|---|---|
-| `GET` | `/api/interviews/pull?season=` | Get pull config status | ChairMan |
-| `POST` | `/api/interviews/pull?season=` | Pull records from Google Forms | ChairMan |
-| `GET` | `/api/interviews/validation?season=` | Run all validations | ChairMan, Highboard |
-| `GET` | `/api/interviews/validation/duplicate-phones?season=` | Find duplicate phones | ChairMan, Highboard |
-| `GET` | `/api/interviews/validation/duplicate-emails?season=` | Find duplicate emails | ChairMan, Highboard |
-| `GET` | `/api/interviews/validation/duplicate-email-addresses?season=` | Find duplicate form emails | ChairMan, Highboard |
-| `GET` | `/api/interviews/validation/email-mismatches?season=` | Find email mismatches | ChairMan, Highboard |
-| `POST` | `/api/interviews/validation/email-mismatches/quick-fix?season=` | Batch fix: set Contact Email = Form Email for all mismatches | ChairMan, Highboard |
-
-### Welcome Day — Attendees
-
-| Method | Endpoint | Description | Auth |
-|---|---|---|---|
-| `GET` | `/api/Welcome-Day/attendees/[id]?season=` | Get attendee (sensitive data filtered) | Any (scoped) |
-| `PATCH` | `/api/Welcome-Day/attendees/[id]?season=` | Update attendee (field-restricted) | Any (scoped) |
-| `GET` | `/api/Welcome-Day/attendees/active?season=` | Get all attendees | ChairMan |
-| `GET` | `/api/Welcome-Day/attendees/search?q=&season=` | Search attendees | Any (scoped) |
-| `GET` | `/api/Welcome-Day/attendees/stats?season=` | Attendee statistics | ChairMan, Highboard |
-
-### Welcome Day — Committee
-
-| Method | Endpoint | Description | Auth |
-|---|---|---|---|
-| `GET` | `/api/Welcome-Day/committee/stats?committee=&season=` | Committee stats | Any |
-| `GET` | `/api/Welcome-Day/committee/members?committee=&season=` | Committee member list | Any |
-
-### Welcome Day — Email
-
-| Method | Endpoint | Description | Auth |
-|---|---|---|---|
-| `POST` | `/api/Welcome-Day/email/send/[id]?season=` | Send confirmation with QR code | ChairMan |
-| `POST` | `/api/Welcome-Day/email/send-unsent?season=` | Batch send to unsent attendees | ChairMan |
-| `POST` | `/api/Welcome-Day/email/send-test?season=` | Test emails (1 per committee) | ChairMan |
-
-### Welcome Day — QR Codes & Attendance
-
-| Method | Endpoint | Description | Auth |
-|---|---|---|---|
-| `POST` | `/api/Welcome-Day/qrcode/generate?season=` | Generate ticket IDs + QR code PNGs | ChairMan |
-| `GET` | `/api/Welcome-Day/qrcode/download` | Download all QR codes as ZIP | Any |
-| `POST` | `/api/Welcome-Day/attendance/scan?season=` | Scan QR code to mark attendance | ChairMan |
-| `POST` | `/api/Welcome-Day/attendance/mark?season=` | Mark attendance by ticket/row ID | ChairMan |
-
-### Welcome Day — Pull & Validation
-
-| Method | Endpoint | Description | Auth |
-|---|---|---|---|
-| `GET` | `/api/Welcome-Day/pull?season=` | Get pull config status | ChairMan |
-| `POST` | `/api/Welcome-Day/pull?season=` | Pull records from Google Forms | ChairMan |
-| `GET` | `/api/Welcome-Day/validation?season=` | Run all validations | ChairMan |
-| `GET` | `/api/Welcome-Day/validation/duplicate-phones?season=` | Find duplicate phones | ChairMan |
-| `GET` | `/api/Welcome-Day/validation/duplicate-emails?season=` | Find duplicate emails | ChairMan |
-| `GET` | `/api/Welcome-Day/validation/duplicate-email-addresses?season=` | Find duplicate form emails | ChairMan |
-| `GET` | `/api/Welcome-Day/validation/email-mismatches?season=` | Find email mismatches | ChairMan |
-
-> **Total: ~43 API endpoints**
-
----
-
-## Pages & UI Components
-
-### Pages
-
-| Route | Description |
-|---|---|
-| `/` | **Home** — Season selection (S1 / S2) with role badge, animated IEEE KSB branding, links to Interviews and Welcome Day |
-| `/login` | **Login** — Username/password form, auto-redirect if already authenticated |
-| `/interviews/[season]` | **Interview Dashboard** — Tabs: Dashboard, Search, Schedule, Email, Approved Email, Validation, Pull. Board sees committee-scoped view; ChairMan/Highboard sees stats + committee breakdown |
-| `/interviews/[season]/active-interviews` | **Active Interviews** — Real-time view of members in Reception/Interview states, auto-refresh every 30s |
-| `/interviews/[season]/member/[id]` | **Member Detail** — Full applicant profile with section navigation, inline editing, Google Drive image proxy, status badges, S2 ID validation display |
-| `/Welcome-Day/[season]` | **Welcome Day Dashboard** — Tabs: Dashboard, Search, Members, Email, Validation, Attendance, QR Codes, Pull |
-| `/Welcome-Day/[season]/member/[id]` | **Attendee Detail** — Full attendee profile with PDF detection for payment screenshots, sensitive data gating, section navigation, inline editing |
-
-### Interview Components
-
-| Component | Description |
-|---|---|
-| **Sidebar** | Tab navigation, Config modal trigger, Active Interviews modal, mobile hamburger menu |
-| **StatsCards** | Dashboard stat cards — totals, state breakdown, email/schedule counts. S2: ID validation stats |
-| **CommitteeBreakdown** | All committees with member counts, click to drill-down |
-| **CommitteeStats** | Single committee statistics with optional date filtering |
-| **CommitteeMembersList** | Sortable member table with status color tags, click to view detail |
-| **SearchPanel** | Search interface with Ant Design Table, status tags, links to member detail |
-| **SchedulePanel** | Schedule config form (dates, times, interval, parallel seats) + ID generation button |
-| **EmailPanel** | Interview invitation panel — send test, send all unsent, send by ID |
-| **ApprovedEmailPanel** | Accepted/rejected email panel — send test, send all, send by ID, filter by status |
-| **ValidationPanel** | Expandable sections showing duplicate phones/emails and mismatches, with Quick Fix button to batch-resolve email mismatches |
-| **PullPanel** | Pull trigger with config display, result summary (new/skipped/validated) |
-| **ConfigModal** | 3-tab runtime config editor (Sheet Names, Email, Pull) with edit/confirm/discard |
-| **ActiveInterviewsModal** | Quick modal view of active interviews without leaving dashboard |
-
-### Welcome Day Components
-
-| Component | Description |
-|---|---|
-| **Sidebar** | Tab navigation for Welcome Day sections |
-| **StatsCards** | Stats — total, checked, attended, payment breakdown, QR count |
-| **CommitteeBreakdown** | Committee distribution with drill-down |
-| **CommitteeStats** | Single committee stats panel |
-| **CommitteeMembersList** | Committee member table with status badges |
-| **SearchPanel** | Attendee search by name/email/phone/ticket |
-| **AllMembersList** | Full attendee list (ChairMan only) — sortable, filterable by committee and payment method |
-| **EmailPanel** | Welcome Day confirmation email panel — send test, send unsent, send specific |
-| **ValidationPanel** | Data validation results display |
-| **AttendancePanel** | QR camera scanner (html5-qrcode) + manual ID input, attendee confirmation before marking |
-| **QRCodePanel** | Generate ticket IDs + QR images, download all as ZIP |
-| **PullPanel** | Pull from Google Forms with result display |
-
-### Shared Components
-
-| Component | Description |
-|---|---|
-| **ToastProvider** | React context with `useToast()` hook — success (green), error (red), warning (amber), info (blue) |
-| **LoadingSpinner** | Full-page spinner with IEEE logo, dual spin animation, bouncing dots |
-| **Footer** | App footer with credits and external links |
-
-### Email Templates
-
-| Template | Used For |
-|---|---|
-| `interview_invitation.html` | Interview schedule invitation |
-| `accepted_board.html` | Board-level acceptance |
-| `accepted_committee.html` | Committee-level acceptance (with WhatsApp link) |
-| `rejected_board.html` | Board-level rejection |
-| `rejected_committee.html` | Committee-level rejection |
-| `welcome_day_confirmation.html` | Welcome Day confirmation with inline QR code |
-| `WhatsAppGroup.csv` | Committee → WhatsApp group invite link mapping |
+### Welcome Day
+- `GET /api/Welcome-Day/attendees/[id]` — Retrieve attendee profile
+- `PATCH /api/Welcome-Day/attendees/[id]` — Update attendee profile
+- `GET /api/Welcome-Day/attendees/active` — Full attendee directory
+- `GET /api/Welcome-Day/attendees/search` — Search attendees
+- `GET /api/Welcome-Day/attendees/stats` — Event attendance metrics
+- `POST /api/Welcome-Day/email/send/[id]` — Send confirmation email with QR
+- `POST /api/Welcome-Day/email/send-unsent` — Batch send confirmations
+- `POST /api/Welcome-Day/qrcode/generate` — Generate QR codes & ticket IDs
+- `GET /api/Welcome-Day/qrcode/download` — Download QR codes as ZIP
+- `POST /api/Welcome-Day/attendance/scan` — QR scan check-in
+- `POST /api/Welcome-Day/attendance/mark` — Manual attendee check-in
+- `POST /api/Welcome-Day/pull` — Ingest Welcome Day form records
+- `GET /api/Welcome-Day/validation` — Run attendee validation suite
 
 ---
 
@@ -404,158 +234,99 @@
 
 | Layer | Technology |
 |---|---|
-| Framework | [Next.js 16](https://nextjs.org/) (App Router, Turbopack) |
-| Language | [TypeScript 5](https://www.typescriptlang.org/) |
-| UI | [React 19](https://react.dev/), [Ant Design 5](https://ant.design/), [Tailwind CSS 4](https://tailwindcss.com/), [Framer Motion](https://www.framer.com/motion/) |
-| Database | [Google Sheets API v4](https://developers.google.com/sheets/api) (via `googleapis`) |
-| Auth | JWT ([jsonwebtoken](https://github.com/auth0/node-jsonwebtoken)) + [bcryptjs](https://github.com/nicolo-ribaudo/bcrypt-edge) |
-| Email | [Nodemailer](https://nodemailer.com/) (SMTP / Gmail) |
-| QR Codes | [qrcode](https://github.com/soldair/node-qrcode), [html5-qrcode](https://github.com/nicolo-ribaudo/html5-qrcode) |
-| Linting | [ESLint 9](https://eslint.org/) (flat config) + [Prettier](https://prettier.io/) |
+| **Framework** | [Next.js 16 (Turbopack, App Router)](https://nextjs.org/) |
+| **UI & Styling** | [React 19](https://react.dev/), [Ant Design 5](https://ant.design/), [Tailwind CSS 4](https://tailwindcss.com/) |
+| **Language** | [TypeScript 5](https://www.typescriptlang.org/) |
+| **Package Manager** | [pnpm 11](https://pnpm.io/) |
+| **Database** | [Google Sheets API v4](https://developers.google.com/sheets/api) via `googleapis` |
+| **Auth** | [jsonwebtoken](https://github.com/auth0/node-jsonwebtoken) + [bcryptjs](https://github.com/dcodeIO/bcrypt.js) |
+| **Email** | [Nodemailer 9](https://nodemailer.com/) |
+| **QR Engine** | [qrcode](https://github.com/soldair/node-qrcode) & [html5-qrcode](https://github.com/scanapp-org/html5-qrcode) |
+| **Code Quality** | [ESLint 9](https://eslint.org/) & [Prettier](https://prettier.io/) |
 
 ---
 
 ## Project Structure
 
 ```
-IEEE-KSB-CRM-Public-Version/
-├── .env                         # Secrets (never committed)
-├── .env.example                 # Template for .env
-├── templates/                   # HTML email templates
-│   ├── interview_invitation.html
-│   ├── accepted_board.html
-│   ├── accepted_committee.html
-│   ├── rejected_board.html
-│   ├── rejected_committee.html
-│   └── welcome_day_confirmation.html
-├── public/                      # Static assets (QR codes, etc.)
+IEEE-CRM/
+├── .env.example                 # Environment variables template
+├── pnpm-workspace.yaml          # pnpm workspace configuration
+├── pnpm-lock.yaml               # pnpm lockfile
+├── package.json                 # Project dependencies & scripts
+├── public/                      # Static assets & logos
+│   ├── Logo/Logo2.png           # IEEE KSB Brand Logo
+│   └── favicon.ico              # Browser icon
 ├── src/
 │   ├── app/
-│   │   ├── page.tsx             # Home / season selection
-│   │   ├── login/               # Login page
-│   │   ├── interviews/          # Interview dashboard & member detail
-│   │   ├── Welcome-Day/         # Welcome-Day dashboard & member detail
-│   │   └── api/                 # Route handlers (REST API)
-│   │       ├── auth/            # login · logout · me
-│   │       ├── config/          # GET/PUT runtime config
-│   │       ├── interviews/      # members · committee · email · schedule · pull · validation
-│   │       └── Welcome-Day/     # attendees · committee · email · qrcode · pull · validation
-│   ├── components/              # Shared UI components
-│   └── lib/                     # Server utilities
-│       ├── auth.ts              # JWT helpers
-│       ├── config.ts            # Runtime config (Google Sheets _Config!A1)
-│       ├── email.ts             # Nodemailer transporter
-│       ├── members.ts           # Interview business logic
-│       ├── welcomeDay.ts        # Welcome-Day business logic
-│       ├── validation.ts        # Duplicate / mismatch checks
-│       └── sheets/              # Google Sheets CRUD
-│           ├── base.ts          # Auth, read, write, expand
-│           ├── interview.ts     # Interview column mapping
-│           ├── welcomeDay.ts    # Welcome-Day column mapping
-│           └── Users.ts         # User accounts
-└── ...
+│   │   ├── layout.tsx           # Root layout with SEO & Schema.org JSON-LD
+│   │   ├── page.tsx             # Home & Season Selector
+│   │   ├── login/               # Authentication Portal
+│   │   ├── interviews/          # Interview Dashboard & Applicant Profiling
+│   │   ├── Welcome-Day/         # Welcome Day Operations & QR Scanner
+│   │   └── api/                 # 44 REST API Serverless Endpoints
+│   ├── components/              # Reusable UI & Schema Components
+│   │   ├── Footer.tsx           # Enterprise Footer
+│   │   ├── StructuredData.tsx   # Schema.org JSON-LD Graph
+│   │   ├── LoadingSpinner.tsx   # Animated Loader
+│   │   └── ToastProvider.tsx    # Toast Notifications
+│   ├── lib/                     # Server Utilities & Google Sheets Layer
+│   │   ├── auth.ts              # JWT & Session Validation
+│   │   ├── config.ts            # Dynamic Runtime Config
+│   │   ├── email.ts             # Nodemailer Transporter
+│   │   ├── members.ts           # Interview Business Logic
+│   │   ├── welcomeDay.ts        # Welcome Day Business Logic
+│   │   └── sheets/              # Typed Google Sheets API Wrappers
+│   └── styles/                  # Tailwind CSS & Design System
+└── templates/                   # Responsive HTML Email Templates
 ```
 
 ---
 
-## Prerequisites
-
-| Tool | Version |
-|---|---|
-| **Node.js** | ≥ 18.18 (LTS recommended) |
-| **npm** | ≥ 9 |
-| **Google Cloud** service account | With Sheets API enabled |
-| **Gmail account** (optional) | For email sending (with App Password) |
-
----
-
-## Getting Started
+## Getting Started with pnpm
 
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/Ahmedfahmy8308/IEEE-KSB-CRM-Public-Version.git
-cd IEEE-KSB-CRM-Public-Version
+git clone https://github.com/Ahmedfahmy8308/IEEE-CRM.git
+cd IEEE-CRM
 ```
 
-### 2. Install dependencies
+### 2. Install dependencies via pnpm
 
 ```bash
-npm install
+pnpm install
 ```
 
-### 3. Set up Google Sheets
-
-1. Go to [Google Cloud Console](https://console.cloud.google.com/) and create a project (or use an existing one).
-2. Enable the **Google Sheets API**.
-3. Create a **Service Account** and download the JSON key file.
-4. Create a Google Spreadsheet and share it with the service account email (`...@...iam.gserviceaccount.com`) as **Editor**.
-5. Note the **Spreadsheet ID** from the URL:
-   ```
-   https://docs.google.com/spreadsheets/d/<SPREADSHEET_ID>/edit
-   ```
-
-### 4. Configure environment variables
+### 3. Configure environment variables
 
 ```bash
 cp .env.example .env
 ```
 
-Open `.env` and fill in your values:
+Fill in your `.env` file:
 
-| Variable | Description |
-|---|---|
-| `SHEET_ID` | Main Google Spreadsheet ID |
-| `GOOGLE_SERVICE_ACCOUNT_KEY_PATH` | Path to your service-account JSON key (local dev) |
-| `GOOGLE_SERVICE_ACCOUNT_EMAIL` | Service account email (production) |
-| `GOOGLE_PRIVATE_KEY` | Service account private key (production) |
-| `JWT_SECRET` | Random secret for signing auth tokens |
-| `SMTP_HOST` | SMTP server hostname (default: `smtp.gmail.com`) |
-| `SMTP_PORT` | SMTP port (default: `465`) |
-| `SMTP_SECURE` | Use TLS (default: `true`) |
-| `SMTP_USER` | Sender email address |
-| `SMTP_PASS` | Email password / Gmail App Password |
-| `EMAIL_FROM` | From header (e.g. `IEEE KSB <you@gmail.com>`) |
+```env
+SHEET_ID=your_google_spreadsheet_id
+GOOGLE_SERVICE_ACCOUNT_KEY_PATH=./service-account.json
+# Or for Vercel/Production deployment:
+# GOOGLE_SERVICE_ACCOUNT_EMAIL=...
+# GOOGLE_PRIVATE_KEY=...
 
-Generate a secure JWT secret:
-
-```bash
-node -e "console.log(require('crypto').randomBytes(128).toString('base64'))"
+JWT_SECRET=your_secure_random_jwt_secret
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=465
+SMTP_SECURE=true
+SMTP_USER=your_email@gmail.com
+SMTP_PASS=your_gmail_app_password
+EMAIL_FROM="IEEE KSB <your_email@gmail.com>"
+NEXT_PUBLIC_APP_URL=https://crm.ieee-ksb.org
 ```
 
-### 5. Configure runtime settings
-
-Runtime config (sheet names, email batching, pull sources) is stored in Google Sheets at `_Config!A1` — **no config file on disk**. The `_Config` tab is auto-created with defaults on first run. The **Chairman** role can edit these settings live from the in-app Config modal.
-
-Default config structure:
-
-```jsonc
-{
-  "sheetNames": {
-    "interview_s1": "Interview_Season_1",
-    "interview_s2": "Interview_Season_2",
-    "welcome_day_s1": "Welcome_Day_Season_1",
-    "welcome_day_s2": "Welcome_Day_Season_2",
-    "users": "Users"
-  },
-  "email": {
-    "batchSize": 21,
-    "batchDelayMs": 2000,
-    "testEmail": ""
-  },
-  "pull": {
-    "interview_s1":   { "active": false, "originSheetId": "", "originTabName": "", "lastPullTimestamp": "" },
-    "interview_s2":   { "active": false, "originSheetId": "", "originTabName": "", "lastPullTimestamp": "" },
-    "welcome_day_s1": { "active": false, "originSheetId": "", "originTabName": "", "lastPullTimestamp": "" },
-    "welcome_day_s2": { "active": false, "originSheetId": "", "originTabName": "", "lastPullTimestamp": "" }
-  }
-}
-```
-
-### 6. Run the development server
+### 4. Run the development server
 
 ```bash
-npm run dev
+pnpm dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
@@ -566,72 +337,26 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 | Command | Description |
 |---|---|
-| `npm run dev` | Start dev server with Turbopack |
-| `npm run build` | Production build |
-| `npm run start` | Start production server |
-| `npm run lint` | Run ESLint |
-| `npm run format` | Format all source files with Prettier |
-| `npm run format:check` | Check formatting (CI-friendly) |
+| `pnpm dev` | Start development server with Turbopack |
+| `pnpm build` | Compile and verify production build |
+| `pnpm start` | Run production server |
+| `pnpm format` | Auto-format all code with Prettier |
+| `pnpm format:check` | Check code formatting |
+| `pnpm lint` | Run ESLint static analysis |
 
 ---
 
-## Environment Variables
+## Authors & Acknowledgments
 
-All secrets live in `.env` (never committed). See [`.env.example`](.env.example) for the full template.
-
-| Variable | Required | Default | Notes |
-|---|---|---|---|
-| `SHEET_ID` | **Yes** | — | Main spreadsheet ID |
-| `GOOGLE_SERVICE_ACCOUNT_KEY_PATH` | Local dev | — | Path to JSON key file |
-| `GOOGLE_SERVICE_ACCOUNT_EMAIL` | Production | — | Inline service account email |
-| `GOOGLE_PRIVATE_KEY` | Production | — | Inline private key |
-| `JWT_SECRET` | **Yes** | — | ≥ 128 bytes, base64 |
-| `SMTP_HOST` | No | `smtp.gmail.com` | |
-| `SMTP_PORT` | No | `465` | |
-| `SMTP_SECURE` | No | `true` | |
-| `SMTP_USER` | **Yes** | — | Sender email |
-| `SMTP_PASS` | **Yes** | — | App password |
-| `EMAIL_FROM` | No | `IEEE KSB <SMTP_USER>` | |
-
----
-
-## Runtime Config (Google Sheets `_Config!A1`)
-
-Unlike `.env`, the runtime config contains **non-secret** settings that can be changed at runtime without redeploying. It is stored as JSON in the `_Config!A1` cell of the main Google Spreadsheet — works identically on local dev and Vercel with no filesystem dependency.
-
-- **Sheet names** — map each season / module to a tab in the spreadsheet.
-- **Email settings** — batch size, delay between batches, test recipient.
-- **Pull sources** — toggle & configure which external Google Form response sheets to import from.
-- **Pull timestamps** — `lastPullTimestamp` per season, auto-saved after each pull to prevent re-importing deleted records.
-
-The Chairman can edit these from the **⚙ Config** button in the sidebar. The `_Config` tab is auto-created with sensible defaults on first run.
-
----
-
-## Deployment
-
-### Vercel (recommended)
-
-1. Push the repo to GitHub.
-2. Import the project in [Vercel](https://vercel.com/).
-3. Add all required environment variables in the Vercel dashboard.
-4. Use `GOOGLE_SERVICE_ACCOUNT_EMAIL` + `GOOGLE_PRIVATE_KEY` (not the key file path).
-5. Deploy — Vercel auto-detects Next.js.
-
-### Self-hosted
-
-```bash
-npm run build
-npm run start
-```
-
-The server starts on port `3000` by default. Use a reverse proxy (nginx / caddy) for production.
+- **Lead Software Architect & Engineer**: [Ahmed Fahmy](https://ahmed-fahmy.engineer) ([@Ahmedfahmy8308](https://github.com/Ahmedfahmy8308))
+- **Engineering Agency**: [UFUQ Tech](https://ufuq-tech.com)
+- **Organization**: [IEEE Kafr El-Sheikh Student Branch (IEEE KSB)](https://ieee-ksb.org)
+- **Parent Institution**: [IEEE (Institute of Electrical and Electronics Engineers)](https://www.ieee.org)
 
 ---
 
 ## License
 
-Copyright © 2025 [Ahmed Fahmy](https://github.com/Ahmedfahmy8308)
-Developed at **Ufuq.tech**
+Copyright © 2026 **IEEE KSB** & **Ahmed Fahmy**. Engineered at **[UFUQ Tech](https://ufuq-tech.com)**.
 
-This project is licensed under the [MIT License](LICENSE). You are free to use, modify, and distribute this software. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the [MIT License](LICENSE).
