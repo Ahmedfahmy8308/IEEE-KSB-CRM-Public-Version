@@ -1,6 +1,5 @@
 // Copyright (c) 2025 Ahmed Fahmy
-// Developed at Ufuq.tech
-// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// Developed at Ufuq-tech.com// Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 /**
  * Member Operations Module
@@ -10,6 +9,12 @@
 import type { ApplicantRow } from './sheets';
 import { readAllRows, findRowById, updateRow, batchUpdateRows } from './sheets';
 import { INTERVIEW_STATE, INTERVIEW_MODE } from './constants';
+import {
+  appendSheetLogEntry,
+  buildSheetUpdateLogEntry,
+  collectSheetFieldChanges,
+  type SheetLogActorInput,
+} from './sheets/logging';
 
 /**
  * Get member by ID
@@ -73,7 +78,7 @@ export async function searchMembers(query: string, season?: string): Promise<App
 export async function updateMember(
   id: string,
   updates: Partial<ApplicantRow>,
-  actor: string,
+  actor: SheetLogActorInput,
   season?: string
 ): Promise<ApplicantRow | null> {
   const member = await findRowById(id, season);
@@ -82,34 +87,24 @@ export async function updateMember(
     return null;
   }
 
-  // Build log entry
-  const timestamp = new Date().toISOString();
-  const changes: string[] = [];
+  const safeUpdates: Partial<ApplicantRow> = { ...updates };
+  delete safeUpdates.rowIndex;
+  delete safeUpdates.log;
 
-  // Track what changed
-  for (const [key, newValue] of Object.entries(updates)) {
-    if (key === 'rowIndex' || key === 'log') continue;
-
-    const oldValue = member[key as keyof ApplicantRow];
-    if (oldValue !== newValue) {
-      changes.push(`${key} from "${oldValue}" to "${newValue}"`);
-    }
-  }
-
-  // Create log entry
-  let logEntry = '';
-  if (changes.length > 0) {
-    logEntry = `${timestamp} | ${actor} | updated: ${changes.join('; ')}`;
-  }
-
-  // Append to existing log
-  const existingLog = member.log || '';
-  const newLog = existingLog ? `${existingLog}\n${logEntry}` : logEntry;
+  const changes = collectSheetFieldChanges(member, safeUpdates, {
+    ignoreFields: ['rowIndex', 'log'],
+  });
+  const logEntry = buildSheetUpdateLogEntry({
+    actor,
+    changes,
+    action: 'updated',
+  });
+  const newLog = appendSheetLogEntry(member.log, logEntry);
 
   // Merge updates
   const updatedMember: ApplicantRow = {
     ...member,
-    ...updates,
+    ...safeUpdates,
     log: newLog,
   };
 
@@ -139,7 +134,7 @@ export async function updateMember(
  */
 export async function batchUpdateMembers(
   memberUpdates: Array<{ id: string; updates: Partial<ApplicantRow> }>,
-  actor: string,
+  actor: SheetLogActorInput,
   season?: string
 ): Promise<Array<ApplicantRow | null>> {
   // Read all members ONCE (single API call)
@@ -153,7 +148,6 @@ export async function batchUpdateMembers(
     }
   }
 
-  const timestamp = new Date().toISOString();
   const batchUpdates: Array<{ rowIndex: number; data: ApplicantRow }> = [];
   const results: Array<ApplicantRow | null> = [];
 
@@ -166,31 +160,24 @@ export async function batchUpdateMembers(
       continue;
     }
 
-    // Build log entry
-    const changes: string[] = [];
-    for (const [key, newValue] of Object.entries(updates)) {
-      if (key === 'rowIndex' || key === 'log') continue;
+    const safeUpdates: Partial<ApplicantRow> = { ...updates };
+    delete safeUpdates.rowIndex;
+    delete safeUpdates.log;
 
-      const oldValue = member[key as keyof ApplicantRow];
-      if (oldValue !== newValue) {
-        changes.push(`${key} from "${oldValue}" to "${newValue}"`);
-      }
-    }
-
-    // Create log entry
-    let logEntry = '';
-    if (changes.length > 0) {
-      logEntry = `${timestamp} | ${actor} | updated: ${changes.join('; ')}`;
-    }
-
-    // Append to existing log
-    const existingLog = member.log || '';
-    const newLog = existingLog ? `${existingLog}\n${logEntry}` : logEntry;
+    const changes = collectSheetFieldChanges(member, safeUpdates, {
+      ignoreFields: ['rowIndex', 'log'],
+    });
+    const logEntry = buildSheetUpdateLogEntry({
+      actor,
+      changes,
+      action: 'updated',
+    });
+    const newLog = appendSheetLogEntry(member.log, logEntry);
 
     // Merge updates
     const updatedMember: ApplicantRow = {
       ...member,
-      ...updates,
+      ...safeUpdates,
       log: newLog,
     };
 
@@ -452,7 +439,7 @@ export async function getMembersWithoutIds(season?: string): Promise<ApplicantRo
 export async function updateMemberByRowIndex(
   rowIndex: number,
   updates: Partial<ApplicantRow>,
-  actor: string,
+  actor: SheetLogActorInput,
   season?: string
 ): Promise<ApplicantRow | null> {
   const members = await readAllRows(season);
@@ -462,34 +449,24 @@ export async function updateMemberByRowIndex(
     return null;
   }
 
-  // Build log entry
-  const timestamp = new Date().toISOString();
-  const changes: string[] = [];
+  const safeUpdates: Partial<ApplicantRow> = { ...updates };
+  delete safeUpdates.rowIndex;
+  delete safeUpdates.log;
 
-  // Track what changed
-  for (const [key, newValue] of Object.entries(updates)) {
-    if (key === 'rowIndex' || key === 'log') continue;
-
-    const oldValue = member[key as keyof ApplicantRow];
-    if (oldValue !== newValue) {
-      changes.push(`${key} from "${oldValue}" to "${newValue}"`);
-    }
-  }
-
-  // Create log entry
-  let logEntry = '';
-  if (changes.length > 0) {
-    logEntry = `${timestamp} | ${actor} | updated: ${changes.join('; ')}`;
-  }
-
-  // Append to existing log
-  const existingLog = member.log || '';
-  const newLog = existingLog ? `${existingLog}\n${logEntry}` : logEntry;
+  const changes = collectSheetFieldChanges(member, safeUpdates, {
+    ignoreFields: ['rowIndex', 'log'],
+  });
+  const logEntry = buildSheetUpdateLogEntry({
+    actor,
+    changes,
+    action: 'updated',
+  });
+  const newLog = appendSheetLogEntry(member.log, logEntry);
 
   // Merge updates
   const updatedMember: ApplicantRow = {
     ...member,
-    ...updates,
+    ...safeUpdates,
     log: newLog,
   };
 
@@ -504,14 +481,12 @@ export async function updateMemberByRowIndex(
  * Uses batch API to avoid rate limiting
  */
 export async function batchUpdateMembersByRowIndex(
-  updates: Array<{ rowIndex: number; updates: Partial<ApplicantRow>; actor: string }>,
+  updates: Array<{ rowIndex: number; updates: Partial<ApplicantRow>; actor: SheetLogActorInput }>,
   season?: string
 ): Promise<number> {
   if (updates.length === 0) return 0;
 
   const members = await readAllRows(season);
-  const timestamp = new Date().toISOString();
-
   const batchUpdates: Array<{ rowIndex: number; data: ApplicantRow }> = [];
 
   for (const { rowIndex, updates: memberUpdates, actor } of updates) {
@@ -522,27 +497,23 @@ export async function batchUpdateMembersByRowIndex(
       continue;
     }
 
-    const changes: string[] = [];
-    for (const [key, newValue] of Object.entries(memberUpdates)) {
-      if (key === 'rowIndex' || key === 'log') continue;
+    const safeUpdates: Partial<ApplicantRow> = { ...memberUpdates };
+    delete safeUpdates.rowIndex;
+    delete safeUpdates.log;
 
-      const oldValue = member[key as keyof ApplicantRow];
-      if (oldValue !== newValue) {
-        changes.push(`${key} from "${oldValue}" to "${newValue}"`);
-      }
-    }
-
-    let logEntry = '';
-    if (changes.length > 0) {
-      logEntry = `${timestamp} | ${actor} | updated: ${changes.join('; ')}`;
-    }
-
-    const existingLog = member.log || '';
-    const newLog = existingLog ? `${existingLog}\n${logEntry}` : logEntry;
+    const changes = collectSheetFieldChanges(member, safeUpdates, {
+      ignoreFields: ['rowIndex', 'log'],
+    });
+    const logEntry = buildSheetUpdateLogEntry({
+      actor,
+      changes,
+      action: 'updated',
+    });
+    const newLog = appendSheetLogEntry(member.log, logEntry);
 
     const updatedMember: ApplicantRow = {
       ...member,
-      ...memberUpdates,
+      ...safeUpdates,
       log: newLog,
     };
 

@@ -1,6 +1,5 @@
 // Copyright (c) 2025 Ahmed Fahmy
-// Developed at Ufuq.tech
-// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// Developed at Ufuq-tech.com// Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 /**
  * Email Module
@@ -155,11 +154,25 @@ export async function sendBatchEmails(
 ): Promise<{
   success: number;
   failed: number;
-  results: Array<{ id: string; success: boolean; email: string; name: string; committee: string; error?: string }>;
+  results: Array<{
+    id: string;
+    success: boolean;
+    email: string;
+    name: string;
+    committee: string;
+    error?: string;
+  }>;
 }> {
   let successCount = 0;
   let failedCount = 0;
-  const results: Array<{ id: string; success: boolean; email: string; name: string; committee: string; error?: string }> = [];
+  const results: Array<{
+    id: string;
+    success: boolean;
+    email: string;
+    name: string;
+    committee: string;
+    error?: string;
+  }> = [];
 
   console.log(`📧 Starting email batch send: ${applicants.length} total emails`);
   const EMAIL_BATCH_SIZE = getEmailBatchSize();

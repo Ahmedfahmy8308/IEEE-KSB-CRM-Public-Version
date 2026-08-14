@@ -1,6 +1,5 @@
 // Copyright (c) 2025 Ahmed Fahmy
-// Developed at Ufuq.tech
-// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// Developed at Ufuq-tech.com// Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 'use client';
 
@@ -184,10 +183,17 @@ export default function MemberDetailPage() {
   }, [params.id, season, router]);
 
   useEffect(() => {
+    let isMounted = true;
     if (params.id) {
-      fetchMember();
-      fetchUserRole();
+      void (async () => {
+        if (!isMounted) return;
+        await fetchMember();
+        await fetchUserRole();
+      })();
     }
+    return () => {
+      isMounted = false;
+    };
   }, [params.id, fetchMember, fetchUserRole]);
 
   // Intersection Observer to update active section on scroll (desktop only)
@@ -850,12 +856,8 @@ export default function MemberDetailPage() {
                           disabled={!isEditing || !canEditField('interviewMode')}
                           className="w-full"
                         >
-                          <Option value={INTERVIEW_MODE.PHYSICAL}>
-                            🏢 Physical
-                          </Option>
-                          <Option value={INTERVIEW_MODE.ONLINE}>
-                            💻 Online
-                          </Option>
+                          <Option value={INTERVIEW_MODE.PHYSICAL}>🏢 Physical</Option>
+                          <Option value={INTERVIEW_MODE.ONLINE}>💻 Online</Option>
                         </Select>
                       </div>
 

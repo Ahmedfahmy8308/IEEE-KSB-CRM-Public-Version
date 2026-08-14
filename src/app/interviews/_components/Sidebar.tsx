@@ -1,12 +1,27 @@
 // Copyright (c) 2025 Ahmed Fahmy
-// Developed at Ufuq.tech
-// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// Developed at Ufuq-tech.com// Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 'use client';
 
 import { useState } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import {
+  LayoutDashboard,
+  Search,
+  Radio,
+  Calendar,
+  Mail,
+  CheckCircle2,
+  Database,
+  Settings,
+  Home,
+  LogOut,
+  X,
+  Menu,
+  Lock,
+  Send,
+} from 'lucide-react';
 import ConfigModal from './ConfigModal';
 
 interface SidebarProps {
@@ -40,148 +55,94 @@ export default function Sidebar({ user, activeTab, onTabChange, onLogout, season
 
   return (
     <>
-      {/* Mobile Menu Button */}
+      {/* Mobile Menu Trigger */}
       <button
         onClick={() => setIsOpen(true)}
-        className={`lg:hidden fixed top-4 left-4 z-50 bg-white text-gray-700 p-2.5 rounded-xl shadow-lg hover:shadow-xl transition-all border border-gray-200 ${
-          isOpen ? 'hidden' : 'block'
+        className={`lg:hidden fixed top-3.5 left-3.5 z-40 bg-white text-slate-700 p-2.5 min-w-[44px] min-h-[44px] rounded-xl shadow-md border border-slate-200/90 active:scale-95 transition-all flex items-center justify-center cursor-pointer ${
+          isOpen ? 'hidden' : 'flex'
         }`}
-        aria-label="Open menu"
+        aria-label="Open navigation menu"
       >
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M4 6h16M4 12h16M4 18h16"
-          />
-        </svg>
+        <Menu className="w-5 h-5 text-slate-800" />
       </button>
 
-      {/* Overlay for mobile */}
+      {/* Mobile Backdrop Overlay */}
       {isOpen && (
         <div
-          className="lg:hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-30"
+          className="lg:hidden fixed inset-0 bg-slate-950/50 backdrop-blur-xs z-40 transition-opacity"
           onClick={() => setIsOpen(false)}
-        ></div>
+        />
       )}
 
-      {/* Sidebar */}
+      {/* Navigation Sidebar */}
       <aside
         className={`
-          fixed lg:fixed top-0 left-0 h-screen
-          bg-white border-r border-gray-200
-          shadow-xl lg:shadow-none z-40
+          fixed top-0 left-0 h-screen
+          bg-white border-r border-slate-200/90
+          shadow-2xl lg:shadow-none z-50
           transition-transform duration-300 ease-in-out
           ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-          w-64 overflow-y-auto flex flex-col flex-shrink-0
+          w-64 overflow-y-auto flex flex-col flex-shrink-0 select-none
         `}
       >
-        {/* Logo Section */}
-        <div className="p-6 border-b border-gray-100">
-          {/* Logo and Title for Desktop */}
-          <div className="hidden lg:flex flex-col items-center justify-center mb-6 w-full">
-            <div className="w-full flex justify-center">
-              <div className=" rounded-xl p-2.5  w-full flex justify-center">
-                <Image
-                  src="/Logo/Logo.png"
-                  alt="IEEE KSB"
-                  width={160}
-                  height={80}
-                  className="object-contain w-full h-auto"
-                />
-              </div>
+        {/* Brand Header */}
+        <div className="p-5 border-b border-slate-100 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="relative w-32 h-9">
+              <Image src="/Logo/Logo.png" alt="IEEE KSB" fill className="object-contain" priority />
             </div>
-            {/* <div className="mt-4 text-center w-full">
-              <h1 className="text-lg font-bold text-gray-900">IEEE KSB</h1>
-              <p className="text-xs text-gray-500">Interview System</p>
-            </div> */}
           </div>
 
-          {/* Logo and Title for Mobile (unchanged) */}
-          <div className="flex lg:hidden items-center justify-between mb-6">
-            <div className="flex items-center gap-3">
-              <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-2.5 shadow-sm">
-                <Image
-                  src="/Logo/Logo2.png"
-                  alt="IEEE KSB"
-                  width={36}
-                  height={36}
-                  className="object-contain"
-                />
-              </div>
-              <div>
-                <h1 className="text-lg font-bold text-gray-900">IEEE KSB</h1>
-                <p className="text-xs text-gray-500">Interview System</p>
-              </div>
-            </div>
-            {/* Mobile Close Button */}
-            <button
-              onClick={() => setIsOpen(false)}
-              className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
-              aria-label="Close menu"
-            >
-              <svg
-                className="w-5 h-5 text-gray-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </div>
+          <button
+            onClick={() => setIsOpen(false)}
+            className="lg:hidden p-2 min-w-[40px] min-h-[40px] rounded-xl text-slate-400 hover:text-slate-700 hover:bg-slate-100 flex items-center justify-center cursor-pointer"
+            aria-label="Close menu"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
 
-          {/* User Info - Mobile Only */}
-          <div className="lg:hidden mt-4 pt-4 border-t border-gray-100">
-            <div className="flex items-center gap-3 px-3 py-2 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg">
-              <div className="flex-shrink-0">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-semibold shadow-md">
-                  {user.name.charAt(0).toUpperCase()}
-                </div>
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-gray-900 truncate">{user.name}</p>
-                <p className="text-xs text-blue-600 font-medium">{user.role}</p>
-                {user.committee && (
-                  <p className="text-xs text-gray-500 truncate">{user.committee}</p>
+        {/* User Card */}
+        <div className="px-4 py-3 bg-slate-50/80 border-b border-slate-100">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#00629B] to-[#004879] text-white flex items-center justify-center font-bold text-sm shadow-xs flex-shrink-0">
+              {user.name.charAt(0).toUpperCase()}
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-xs font-bold text-slate-900 truncate leading-none">{user.name}</p>
+              <div className="flex items-center gap-1.5 mt-1">
+                <span className="text-[10px] font-semibold text-[#00629B] bg-blue-50 px-1.5 py-0.5 rounded border border-blue-200/50">
+                  {user.role}
+                </span>
+                {season && (
+                  <span className="text-[10px] font-semibold text-slate-500 bg-slate-200/60 px-1.5 py-0.5 rounded">
+                    {season}
+                  </span>
                 )}
               </div>
             </div>
           </div>
         </div>
 
-        {/* Navigation */}
-        <nav className="flex-1 p-4 space-y-1">
+        {/* Navigation Items */}
+        <nav className="flex-1 p-3 space-y-1 overflow-y-auto scrollbar-thin">
+          <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-3 py-1.5">
+            General
+          </div>
+
           <button
             onClick={() => {
               onTabChange('dashboard');
               setIsOpen(false);
             }}
-            className={`
-              w-full flex items-center gap-3 px-4 py-3 rounded-xl
-              transition-all duration-200 group
-              ${
-                activeTab === 'dashboard'
-                  ? 'bg-[#064692] text-white shadow-lg shadow-blue-500/30'
-                  : 'text-gray-700 hover:bg-gray-100'
-              }
-            `}
+            className={`w-full flex items-center gap-3 px-3.5 py-2.5 min-h-[42px] rounded-xl text-xs font-semibold transition-all duration-150 cursor-pointer ${
+              activeTab === 'dashboard'
+                ? 'bg-[#00629B] text-white shadow-sm shadow-[#00629B]/30'
+                : 'text-slate-700 hover:bg-slate-100/90'
+            }`}
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-              />
-            </svg>
-            <span className="font-medium">Dashboard</span>
+            <LayoutDashboard className="w-4 h-4 flex-shrink-0" />
+            <span>Dashboard Overview</span>
           </button>
 
           <button
@@ -189,25 +150,14 @@ export default function Sidebar({ user, activeTab, onTabChange, onLogout, season
               onTabChange('search');
               setIsOpen(false);
             }}
-            className={`
-              w-full flex items-center gap-3 px-4 py-3 rounded-xl
-              transition-all duration-200 group
-              ${
-                activeTab === 'search'
-                  ? 'bg-[#064692] text-white shadow-lg shadow-blue-500/30'
-                  : 'text-gray-700 hover:bg-gray-100'
-              }
-            `}
+            className={`w-full flex items-center gap-3 px-3.5 py-2.5 min-h-[42px] rounded-xl text-xs font-semibold transition-all duration-150 cursor-pointer ${
+              activeTab === 'search'
+                ? 'bg-[#00629B] text-white shadow-sm shadow-[#00629B]/30'
+                : 'text-slate-700 hover:bg-slate-100/90'
+            }`}
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
-            <span className="font-medium">Search Members</span>
+            <Search className="w-4 h-4 flex-shrink-0" />
+            <span>Search Applicants</span>
           </button>
 
           <button
@@ -215,56 +165,28 @@ export default function Sidebar({ user, activeTab, onTabChange, onLogout, season
               router.push(`/interviews/${season}/active-interviews`);
               setIsOpen(false);
             }}
-            className={`
-              w-full flex items-center gap-3 px-4 py-3 rounded-xl
-              transition-all duration-200 group
-              ${
-                activeTab === 'active-interviews'
-                  ? 'bg-[#064692] text-white shadow-lg shadow-blue-500/30'
-                  : 'text-gray-700 hover:bg-gray-100'
-              }
-            `}
+            className={`w-full flex items-center justify-between px-3.5 py-2.5 min-h-[42px] rounded-xl text-xs font-semibold transition-all duration-150 cursor-pointer ${
+              activeTab === 'active-interviews'
+                ? 'bg-[#00629B] text-white shadow-sm shadow-[#00629B]/30'
+                : 'text-slate-700 hover:bg-slate-100/90'
+            }`}
           >
-            <div className="relative">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                />
-              </svg>
-              {activeTab !== 'active-interviews' && (
-                <div className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-500 rounded-full animate-pulse"></div>
-              )}
+            <div className="flex items-center gap-3">
+              <Radio className="w-4 h-4 flex-shrink-0" />
+              <span>Active Interviews</span>
             </div>
-            <span className="font-medium">Active Interviews</span>
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
           </button>
 
-          {/* Chairman Tools - Visible to all, clickable only by Chairman */}
-          <div className="pt-4 mt-4 border-t border-gray-200">
-            <div className="flex items-center justify-between px-4 mb-3">
-              <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                Chairman Tools
-              </p>
-              {user.role !== 'ChairMan' && user.role !== 'highboard' && (
-                <svg
-                  className="w-4 h-4 text-gray-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-                  />
-                </svg>
-              )}
+          {/* Chairman / Highboard Tools */}
+          <div className="pt-4 mt-3 border-t border-slate-100">
+            <div className="flex items-center justify-between px-3 py-1.5 mb-1">
+              <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                Management Tools
+              </span>
+              {!canAccessTools && <Lock className="w-3 h-3 text-slate-400" />}
             </div>
 
-            {/* Schedule Management */}
             <button
               onClick={() => {
                 if (canAccessTools) {
@@ -273,26 +195,18 @@ export default function Sidebar({ user, activeTab, onTabChange, onLogout, season
                 }
               }}
               disabled={!canAccessTools}
-              className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 group text-sm ${
+              className={`w-full flex items-center gap-3 px-3.5 py-2.5 min-h-[42px] rounded-xl text-xs font-semibold transition-all duration-150 ${
                 canAccessTools
                   ? activeTab === 'schedule'
-                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30'
-                    : 'text-gray-700 hover:bg-gray-100 cursor-pointer'
-                  : 'text-gray-400 cursor-not-allowed opacity-60'
+                    ? 'bg-[#00629B] text-white shadow-sm shadow-[#00629B]/30 cursor-pointer'
+                    : 'text-slate-700 hover:bg-slate-100/90 cursor-pointer'
+                  : 'text-slate-400 opacity-60 cursor-not-allowed'
               }`}
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                />
-              </svg>
-              <span className="font-medium">Schedule</span>
+              <Calendar className="w-4 h-4 flex-shrink-0" />
+              <span>Schedule Manager</span>
             </button>
 
-            {/* Interview Email Management */}
             <button
               onClick={() => {
                 if (canAccessTools) {
@@ -301,26 +215,18 @@ export default function Sidebar({ user, activeTab, onTabChange, onLogout, season
                 }
               }}
               disabled={!canAccessTools}
-              className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 group text-sm ${
+              className={`w-full flex items-center gap-3 px-3.5 py-2.5 min-h-[42px] rounded-xl text-xs font-semibold transition-all duration-150 ${
                 canAccessTools
                   ? activeTab === 'email'
-                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30'
-                    : 'text-gray-700 hover:bg-gray-100 cursor-pointer'
-                  : 'text-gray-400 cursor-not-allowed opacity-60'
+                    ? 'bg-[#00629B] text-white shadow-sm shadow-[#00629B]/30 cursor-pointer'
+                    : 'text-slate-700 hover:bg-slate-100/90 cursor-pointer'
+                  : 'text-slate-400 opacity-60 cursor-not-allowed'
               }`}
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                />
-              </svg>
-              <span className="font-medium">Interview Emails</span>
+              <Mail className="w-4 h-4 flex-shrink-0" />
+              <span>Interview Invitations</span>
             </button>
 
-            {/* Approved Email Management */}
             <button
               onClick={() => {
                 if (canAccessTools) {
@@ -329,26 +235,18 @@ export default function Sidebar({ user, activeTab, onTabChange, onLogout, season
                 }
               }}
               disabled={!canAccessTools}
-              className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 group text-sm ${
+              className={`w-full flex items-center gap-3 px-3.5 py-2.5 min-h-[42px] rounded-xl text-xs font-semibold transition-all duration-150 ${
                 canAccessTools
                   ? activeTab === 'approved-email'
-                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30'
-                    : 'text-gray-700 hover:bg-gray-100 cursor-pointer'
-                  : 'text-gray-400 cursor-not-allowed opacity-60'
+                    ? 'bg-[#00629B] text-white shadow-sm shadow-[#00629B]/30 cursor-pointer'
+                    : 'text-slate-700 hover:bg-slate-100/90 cursor-pointer'
+                  : 'text-slate-400 opacity-60 cursor-not-allowed'
               }`}
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M3 19v-8.93a2 2 0 01.89-1.664l7-4.666a2 2 0 012.22 0l7 4.666A2 2 0 0121 10.07V19M3 19a2 2 0 002 2h14a2 2 0 002-2M3 19l6.75-4.5M21 19l-6.75-4.5M3 10l6.75 4.5M21 10l-6.75 4.5m0 0l-1.14.76a2 2 0 01-2.22 0l-1.14-.76"
-                />
-              </svg>
-              <span className="font-medium">Approval Emails</span>
+              <Send className="w-4 h-4 flex-shrink-0" />
+              <span>Accept / Reject Emails</span>
             </button>
 
-            {/* Validation */}
             <button
               onClick={() => {
                 if (canAccessTools) {
@@ -357,26 +255,18 @@ export default function Sidebar({ user, activeTab, onTabChange, onLogout, season
                 }
               }}
               disabled={!canAccessTools}
-              className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 group text-sm ${
+              className={`w-full flex items-center gap-3 px-3.5 py-2.5 min-h-[42px] rounded-xl text-xs font-semibold transition-all duration-150 ${
                 canAccessTools
                   ? activeTab === 'validation'
-                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30'
-                    : 'text-gray-700 hover:bg-gray-100 cursor-pointer'
-                  : 'text-gray-400 cursor-not-allowed opacity-60'
+                    ? 'bg-[#00629B] text-white shadow-sm shadow-[#00629B]/30 cursor-pointer'
+                    : 'text-slate-700 hover:bg-slate-100/90 cursor-pointer'
+                  : 'text-slate-400 opacity-60 cursor-not-allowed'
               }`}
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <span className="font-medium">Validation</span>
+              <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
+              <span>Data Validation</span>
             </button>
 
-            {/* Pull Records */}
             <button
               onClick={() => {
                 if (canAccessTools) {
@@ -385,104 +275,60 @@ export default function Sidebar({ user, activeTab, onTabChange, onLogout, season
                 }
               }}
               disabled={!canAccessTools}
-              className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 group text-sm ${
+              className={`w-full flex items-center gap-3 px-3.5 py-2.5 min-h-[42px] rounded-xl text-xs font-semibold transition-all duration-150 ${
                 canAccessTools
                   ? activeTab === 'pull'
-                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg shadow-blue-500/30'
-                    : 'text-gray-700 hover:bg-gray-100 cursor-pointer'
-                  : 'text-gray-400 cursor-not-allowed opacity-60'
+                    ? 'bg-[#00629B] text-white shadow-sm shadow-[#00629B]/30 cursor-pointer'
+                    : 'text-slate-700 hover:bg-slate-100/90 cursor-pointer'
+                  : 'text-slate-400 opacity-60 cursor-not-allowed'
               }`}
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                />
-              </svg>
-              <span className="font-medium">Pull Records</span>
+              <Database className="w-4 h-4 flex-shrink-0" />
+              <span>Pull from Form</span>
             </button>
 
-            {/* System Config */}
-            <button
-              onClick={() => {
-                if (canAccessTools) {
+            {user.role === 'ChairMan' && (
+              <button
+                onClick={() => {
                   setConfigOpen(true);
                   setIsOpen(false);
-                }
-              }}
-              disabled={!canAccessTools}
-              className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg transition-all duration-200 group text-sm ${
-                canAccessTools
-                  ? 'text-gray-700 hover:bg-gray-100 cursor-pointer'
-                  : 'text-gray-400 cursor-not-allowed opacity-60'
-              }`}
-            >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-              </svg>
-              <span className="font-medium">Config</span>
-            </button>
+                }}
+                className="w-full flex items-center gap-3 px-3.5 py-2.5 min-h-[42px] rounded-xl text-xs font-semibold text-slate-700 hover:bg-slate-100/90 transition-all duration-150 cursor-pointer"
+              >
+                <Settings className="w-4 h-4 flex-shrink-0 text-slate-500" />
+                <span>System Config</span>
+              </button>
+            )}
           </div>
         </nav>
 
-        {/* Home and Logout Buttons */}
-        <div className="p-4 border-t border-gray-200 bg-gray-50/50 space-y-2">
+        {/* Bottom Actions */}
+        <div className="p-3 border-t border-slate-200/80 bg-slate-50/70 space-y-2">
           <button
             onClick={() => router.push('/')}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg transition-all duration-200 font-medium group border border-blue-200"
+            className="w-full flex items-center justify-center gap-2 px-3 py-2 min-h-[40px] bg-white hover:bg-slate-100 text-slate-700 rounded-xl text-xs font-semibold border border-slate-200 shadow-xs transition-colors cursor-pointer"
           >
-            <svg
-              className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-              />
-            </svg>
-            <span>Home</span>
+            <Home className="w-4 h-4 text-slate-500" />
+            <span>Home Hub</span>
           </button>
+
           <button
             onClick={onLogout}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-all duration-200 font-medium group border border-gray-300"
+            className="w-full flex items-center justify-center gap-2 px-3 py-2 min-h-[40px] bg-rose-50 hover:bg-rose-100 text-rose-600 rounded-xl text-xs font-semibold border border-rose-200/60 transition-colors cursor-pointer"
           >
-            <svg
-              className="w-4 h-4 group-hover:translate-x-0.5 transition-transform"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-              />
-            </svg>
-            <span>Logout</span>
+            <LogOut className="w-4 h-4" />
+            <span>Sign Out</span>
           </button>
         </div>
       </aside>
 
-      {/* Config Modal */}
-      <ConfigModal isOpen={configOpen} onClose={() => setConfigOpen(false)} season={season} readOnly={user.role !== 'ChairMan'} />
+      {/* System Config Modal */}
+      <ConfigModal
+        isOpen={configOpen}
+        onClose={() => setConfigOpen(false)}
+        season={season}
+        readOnly={user.role !== 'ChairMan'}
+      />
     </>
   );
 }

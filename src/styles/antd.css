@@ -1,71 +1,140 @@
 /*
- * Ant Design Component Overrides
+ * Ant Design Component Overrides - Modern IEEE KSB Theme
  */
 
 /* ─── Card ─── */
 .ant-card {
-  border-radius: 12px !important;
-  transition: all 0.3s ease !important;
+  border-radius: 16px !important;
+  border: 1px solid rgba(226, 232, 240, 0.8) !important;
+  box-shadow:
+    0 1px 3px 0 rgba(0, 0, 0, 0.05),
+    0 1px 2px -1px rgba(0, 0, 0, 0.05) !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  background: #ffffff;
 }
 
 .ant-card:hover {
-  transform: translateY(-2px);
+  box-shadow:
+    0 10px 25px -5px rgba(0, 98, 155, 0.08),
+    0 8px 10px -6px rgba(0, 98, 155, 0.04) !important;
 }
 
-/* ─── Input / Select ─── */
+.ant-card-head {
+  border-bottom: 1px solid rgba(241, 245, 249, 1) !important;
+  padding: 16px 20px !important;
+  font-weight: 600 !important;
+}
+
+.ant-card-body {
+  padding: 20px !important;
+}
+
+/* ─── Input & Select ─── */
 .ant-input,
 .ant-input-affix-wrapper,
 .ant-select-selector,
 .ant-input-textarea-show-count textarea {
-  border-radius: 8px !important;
-  transition: all 0.3s ease !important;
+  border-radius: 10px !important;
+  border-color: #cbd5e1 !important;
+  font-size: 0.925rem !important;
+  transition: all 0.2s ease !important;
+}
+
+.ant-input:hover,
+.ant-input-affix-wrapper:hover,
+.ant-select-selector:hover {
+  border-color: #00629b !important;
 }
 
 .ant-input:focus,
 .ant-input-affix-wrapper:focus,
-.ant-input-affix-wrapper-focused {
-  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1) !important;
+.ant-input-affix-wrapper-focused,
+.ant-select-focused .ant-select-selector {
+  border-color: #00629b !important;
+  box-shadow: 0 0 0 3px rgba(0, 98, 155, 0.15) !important;
 }
 
 /* ─── Button ─── */
 .ant-btn {
-  border-radius: 8px !important;
-  font-weight: 500 !important;
-  transition: all 0.3s ease !important;
+  border-radius: 10px !important;
+  font-weight: 600 !important;
+  height: auto !important;
+  padding: 8px 18px !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
 }
 
 .ant-btn-primary {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+  background: linear-gradient(135deg, #00629b 0%, #004b77 100%) !important;
+  border: none !important;
+  box-shadow: 0 2px 8px rgba(0, 98, 155, 0.25) !important;
 }
 
 .ant-btn-primary:hover {
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+  background: linear-gradient(135deg, #0077bc 0%, #00629b 100%) !important;
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
+  box-shadow: 0 4px 14px rgba(0, 98, 155, 0.35) !important;
+}
+
+.ant-btn-primary:active {
+  transform: translateY(0);
 }
 
 /* ─── Tag ─── */
 .ant-tag {
-  border-radius: 6px !important;
+  border-radius: 9999px !important;
   font-weight: 500 !important;
-  padding: 4px 12px !important;
+  font-size: 0.775rem !important;
+  padding: 3px 10px !important;
+  border-width: 1px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
 }
 
-/* ─── Select Dropdown ─── */
+/* ─── Select Dropdown & Modals ─── */
 .ant-select-dropdown {
-  border-radius: 8px !important;
+  border-radius: 12px !important;
+  box-shadow:
+    0 10px 25px -5px rgba(0, 0, 0, 0.1),
+    0 8px 10px -6px rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid rgba(226, 232, 240, 0.8) !important;
+  padding: 6px !important;
+}
+
+.ant-modal-content {
+  border-radius: 20px !important;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25) !important;
+  overflow: hidden !important;
+  border: 1px solid rgba(226, 232, 240, 0.8) !important;
+}
+
+.ant-modal-header {
+  margin-bottom: 16px !important;
 }
 
 /* ─── Empty & Skeleton ─── */
 .ant-empty {
-  padding: 40px 0 !important;
+  padding: 48px 0 !important;
 }
 
 .ant-skeleton {
-  padding: 20px !important;
+  padding: 24px !important;
 }
 
 /* ─── Pagination ─── */
 .ant-pagination {
-  margin-top: 16px !important;
+  margin-top: 20px !important;
+}
+
+.ant-pagination-item-active {
+  border-color: #00629b !important;
+  background-color: #00629b !important;
+}
+
+.ant-pagination-item-active a {
+  color: #ffffff !important;
 }

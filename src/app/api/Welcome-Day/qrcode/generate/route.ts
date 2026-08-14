@@ -1,6 +1,5 @@
 // Copyright (c) 2025 Ahmed Fahmy
-// Developed at Ufuq.tech
-// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// Developed at Ufuq-tech.com// Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 /**
  * Welcome Day QR Code Generation API Route
@@ -13,6 +12,11 @@ import {
   readAllWelcomeDayAttendees,
   batchUpdateWelcomeDayAttendees,
 } from '@/lib/sheets/welcomeDay';
+import {
+  appendSheetLogEntry,
+  buildSheetUpdateLogEntry,
+  collectSheetFieldChanges,
+} from '@/lib/sheets/logging';
 import QRCode from 'qrcode';
 import { writeFile } from 'fs/promises';
 import { join } from 'path';
@@ -49,7 +53,7 @@ async function generateQRCodeImage(ticketId: string): Promise<void> {
   }
 }
 
-export const POST = withRoles(['ChairMan'], async (request: NextRequest) => {
+export const POST = withRoles(['ChairMan'], async (request: NextRequest, user) => {
   try {
     const season = request.nextUrl.searchParams.get('season') || undefined;
 
@@ -66,13 +70,33 @@ export const POST = withRoles(['ChairMan'], async (request: NextRequest) => {
     }
 
     // Generate unique ticket IDs and QR code images
-    const updates = attendeesWithoutQR.map((attendee, index) => ({
-      rowIndex: attendee.rowIndex!,
-      data: {
-        ...attendee,
-        qrCode: generateTicketId(index),
-      },
-    }));
+    const updates = attendeesWithoutQR.map((attendee, index) => {
+      const nextQrCode = generateTicketId(index);
+      const changes = collectSheetFieldChanges(
+        attendee,
+        { qrCode: nextQrCode },
+        {
+          ignoreFields: ['rowIndex', 'log'],
+        }
+      );
+      const logEntry = buildSheetUpdateLogEntry({
+        actor: {
+          name: user.name || user.username,
+          email: user.username,
+        },
+        changes,
+        action: 'qr generated',
+      });
+
+      return {
+        rowIndex: attendee.rowIndex!,
+        data: {
+          ...attendee,
+          qrCode: nextQrCode,
+          log: appendSheetLogEntry(attendee.log, logEntry),
+        },
+      };
+    });
 
     // Generate QR code images for all tickets
     await Promise.all(updates.map((update) => generateQRCodeImage(update.data.qrCode!)));

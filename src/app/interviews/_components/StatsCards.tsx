@@ -1,24 +1,25 @@
 // Copyright (c) 2025 Ahmed Fahmy
-// Developed at Ufuq.tech
-// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// Developed at Ufuq-tech.com// Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
-import { Card, Statistic } from 'antd';
+'use client';
+
 import {
-  TeamOutlined,
-  MailOutlined,
-  CheckCircleOutlined,
-  CloseCircleOutlined,
-  ClockCircleOutlined,
-  CheckSquareOutlined,
-  PlayCircleOutlined,
-  StopOutlined,
-  SafetyOutlined,
-  UserAddOutlined,
-  WarningOutlined,
-  ExclamationCircleOutlined,
-  HomeOutlined,
-  LaptopOutlined,
-} from '@ant-design/icons';
+  Users,
+  CheckCircle,
+  XCircle,
+  Clock,
+  Mail,
+  Send,
+  CheckSquare,
+  PlayCircle,
+  UserX,
+  ShieldCheck,
+  UserPlus,
+  AlertTriangle,
+  HelpCircle,
+  MapPin,
+  Globe,
+} from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface StatsCardsProps {
@@ -48,152 +49,142 @@ export default function StatsCards({ stats, season }: StatsCardsProps) {
     {
       title: 'Total Applicants',
       value: stats.total,
-      icon: <TeamOutlined style={{ fontSize: '32px', color: '#fff' }} />,
-      bgGradient: 'linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)',
-      iconBgColor: 'rgba(147, 197, 253, 0.2)',
+      icon: Users,
+      iconColor: 'text-[#00629B]',
+      iconBg: 'bg-blue-100/90 border-blue-200',
     },
     {
       title: 'Approved',
       value: stats.approved,
-      icon: <CheckCircleOutlined style={{ fontSize: '32px', color: '#fff' }} />,
-      bgGradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-      iconBgColor: 'rgba(110, 231, 183, 0.2)',
+      icon: CheckCircle,
+      iconColor: 'text-emerald-700',
+      iconBg: 'bg-emerald-100/90 border-emerald-200',
     },
     {
       title: 'Rejected',
       value: stats.rejected,
-      icon: <CloseCircleOutlined style={{ fontSize: '32px', color: '#fff' }} />,
-      bgGradient: 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)',
-      iconBgColor: 'rgba(252, 165, 165, 0.2)',
+      icon: XCircle,
+      iconColor: 'text-rose-700',
+      iconBg: 'bg-rose-100/90 border-rose-200',
     },
     {
       title: 'Pending Approval',
       value: stats.pending,
-      icon: <ClockCircleOutlined style={{ fontSize: '32px', color: '#fff' }} />,
-      bgGradient: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
-      iconBgColor: 'rgba(251, 191, 36, 0.2)',
+      icon: Clock,
+      iconColor: 'text-amber-700',
+      iconBg: 'bg-amber-100/90 border-amber-200',
     },
     {
-      title: 'Emails Sent',
+      title: 'Invited Emails',
       value: stats.emailSent,
-      icon: <MailOutlined style={{ fontSize: '32px', color: '#fff' }} />,
-      bgGradient: 'linear-gradient(135deg, #a855f7 0%, #9333ea 100%)',
-      iconBgColor: 'rgba(216, 180, 254, 0.2)',
+      icon: Mail,
+      iconColor: 'text-purple-700',
+      iconBg: 'bg-purple-100/90 border-purple-200',
     },
     {
-      title: 'Approved Email Sent',
+      title: 'Result Emails Sent',
       value: stats.approvedEmailSent,
-      icon: <MailOutlined style={{ fontSize: '32px', color: '#fff' }} />,
-      bgGradient: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)',
-      iconBgColor: 'rgba(103, 232, 249, 0.2)',
+      icon: Send,
+      iconColor: 'text-cyan-700',
+      iconBg: 'bg-cyan-100/90 border-cyan-200',
     },
     {
       title: 'Completed',
       value: stats.completed,
-      icon: <CheckSquareOutlined style={{ fontSize: '32px', color: '#fff' }} />,
-      bgGradient: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)',
-      iconBgColor: 'rgba(196, 181, 253, 0.2)',
+      icon: CheckSquare,
+      iconColor: 'text-teal-700',
+      iconBg: 'bg-teal-100/90 border-teal-200',
     },
     {
       title: 'Not Started',
       value: stats.notStarted,
-      icon: <PlayCircleOutlined style={{ fontSize: '32px', color: '#fff' }} />,
-      bgGradient: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
-      iconBgColor: 'rgba(165, 180, 252, 0.2)',
+      icon: PlayCircle,
+      iconColor: 'text-indigo-700',
+      iconBg: 'bg-indigo-100/90 border-indigo-200',
     },
     {
       title: 'Not Attended',
       value: stats.notAttended,
-      icon: <StopOutlined style={{ fontSize: '32px', color: '#fff' }} />,
-      bgGradient: 'linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)',
-      iconBgColor: 'rgba(252, 165, 165, 0.2)',
+      icon: UserX,
+      iconColor: 'text-rose-700',
+      iconBg: 'bg-rose-100/90 border-rose-200',
     },
-    // ID validation cards (shown in both seasons for fixed 15-card layout)
     ...(season === 'S2' || season === 'S1'
       ? [
           {
             title: 'ID Matched',
             value: stats.idMatched ?? 0,
-            icon: <SafetyOutlined style={{ fontSize: '32px', color: '#fff' }} />,
-            bgGradient: 'linear-gradient(135deg, #059669 0%, #047857 100%)',
-            iconBgColor: 'rgba(52, 211, 153, 0.2)',
+            icon: ShieldCheck,
+            iconColor: 'text-emerald-700',
+            iconBg: 'bg-emerald-100/90 border-emerald-200',
           },
           {
-            title: 'ID New',
+            title: 'ID New Member',
             value: stats.idNew ?? 0,
-            icon: <UserAddOutlined style={{ fontSize: '32px', color: '#fff' }} />,
-            bgGradient: 'linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%)',
-            iconBgColor: 'rgba(125, 211, 252, 0.2)',
+            icon: UserPlus,
+            iconColor: 'text-sky-700',
+            iconBg: 'bg-sky-100/90 border-sky-200',
           },
           {
             title: 'ID Mismatch',
             value: stats.idMismatch ?? 0,
-            icon: <WarningOutlined style={{ fontSize: '32px', color: '#fff' }} />,
-            bgGradient: 'linear-gradient(135deg, #f43f5e 0%, #e11d48 100%)',
-            iconBgColor: 'rgba(251, 113, 133, 0.2)',
+            icon: AlertTriangle,
+            iconColor: 'text-rose-700',
+            iconBg: 'bg-rose-100/90 border-rose-200',
           },
           {
-            title: 'ID Need Review',
+            title: 'ID Review Needed',
             value: stats.idNeedReview ?? 0,
-            icon: <ExclamationCircleOutlined style={{ fontSize: '32px', color: '#fff' }} />,
-            bgGradient: 'linear-gradient(135deg, #f97316 0%, #ea580c 100%)',
-            iconBgColor: 'rgba(253, 186, 116, 0.2)',
+            icon: HelpCircle,
+            iconColor: 'text-amber-700',
+            iconBg: 'bg-amber-100/90 border-amber-200',
           },
         ]
       : []),
     {
-      title: 'Physical',
+      title: 'Physical Interview',
       value: stats.physical ?? 0,
-      icon: <HomeOutlined style={{ fontSize: '32px', color: '#fff' }} />,
-      bgGradient: 'linear-gradient(135deg, #14b8a6 0%, #0d9488 100%)',
-      iconBgColor: 'rgba(94, 234, 212, 0.2)',
+      icon: MapPin,
+      iconColor: 'text-emerald-700',
+      iconBg: 'bg-emerald-100/90 border-emerald-200',
     },
     {
-      title: 'Online',
+      title: 'Online Interview',
       value: stats.online ?? 0,
-      icon: <LaptopOutlined style={{ fontSize: '32px', color: '#fff' }} />,
-      bgGradient: 'linear-gradient(135deg, #6366f1 0%, #4f46e5 100%)',
-      iconBgColor: 'rgba(165, 180, 252, 0.2)',
+      icon: Globe,
+      iconColor: 'text-indigo-700',
+      iconBg: 'bg-indigo-100/90 border-indigo-200',
     },
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 w-full">
-      {statsData.map((stat, index) => (
-        <motion.div
-          key={stat.title}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: index * 0.1 }}
-        >
-          <Card
-            className="shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer h-full"
-            variant="borderless"
-            style={{ background: stat.bgGradient }}
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3.5 w-full">
+      {statsData.map((stat, index) => {
+        const Icon = stat.icon;
+        return (
+          <motion.div
+            key={stat.title}
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.2, delay: index * 0.02 }}
+            className="p-4 bg-white border border-slate-200/90 hover:border-[#00629B]/30 rounded-2xl shadow-2xs hover:shadow-sm transition-all duration-200 flex flex-col justify-between"
           >
-            <div className="flex items-center justify-between">
-              <div className="flex-1">
-                <Statistic
-                  title={
-                    <span style={{ color: 'rgba(255, 255, 255, 0.9)', fontSize: '14px' }}>
-                      {stat.title}
-                    </span>
-                  }
-                  value={stat.value}
-                  valueStyle={{
-                    color: '#ffffff',
-                    fontSize: '28px',
-                    fontWeight: 'bold',
-                  }}
-                />
-              </div>
-              <div className="p-4 rounded-lg" style={{ backgroundColor: stat.iconBgColor }}>
-                {stat.icon}
+            <div className="flex items-center justify-between gap-2 mb-2.5">
+              <span className="text-xs font-medium text-slate-500 truncate">{stat.title}</span>
+              <div
+                className={`w-8 h-8 rounded-xl border flex items-center justify-center shrink-0 ${stat.iconBg} ${stat.iconColor}`}
+              >
+                <Icon className="w-4 h-4 stroke-[1.75]" />
               </div>
             </div>
-          </Card>
-        </motion.div>
-      ))}
+            <div>
+              <span className="text-xl sm:text-2xl font-bold text-slate-800 tracking-tight leading-none">
+                {stat.value.toLocaleString()}
+              </span>
+            </div>
+          </motion.div>
+        );
+      })}
     </div>
   );
 }

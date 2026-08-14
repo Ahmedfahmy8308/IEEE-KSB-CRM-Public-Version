@@ -1,6 +1,5 @@
 // Copyright (c) 2025 Ahmed Fahmy
-// Developed at Ufuq.tech
-// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// Developed at Ufuq-tech.com// Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 'use client';
 
@@ -10,17 +9,41 @@ import { useToast } from '@/components/ToastProvider';
 interface ValidationResult {
   duplicatePhones: Array<{
     phone: string;
-    members: Array<{ id: string; fullName: string; email: string; phoneNumber: string; committee: string }>;
+    members: Array<{
+      id: string;
+      fullName: string;
+      email: string;
+      phoneNumber: string;
+      committee: string;
+    }>;
   }>;
   duplicateEmails: Array<{
     email: string;
-    members: Array<{ id: string; fullName: string; email: string; emailAddress: string; committee: string }>;
+    members: Array<{
+      id: string;
+      fullName: string;
+      email: string;
+      emailAddress: string;
+      committee: string;
+    }>;
   }>;
   duplicateEmailAddresses: Array<{
     emailAddress: string;
-    members: Array<{ id: string; fullName: string; email: string; emailAddress: string; committee: string }>;
+    members: Array<{
+      id: string;
+      fullName: string;
+      email: string;
+      emailAddress: string;
+      committee: string;
+    }>;
   }>;
-  emailMismatches: Array<{ id: string; fullName: string; email: string; emailAddress: string; committee: string }>;
+  emailMismatches: Array<{
+    id: string;
+    fullName: string;
+    email: string;
+    emailAddress: string;
+    committee: string;
+  }>;
 }
 
 interface ValidationSummary {
@@ -31,7 +54,13 @@ interface ValidationSummary {
   totalIssues: number;
 }
 
-export default function ValidationPanel({ season, readOnly }: { season?: string; readOnly?: boolean }) {
+export default function ValidationPanel({
+  season,
+  readOnly,
+}: {
+  season?: string;
+  readOnly?: boolean;
+}) {
   const { showToast } = useToast();
   const [validationResults, setValidationResults] = useState<ValidationResult | null>(null);
   const [summary, setSummary] = useState<ValidationSummary | null>(null);
@@ -266,7 +295,8 @@ export default function ValidationPanel({ season, readOnly }: { season?: string;
                               <li key={idx} className="text-blue-700 pl-4 py-1">
                                 <div className="font-medium">{member.fullName}</div>
                                 <div className="text-xs text-blue-600">
-                                  ID: {member.id} | Phone: {member.phoneNumber} | Email: {member.email} | Committee: {member.committee}
+                                  ID: {member.id} | Phone: {member.phoneNumber} | Email:{' '}
+                                  {member.email} | Committee: {member.committee}
                                 </div>
                               </li>
                             ))}
@@ -324,7 +354,8 @@ export default function ValidationPanel({ season, readOnly }: { season?: string;
                               <li key={idx} className="text-yellow-700 pl-4 py-1">
                                 <div className="font-medium">{member.fullName}</div>
                                 <div className="text-xs text-yellow-600">
-                                  ID: {member.id} | Form Email: {member.emailAddress} | Committee: {member.committee}
+                                  ID: {member.id} | Form Email: {member.emailAddress} | Committee:{' '}
+                                  {member.committee}
                                 </div>
                               </li>
                             ))}
@@ -384,7 +415,8 @@ export default function ValidationPanel({ season, readOnly }: { season?: string;
                               <li key={idx} className="text-purple-700 pl-4 py-1">
                                 <div className="font-medium">{member.fullName}</div>
                                 <div className="text-xs text-purple-600">
-                                  ID: {member.id} | Form Email: {member.emailAddress} | Committee: {member.committee}
+                                  ID: {member.id} | Form Email: {member.emailAddress} | Committee:{' '}
+                                  {member.committee}
                                 </div>
                               </li>
                             ))}

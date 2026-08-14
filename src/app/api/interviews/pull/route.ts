@@ -1,6 +1,5 @@
 // Copyright (c) 2025 Ahmed Fahmy
-// Developed at Ufuq.tech
-// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// Developed at Ufuq-tech.com// Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 /**
  * Pull Records API Route
@@ -23,6 +22,7 @@ import {
   type InterviewApplicant,
   getAllInterviewIds,
 } from '@/lib/sheets/interview';
+import { buildSheetActionLogEntry } from '@/lib/sheets/logging';
 
 // Origin form column mapping for S1 (has "If yes role" at col 15)
 const ORIGIN_S1_COLS = {
@@ -121,11 +121,15 @@ function parseTimestamp(ts: string): Date | null {
   if (arMatch) {
     const [, hourStr, minute, second, ampm, year, month, day] = arMatch;
     let hour = parseInt(hourStr);
-    if (ampm === 'م' && hour < 12) hour += 12;      // PM
-    if (ampm === 'ص' && hour === 12) hour = 0;       // 12 AM = 0
+    if (ampm === 'م' && hour < 12) hour += 12; // PM
+    if (ampm === 'ص' && hour === 12) hour = 0; // 12 AM = 0
     return new Date(
-      parseInt(year), parseInt(month) - 1, parseInt(day),
-      hour, parseInt(minute), parseInt(second)
+      parseInt(year),
+      parseInt(month) - 1,
+      parseInt(day),
+      hour,
+      parseInt(minute),
+      parseInt(second)
     );
   }
 
@@ -134,8 +138,12 @@ function parseTimestamp(ts: string): Date | null {
   if (gfMatch) {
     const [, month, day, year, hour, minute, second] = gfMatch;
     return new Date(
-      parseInt(year), parseInt(month) - 1, parseInt(day),
-      parseInt(hour), parseInt(minute), parseInt(second)
+      parseInt(year),
+      parseInt(month) - 1,
+      parseInt(day),
+      parseInt(hour),
+      parseInt(minute),
+      parseInt(second)
     );
   }
 
@@ -171,7 +179,7 @@ function getPullConfig(season: string): PullConfig {
   };
 }
 
-export const POST = withRoles(['ChairMan'], async (request: NextRequest) => {
+export const POST = withRoles(['ChairMan'], async (request: NextRequest, user) => {
   try {
     const season = request.nextUrl.searchParams.get('season') || 'S2';
     const config = getPullConfig(season);
@@ -343,18 +351,58 @@ export const POST = withRoles(['ChairMan'], async (request: NextRequest) => {
       const pullTimestamp = new Date().toISOString();
       const logLines: string[] = [];
 
+      const actor = {
+        name: user.name || user.username,
+        email: user.username,
+      };
+
       if (season === 'S2' && enteredS1Id) {
         if (validationStatus === VALIDATION_STATUS.MATCHED) {
-          logLines.push(`${pullTimestamp} | system | Pulled from origin form; S1 ID entered: ${enteredS1Id}; ID validation: Matched (ID + phone matched S1); Auto-approved: yes; ID carried over from S1: ${assignedId}`);
+          logLines.push(
+            buildSheetActionLogEntry({
+              actor,
+              action: 'created via pull',
+              timestamp: pullTimestamp,
+              details: `S1 ID entered=${enteredS1Id}; validation=Matched (ID + phone matched S1); auto-approved=yes; assignedId=${assignedId}`,
+            })
+          );
         } else if (validationStatus === VALIDATION_STATUS.NEED_REVIEW) {
-          logLines.push(`${pullTimestamp} | system | Pulled from origin form; S1 ID entered: ${enteredS1Id}; ID validation: Need Review (ID matched S1 but phone mismatch); ID carried over: ${assignedId}`);
+          logLines.push(
+            buildSheetActionLogEntry({
+              actor,
+              action: 'created via pull',
+              timestamp: pullTimestamp,
+              details: `S1 ID entered=${enteredS1Id}; validation=Need Review (ID matched S1 but phone mismatch); assignedId=${assignedId}`,
+            })
+          );
         } else if (validationStatus === VALIDATION_STATUS.WRONG_ID) {
-          logLines.push(`${pullTimestamp} | system | Pulled from origin form; S1 ID entered: ${enteredS1Id}; ID validation: Wrong ID (no matching S1 record); New ID generated: ${assignedId}`);
+          logLines.push(
+            buildSheetActionLogEntry({
+              actor,
+              action: 'created via pull',
+              timestamp: pullTimestamp,
+              details: `S1 ID entered=${enteredS1Id}; validation=Wrong ID (no matching S1 record); assignedId=${assignedId}`,
+            })
+          );
         }
       } else if (season === 'S2') {
-        logLines.push(`${pullTimestamp} | system | Pulled from origin form; No S1 ID entered; New ID generated: ${assignedId}`);
+        logLines.push(
+          buildSheetActionLogEntry({
+            actor,
+            action: 'created via pull',
+            timestamp: pullTimestamp,
+            details: `No S1 ID entered; assignedId=${assignedId}`,
+          })
+        );
       } else {
-        logLines.push(`${pullTimestamp} | system | Pulled from origin form; New ID generated: ${assignedId}`);
+        logLines.push(
+          buildSheetActionLogEntry({
+            actor,
+            action: 'created via pull',
+            timestamp: pullTimestamp,
+            details: `assignedId=${assignedId}`,
+          })
+        );
       }
 
       const pullLog = logLines.join('\n');
@@ -412,10 +460,18 @@ export const POST = withRoles(['ChairMan'], async (request: NextRequest) => {
 
     // Always save the max timestamp from ALL origin rows we've seen.
     // This ensures deleted records won't be re-imported on future pulls.
-    const finalTimestamp = maxOriginTimestamp && (!latestTimestamp || maxOriginTimestamp > latestTimestamp)
-      ? maxOriginTimestamp
-      : latestTimestamp;
-    console.log('[Pull] maxOriginTimestamp:', maxOriginTimestamp?.toISOString(), 'latestTimestamp:', latestTimestamp?.toISOString(), 'finalTimestamp:', finalTimestamp?.toISOString());
+    const finalTimestamp =
+      maxOriginTimestamp && (!latestTimestamp || maxOriginTimestamp > latestTimestamp)
+        ? maxOriginTimestamp
+        : latestTimestamp;
+    console.log(
+      '[Pull] maxOriginTimestamp:',
+      maxOriginTimestamp?.toISOString(),
+      'latestTimestamp:',
+      latestTimestamp?.toISOString(),
+      'finalTimestamp:',
+      finalTimestamp?.toISOString()
+    );
     if (finalTimestamp) {
       console.log('[Pull] Saving lastPullTimestamp to config for', pullConfigKey);
       await updateConfig({

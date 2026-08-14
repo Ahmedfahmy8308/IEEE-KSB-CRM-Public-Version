@@ -1,6 +1,5 @@
 // Copyright (c) 2025 Ahmed Fahmy
-// Developed at Ufuq.tech
-// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// Developed at Ufuq-tech.com// Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 import Image from 'next/image';
 
@@ -26,7 +25,8 @@ export default function LoadingSpinner() {
                 alt="IEEE KSB"
                 width={40}
                 height={40}
-                className="object-contain"
+                className="object-contain w-auto h-auto"
+                style={{ width: 'auto', height: 'auto' }}
                 priority
               />
             </div>

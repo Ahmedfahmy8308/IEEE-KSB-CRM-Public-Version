@@ -1,6 +1,5 @@
 // Copyright (c) 2025 Ahmed Fahmy
-// Developed at Ufuq.tech
-// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// Developed at Ufuq-tech.com// Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 /**
  * Email Mismatches Quick Fix API Route
@@ -35,7 +34,14 @@ export const POST = withRoles(['ChairMan'], async (request: NextRequest) => {
       updates: { email: m.emailAddress },
     }));
 
-    const results = await batchUpdateMembers(memberUpdates, 'system', season);
+    const results = await batchUpdateMembers(
+      memberUpdates,
+      {
+        name: 'System',
+        email: 'system@ieee-crm.local',
+      },
+      season
+    );
 
     const fixed = results.filter((r) => r !== null).length;
     const failed = results.filter((r) => r === null).length;

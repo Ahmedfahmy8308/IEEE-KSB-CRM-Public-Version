@@ -1,6 +1,5 @@
 // Copyright (c) 2025 Ahmed Fahmy
-// Developed at Ufuq.tech
-// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// Developed at Ufuq-tech.com// Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 'use client';
 
@@ -162,11 +161,7 @@ export default function SearchPanel({ season }: { season?: string }) {
       key: 'interviewMode',
       width: 90,
       render: (text: string) =>
-        text ? (
-          <Tag color={text === 'Online' ? 'blue' : 'green'}>{text}</Tag>
-        ) : (
-          <span>-</span>
-        ),
+        text ? <Tag color={text === 'Online' ? 'blue' : 'green'}>{text}</Tag> : <span>-</span>,
     },
     {
       title: 'Email Sent',
@@ -351,7 +346,10 @@ export default function SearchPanel({ season }: { season?: string }) {
                               {member.interviewMode && (
                                 <div className="flex items-center gap-2">
                                   <span className="font-medium">Mode:</span>{' '}
-                                  <Tag color={member.interviewMode === 'Online' ? 'blue' : 'green'} style={{ margin: 0 }}>
+                                  <Tag
+                                    color={member.interviewMode === 'Online' ? 'blue' : 'green'}
+                                    style={{ margin: 0 }}
+                                  >
                                     {member.interviewMode}
                                   </Tag>
                                 </div>

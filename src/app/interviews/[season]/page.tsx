@@ -1,6 +1,5 @@
 // Copyright (c) 2025 Ahmed Fahmy
-// Developed at Ufuq.tech
-// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// Developed at Ufuq-tech.com// Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 'use client';
 
@@ -58,7 +57,6 @@ function DashboardContent() {
   const [user, setUser] = useState<User | null>(null);
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
-  const [selectedCommittee, setSelectedCommittee] = useState<string | null>(null);
 
   // Helper to append season to API URLs
   const apiUrl = useCallback(
@@ -69,16 +67,13 @@ function DashboardContent() {
     [season]
   );
 
+  const selectedCommittee = searchParams.get('committee');
+
   // Get active tab from URL, default to 'dashboard'
   const activeTab =
     (searchParams.get('tab') as
-      | 'dashboard'
-      | 'search'
-      | 'schedule'
-      | 'email'
-      | 'validation'
-      | 'approved-email'
-      | 'pull') || 'dashboard';
+      'dashboard' | 'search' | 'schedule' | 'email' | 'validation' | 'approved-email' | 'pull') ||
+    'dashboard';
 
   const checkAuth = useCallback(async () => {
     try {
@@ -109,17 +104,17 @@ function DashboardContent() {
   }, [apiUrl]);
 
   useEffect(() => {
-    checkAuth();
-    fetchStats();
+    let isMounted = true;
+    void (async () => {
+      if (!isMounted) return;
+      await checkAuth();
+      await fetchStats();
+    })();
 
-    // Check if committee parameter is set
-    const committee = searchParams.get('committee');
-    if (committee) {
-      setSelectedCommittee(committee);
-    } else {
-      setSelectedCommittee(null);
-    }
-  }, [searchParams, checkAuth, fetchStats]);
+    return () => {
+      isMounted = false;
+    };
+  }, [checkAuth, fetchStats]);
 
   const handleLogout = async () => {
     await fetch('/api/auth/logout', { method: 'POST' });
@@ -209,7 +204,6 @@ function DashboardContent() {
                   <div className="mb-4">
                     <button
                       onClick={() => {
-                        setSelectedCommittee(null);
                         const p = new URLSearchParams(searchParams.toString());
                         p.delete('committee');
                         router.push(`/interviews/${season}?${p.toString()}`);
@@ -266,27 +260,45 @@ function DashboardContent() {
 
           {/* Schedule Tab - Chairman & Highboard */}
           {activeTab === 'schedule' && (user.role === 'ChairMan' || user.role === 'highboard') && (
-            <SchedulePanel onSuccess={handleSuccess} season={season} readOnly={user.role !== 'ChairMan'} />
+            <SchedulePanel
+              onSuccess={handleSuccess}
+              season={season}
+              readOnly={user.role !== 'ChairMan'}
+            />
           )}
 
           {/* Email Tab - Chairman & Highboard */}
           {activeTab === 'email' && (user.role === 'ChairMan' || user.role === 'highboard') && (
-            <EmailPanel onSuccess={handleSuccess} season={season} readOnly={user.role !== 'ChairMan'} />
+            <EmailPanel
+              onSuccess={handleSuccess}
+              season={season}
+              readOnly={user.role !== 'ChairMan'}
+            />
           )}
 
           {/* Approved Email Tab - Chairman & Highboard */}
-          {activeTab === 'approved-email' && (user.role === 'ChairMan' || user.role === 'highboard') && (
-            <ApprovedEmailPanel onSuccess={handleSuccess} season={season} readOnly={user.role !== 'ChairMan'} />
-          )}
+          {activeTab === 'approved-email' &&
+            (user.role === 'ChairMan' || user.role === 'highboard') && (
+              <ApprovedEmailPanel
+                onSuccess={handleSuccess}
+                season={season}
+                readOnly={user.role !== 'ChairMan'}
+              />
+            )}
 
           {/* Validation Tab - Chairman & Highboard */}
-          {activeTab === 'validation' && (user.role === 'ChairMan' || user.role === 'highboard') && (
-            <ValidationPanel season={season} readOnly={user.role !== 'ChairMan'} />
-          )}
+          {activeTab === 'validation' &&
+            (user.role === 'ChairMan' || user.role === 'highboard') && (
+              <ValidationPanel season={season} readOnly={user.role !== 'ChairMan'} />
+            )}
 
           {/* Pull Records Tab - Chairman & Highboard */}
           {activeTab === 'pull' && (user.role === 'ChairMan' || user.role === 'highboard') && (
-            <PullPanel onSuccess={handleSuccess} season={season} readOnly={user.role !== 'ChairMan'} />
+            <PullPanel
+              onSuccess={handleSuccess}
+              season={season}
+              readOnly={user.role !== 'ChairMan'}
+            />
           )}
         </main>
 

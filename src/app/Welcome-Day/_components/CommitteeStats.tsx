@@ -1,27 +1,21 @@
 // Copyright (c) 2025 Ahmed Fahmy
-// Developed at Ufuq.tech
-// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// Developed at Ufuq-tech.com// Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Card, Statistic, Row, Col, Typography, Skeleton } from 'antd';
 import {
-  MailOutlined,
-  TeamOutlined,
-  CheckCircleOutlined,
-  CloseCircleOutlined,
-  SafetyOutlined,
-  ClockCircleOutlined,
-  StopOutlined,
-  WalletOutlined,
-  MobileOutlined,
-  QrcodeOutlined,
-} from '@ant-design/icons';
+  Users,
+  Mail,
+  CheckCircle2,
+  XCircle,
+  QrCode,
+  CreditCard,
+  Smartphone,
+  Sparkles,
+} from 'lucide-react';
 import { motion } from 'framer-motion';
-
-const { Title, Text } = Typography;
 
 interface CommitteeStatsProps {
   committee: string;
@@ -46,55 +40,55 @@ export default function CommitteeStats({ committee, season }: CommitteeStatsProp
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const formatCommittee = (committee: string) => {
-    // Check if it's the "Invited (Only for Who Not in IEEE)" committee
-    if (
-      committee.toLowerCase().includes('invited') &&
-      committee.toLowerCase().includes('not in ieee')
-    ) {
-      return 'Invited';
+  const formatCommittee = (comm: string) => {
+    if (comm.toLowerCase().includes('invited') && comm.toLowerCase().includes('not in ieee')) {
+      return 'Invited Attendees';
     }
-    return committee;
+    return comm;
   };
 
-  const fetchStats = useCallback(async () => {
-    setLoading(true);
-    try {
-      const params = new URLSearchParams();
-      if (committee && committee !== 'all') {
-        params.append('committee', committee);
-      }
-      if (season) params.set('season', season);
-
-      const res = await fetch(`/api/Welcome-Day/committee/stats?${params.toString()}`);
-      if (res.ok) {
-        const data = await res.json();
-        setStats(data.stats);
-      } else if (res.status === 401) {
-        router.push('/login');
-      }
-    } catch (error) {
-      console.error('Error fetching committee stats:', error);
-    } finally {
-      setLoading(false);
-    }
-  }, [committee, season, router]);
-
   useEffect(() => {
-    fetchStats();
-  }, [committee, fetchStats]);
+    let isMounted = true;
+
+    async function loadStats() {
+      try {
+        const params = new URLSearchParams();
+        if (committee && committee !== 'all') {
+          params.append('committee', committee);
+        }
+        if (season) params.set('season', season);
+
+        const res = await fetch(`/api/Welcome-Day/committee/stats?${params.toString()}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (isMounted) setStats(data.stats);
+        } else if (res.status === 401 && isMounted) {
+          router.push('/login');
+        }
+      } catch (error) {
+        console.error('Error fetching committee stats:', error);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+
+    loadStats();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [committee, season, router]);
 
   if (loading) {
     return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="space-y-6 w-full max-w-full"
-      >
-        <Card>
-          <Skeleton active paragraph={{ rows: 3 }} />
-        </Card>
-      </motion.div>
+      <div className="p-6 bg-white border border-slate-200/90 rounded-2xl shadow-xs animate-pulse space-y-4">
+        <div className="h-6 bg-slate-200 rounded w-1/4" />
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+          {[...Array(8)].map((_, i) => (
+            <div key={i} className="h-20 bg-slate-100 rounded-xl" />
+          ))}
+        </div>
+      </div>
     );
   }
 
@@ -102,193 +96,126 @@ export default function CommitteeStats({ committee, season }: CommitteeStatsProp
 
   const statsData = [
     {
-      title: 'Total Attendees',
+      title: 'Total Registered',
       value: stats.total,
-      icon: <TeamOutlined className="text-2xl" />,
-      color: 'blue',
-      bgColor: 'bg-blue-50',
-      iconColor: 'text-blue-600',
+      icon: Users,
+      iconColor: 'text-[#00629B]',
+      iconBg: 'bg-blue-100/80 border-blue-200/80',
     },
     {
-      title: 'Emails Sent',
+      title: 'Email Sent',
       value: stats.emailSent,
-      icon: <MailOutlined className="text-2xl" />,
-      color: 'purple',
-      bgColor: 'bg-purple-50',
-      iconColor: 'text-purple-600',
+      icon: Mail,
+      iconColor: 'text-purple-700',
+      iconBg: 'bg-purple-100/80 border-purple-200/80',
     },
     {
       title: 'Attended',
       value: stats.attended,
-      icon: <CheckCircleOutlined className="text-2xl" />,
-      color: 'green',
-      bgColor: 'bg-green-50',
-      iconColor: 'text-green-600',
+      icon: CheckCircle2,
+      iconColor: 'text-emerald-700',
+      iconBg: 'bg-emerald-100/80 border-emerald-200/80',
     },
     {
-      title: 'Not Attended',
+      title: 'Absent / Pending',
       value: stats.notAttended,
-      icon: <CloseCircleOutlined className="text-2xl" />,
-      color: 'red',
-      bgColor: 'bg-red-50',
-      iconColor: 'text-red-600',
-    },
-    // Validation Status Cards
-    {
-      title: 'Validation Passed',
-      value: stats.validationPassed,
-      icon: <SafetyOutlined className="text-2xl" />,
-      color: 'green',
-      bgColor: 'bg-green-50',
-      iconColor: 'text-green-600',
+      icon: XCircle,
+      iconColor: 'text-rose-700',
+      iconBg: 'bg-rose-100/80 border-rose-200/80',
     },
     {
-      title: 'Not Checked',
-      value: stats.validationNotChecked,
-      icon: <ClockCircleOutlined className="text-2xl" />,
-      color: 'orange',
-      bgColor: 'bg-orange-50',
-      iconColor: 'text-orange-600',
-    },
-    {
-      title: 'Validation Failed',
-      value: stats.validationFailed,
-      icon: <StopOutlined className="text-2xl" />,
-      color: 'red',
-      bgColor: 'bg-red-50',
-      iconColor: 'text-red-600',
-    },
-    {
-      title: 'QR Codes Generated',
+      title: 'QR Generated',
       value: stats.qrCodesGenerated,
-      icon: <QrcodeOutlined className="text-2xl" />,
-      color: 'purple',
-      bgColor: 'bg-purple-50',
-      iconColor: 'text-purple-600',
+      icon: QrCode,
+      iconColor: 'text-indigo-700',
+      iconBg: 'bg-indigo-100/80 border-indigo-200/80',
     },
   ];
 
   return (
-    <div className="space-y-6 w-full max-w-full">
+    <div className="space-y-6 w-full">
       {/* Header */}
       <motion.div
-        initial={{ opacity: 0, y: -20 }}
+        initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
+        className="p-4 sm:p-5 bg-white border border-slate-200/90 rounded-2xl shadow-xs flex items-center justify-between"
       >
-        <Card className="shadow-lg">
-          <div className="flex items-center gap-3">
-            <div className="p-3 bg-blue-100 rounded-lg">
-              <TeamOutlined className="text-2xl text-blue-600" />
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-purple-50 border border-purple-100 text-purple-700 flex items-center justify-center font-bold">
+            <Sparkles className="w-5 h-5" />
+          </div>
+          <div>
+            <h2 className="text-base sm:text-lg font-bold text-slate-900 leading-tight">
+              {committee === 'all' ? 'All Committees' : formatCommittee(committee)} Statistics
+            </h2>
+            <p className="text-xs text-slate-500">Live attendance & ticketing summary</p>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Main Stats Grid */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
+        {statsData.map((stat, index) => {
+          const Icon = stat.icon;
+          return (
+            <motion.div
+              key={stat.title}
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.2, delay: index * 0.03 }}
+              className="p-4 bg-white border border-slate-200 hover:border-purple-600/40 rounded-2xl shadow-xs hover:shadow-md transition-all duration-200 flex flex-col justify-between"
+            >
+              <div className="flex items-center justify-between gap-2 mb-3">
+                <span className="text-xs font-bold text-slate-700 truncate leading-snug">
+                  {stat.title}
+                </span>
+                <div
+                  className={`w-8 h-8 rounded-xl border flex items-center justify-center shrink-0 ${stat.iconBg} ${stat.iconColor}`}
+                >
+                  <Icon className="w-4 h-4 stroke-[2.25]" />
+                </div>
+              </div>
+              <div>
+                <span className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-none">
+                  {stat.value.toLocaleString()}
+                </span>
+              </div>
+            </motion.div>
+          );
+        })}
+      </div>
+
+      {/* Payment Method Breakdown */}
+      <div className="p-5 bg-white border border-slate-200/90 rounded-2xl shadow-xs space-y-3">
+        <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">
+          Payment Methods Distribution
+        </h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div className="p-4 bg-indigo-50/60 border border-indigo-100 rounded-xl flex items-center gap-3.5">
+            <div className="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold">
+              <CreditCard className="w-5 h-5" />
             </div>
             <div>
-              <Title level={3} style={{ margin: 0 }}>
-                {committee === 'all' ? 'All Committees' : formatCommittee(committee)} Statistics
-              </Title>
-              <Text type="secondary">Overview of Welcome Day attendees</Text>
+              <p className="text-xs font-semibold text-slate-600">Instapay Transfers</p>
+              <p className="text-2xl font-black text-indigo-950">
+                {stats.paymentInstapay.toLocaleString()}
+              </p>
             </div>
           </div>
-        </Card>
-      </motion.div>
 
-      {/* Stats Grid */}
-      <Row gutter={[16, 16]}>
-        {statsData.map((stat, index) => (
-          <Col xs={12} sm={12} md={12} lg={12} xl={6} key={stat.title}>
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.3, delay: index * 0.05 }}
-            >
-              <Card
-                className="shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer"
-                variant="borderless"
-              >
-                <div className="flex items-center gap-4">
-                  <div className={`p-3 ${stat.bgColor} rounded-lg`}>
-                    <span className={stat.iconColor}>{stat.icon}</span>
-                  </div>
-                  <div className="flex-1">
-                    <Statistic
-                      title={<Text className="text-sm text-gray-600">{stat.title}</Text>}
-                      value={stat.value}
-                      valueStyle={{
-                        fontSize: '24px',
-                        fontWeight: 'bold',
-                        color: '#1f2937',
-                      }}
-                    />
-                  </div>
-                </div>
-              </Card>
-            </motion.div>
-          </Col>
-        ))}
-      </Row>
-
-      {/* Payment Methods Card */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, delay: 0.4 }}
-      >
-        <Card className="shadow-lg">
-          <div className="mb-4">
-            <Title level={4} style={{ margin: 0 }}>
-              <WalletOutlined className="mr-2" />
-              Payment Methods
-            </Title>
+          <div className="p-4 bg-cyan-50/60 border border-cyan-100 rounded-xl flex items-center gap-3.5">
+            <div className="w-10 h-10 rounded-xl bg-cyan-600 text-white flex items-center justify-center font-bold">
+              <Smartphone className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="text-xs font-semibold text-slate-600">Vodafone Cash</p>
+              <p className="text-2xl font-black text-cyan-950">
+                {stats.paymentVodafoneCash.toLocaleString()}
+              </p>
+            </div>
           </div>
-          <Row gutter={16}>
-            <Col xs={24} sm={12}>
-              <Card
-                className="shadow-md hover:shadow-xl transition-all duration-300"
-                variant="borderless"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="p-3 bg-indigo-50 rounded-lg">
-                    <WalletOutlined className="text-2xl text-indigo-600" />
-                  </div>
-                  <div className="flex-1">
-                    <Statistic
-                      title={<Text className="text-sm text-gray-600">Instapay</Text>}
-                      value={stats.paymentInstapay}
-                      valueStyle={{
-                        fontSize: '24px',
-                        fontWeight: 'bold',
-                        color: '#1f2937',
-                      }}
-                    />
-                  </div>
-                </div>
-              </Card>
-            </Col>
-            <Col xs={24} sm={12}>
-              <Card
-                className="shadow-md hover:shadow-xl transition-all duration-300"
-                variant="borderless"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="p-3 bg-cyan-50 rounded-lg">
-                    <MobileOutlined className="text-2xl text-cyan-600" />
-                  </div>
-                  <div className="flex-1">
-                    <Statistic
-                      title={<Text className="text-sm text-gray-600">Vodafone Cash</Text>}
-                      value={stats.paymentVodafoneCash}
-                      valueStyle={{
-                        fontSize: '24px',
-                        fontWeight: 'bold',
-                        color: '#1f2937',
-                      }}
-                    />
-                  </div>
-                </div>
-              </Card>
-            </Col>
-          </Row>
-        </Card>
-      </motion.div>
+        </div>
+      </div>
     </div>
   );
 }

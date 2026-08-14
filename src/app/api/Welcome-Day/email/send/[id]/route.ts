@@ -1,6 +1,5 @@
 // Copyright (c) 2025 Ahmed Fahmy
-// Developed at Ufuq.tech
-// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// Developed at Ufuq-tech.com// Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 /**
  * Welcome Day Send Email to Specific Attendee API Route
@@ -10,8 +9,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { withRoles } from '@/lib/middleware';
 import { readAllWelcomeDayAttendees, updateWelcomeDayAttendee } from '@/lib/sheets/welcomeDay';
+import {
+  appendSheetLogEntry,
+  buildSheetUpdateLogEntry,
+  collectSheetFieldChanges,
+} from '@/lib/sheets/logging';
 
-export const POST = withRoles(['ChairMan'], async (request: NextRequest) => {
+export const POST = withRoles(['ChairMan'], async (request: NextRequest, user) => {
   try {
     const season = request.nextUrl.searchParams.get('season') || undefined;
     const ticketId = request.nextUrl.pathname.split('/').pop();
@@ -58,9 +62,26 @@ export const POST = withRoles(['ChairMan'], async (request: NextRequest) => {
     );
 
     // Mark email as sent
+    const changes = collectSheetFieldChanges(
+      attendee,
+      { isEmailSend: true },
+      {
+        ignoreFields: ['rowIndex', 'log'],
+      }
+    );
+    const logEntry = buildSheetUpdateLogEntry({
+      actor: {
+        name: user.name || user.username,
+        email: user.username,
+      },
+      changes,
+      action: 'email sent',
+    });
+
     const updatedAttendee = {
       ...attendee,
       isEmailSend: true,
+      log: appendSheetLogEntry(attendee.log, logEntry),
     };
 
     await updateWelcomeDayAttendee(attendee.rowIndex, updatedAttendee, season);

@@ -1,6 +1,5 @@
 // Copyright (c) 2025 Ahmed Fahmy
-// Developed at Ufuq.tech
-// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// Developed at Ufuq-tech.com// Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 'use client';
 
@@ -182,7 +181,13 @@ export default function EmailPanel({ onSuccess, season, readOnly }: EmailFormPro
               disabled={loading || !memberId.trim() || readOnly}
               className="bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center justify-center gap-2 w-full sm:w-auto whitespace-nowrap"
             >
-              {readOnly ? <span>🔒 View Only</span> : loading ? <span className="animate-spin">⏳</span> : <span>Send</span>}
+              {readOnly ? (
+                <span>🔒 View Only</span>
+              ) : loading ? (
+                <span className="animate-spin">⏳</span>
+              ) : (
+                <span>Send</span>
+              )}
             </button>
           </div>
           <p className="text-xs text-indigo-700 mt-2">

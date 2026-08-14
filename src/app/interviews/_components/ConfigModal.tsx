@@ -1,6 +1,5 @@
 // Copyright (c) 2025 Ahmed Fahmy
-// Developed at Ufuq.tech
-// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// Developed at Ufuq-tech.com// Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 'use client';
 
@@ -75,13 +74,27 @@ export default function ConfigModal({ isOpen, onClose, readOnly }: ConfigModalPr
   }, []);
 
   useEffect(() => {
+    let isMounted = true;
     if (isOpen) {
-      fetchConfig();
-      setSuccess(false);
-      setEditing(false);
-      setShowConfirm(false);
+      async function load() {
+        try {
+          const res = await fetch('/api/config', { credentials: 'include' });
+          if (res.ok && isMounted) {
+            const data = await res.json();
+            setConfig(data.config);
+          }
+        } catch (err) {
+          if (isMounted) setError(err instanceof Error ? err.message : 'Failed to load config');
+        } finally {
+          if (isMounted) setLoading(false);
+        }
+      }
+      load();
     }
-  }, [isOpen, fetchConfig]);
+    return () => {
+      isMounted = false;
+    };
+  }, [isOpen]);
 
   const handleSave = async () => {
     if (!config) return;

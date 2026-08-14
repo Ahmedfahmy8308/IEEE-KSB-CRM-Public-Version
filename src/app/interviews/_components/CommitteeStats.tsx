@@ -1,29 +1,28 @@
 // Copyright (c) 2025 Ahmed Fahmy
-// Developed at Ufuq.tech
-// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// Developed at Ufuq-tech.com// Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Card, Statistic, Typography, Skeleton } from 'antd';
 import {
-  MailOutlined,
-  SafetyOutlined,
-  TeamOutlined,
-  CloseCircleOutlined,
-  ExclamationCircleOutlined,
-  CheckSquareOutlined,
-  PlayCircleOutlined,
-  StopOutlined,
-  UserAddOutlined,
-  WarningOutlined,
-  HomeOutlined,
-  LaptopOutlined,
-} from '@ant-design/icons';
+  Users,
+  CheckCircle,
+  XCircle,
+  Clock,
+  Mail,
+  Send,
+  CheckSquare,
+  PlayCircle,
+  UserX,
+  ShieldCheck,
+  UserPlus,
+  AlertTriangle,
+  HelpCircle,
+  MapPin,
+  Globe,
+} from 'lucide-react';
 import { motion } from 'framer-motion';
-
-const { Title, Text } = Typography;
 
 interface CommitteeStatsProps {
   committee: string;
@@ -56,44 +55,48 @@ export default function CommitteeStats({ committee, season }: CommitteeStatsProp
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
 
-  const fetchStats = useCallback(async () => {
-    setLoading(true);
-    try {
-      const params = new URLSearchParams();
-      if (committee && committee !== 'all') {
-        params.append('committee', committee);
-      }
-      if (season) params.set('season', season);
-
-      const res = await fetch(`/api/interviews/committee/stats?${params.toString()}`);
-      if (res.ok) {
-        const data = await res.json();
-        setStats(data.stats);
-      } else if (res.status === 401) {
-        router.push('/login');
-      }
-    } catch (error) {
-      console.error('Error fetching committee stats:', error);
-    } finally {
-      setLoading(false);
-    }
-  }, [committee, season, router]);
-
   useEffect(() => {
-    fetchStats();
-  }, [committee, fetchStats]);
+    let isMounted = true;
+
+    async function loadStats() {
+      try {
+        const params = new URLSearchParams();
+        if (committee && committee !== 'all') {
+          params.append('committee', committee);
+        }
+        if (season) params.set('season', season);
+
+        const res = await fetch(`/api/interviews/committee/stats?${params.toString()}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (isMounted) setStats(data.stats);
+        } else if (res.status === 401 && isMounted) {
+          router.push('/login');
+        }
+      } catch (error) {
+        console.error('Error fetching committee stats:', error);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+
+    loadStats();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [committee, season, router]);
 
   if (loading) {
     return (
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="space-y-6 w-full max-w-full"
-      >
-        <Card>
-          <Skeleton active paragraph={{ rows: 3 }} />
-        </Card>
-      </motion.div>
+      <div className="p-6 bg-white border border-slate-200/90 rounded-2xl shadow-xs animate-pulse space-y-4">
+        <div className="h-6 bg-slate-200 rounded w-1/4" />
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+          {[...Array(10)].map((_, i) => (
+            <div key={i} className="h-20 bg-slate-100 rounded-xl" />
+          ))}
+        </div>
+      </div>
     );
   }
 
@@ -103,185 +106,163 @@ export default function CommitteeStats({ committee, season }: CommitteeStatsProp
     {
       title: 'Total Applicants',
       value: stats.total,
-      icon: <TeamOutlined className="text-2xl" />,
-      color: 'blue',
-      bgColor: 'bg-blue-50',
-      iconColor: 'text-blue-600',
+      icon: Users,
+      iconColor: 'text-[#00629B]',
+      iconBg: 'bg-blue-100/90 border-blue-200',
     },
     {
       title: 'Approved',
       value: stats.approved,
-      icon: <SafetyOutlined className="text-2xl" />,
-      color: 'green',
-      bgColor: 'bg-green-50',
-      iconColor: 'text-green-600',
+      icon: CheckCircle,
+      iconColor: 'text-emerald-700',
+      iconBg: 'bg-emerald-100/90 border-emerald-200',
     },
     {
       title: 'Rejected',
       value: stats.rejected,
-      icon: <CloseCircleOutlined className="text-2xl" />,
-      color: 'red',
-      bgColor: 'bg-red-50',
-      iconColor: 'text-red-600',
+      icon: XCircle,
+      iconColor: 'text-rose-700',
+      iconBg: 'bg-rose-100/90 border-rose-200',
     },
     {
       title: 'Pending Approval',
       value: stats.pendingApproval,
-      icon: <ExclamationCircleOutlined className="text-2xl" />,
-      color: 'yellow',
-      bgColor: 'bg-yellow-50',
-      iconColor: 'text-yellow-600',
+      icon: Clock,
+      iconColor: 'text-amber-700',
+      iconBg: 'bg-amber-100/90 border-amber-200',
     },
     {
-      title: 'Emails Sent',
+      title: 'Invited Emails',
       value: stats.emailSent,
-      icon: <MailOutlined className="text-2xl" />,
-      color: 'purple',
-      bgColor: 'bg-purple-50',
-      iconColor: 'text-purple-600',
+      icon: Mail,
+      iconColor: 'text-purple-700',
+      iconBg: 'bg-purple-100/90 border-purple-200',
     },
     {
-      title: 'Approved Email Sent',
+      title: 'Result Emails Sent',
       value: stats.approvedEmailSent,
-      icon: <MailOutlined className="text-2xl" />,
-      color: 'cyan',
-      bgColor: 'bg-cyan-50',
-      iconColor: 'text-cyan-600',
+      icon: Send,
+      iconColor: 'text-cyan-700',
+      iconBg: 'bg-cyan-100/90 border-cyan-200',
     },
     {
       title: 'Completed',
       value: stats.completed,
-      icon: <CheckSquareOutlined className="text-2xl" />,
-      color: 'cyan',
-      bgColor: 'bg-cyan-50',
-      iconColor: 'text-cyan-600',
+      icon: CheckSquare,
+      iconColor: 'text-teal-700',
+      iconBg: 'bg-teal-100/90 border-teal-200',
     },
     {
       title: 'Not Started',
       value: stats.notStarted,
-      icon: <PlayCircleOutlined className="text-2xl" />,
-      color: 'indigo',
-      bgColor: 'bg-indigo-50',
-      iconColor: 'text-indigo-600',
+      icon: PlayCircle,
+      iconColor: 'text-indigo-700',
+      iconBg: 'bg-indigo-100/90 border-indigo-200',
     },
     {
       title: 'Not Attended',
       value: stats.notAttended,
-      icon: <StopOutlined className="text-2xl" />,
-      color: 'red',
-      bgColor: 'bg-red-50',
-      iconColor: 'text-red-600',
+      icon: UserX,
+      iconColor: 'text-rose-700',
+      iconBg: 'bg-rose-100/90 border-rose-200',
     },
-    // ID validation cards (shown in both seasons for fixed 15-card layout)
     ...(season === 'S2' || season === 'S1'
       ? [
           {
             title: 'ID Matched',
             value: stats.idMatched ?? 0,
-            icon: <SafetyOutlined className="text-2xl" />,
-            color: 'emerald',
-            bgColor: 'bg-emerald-50',
-            iconColor: 'text-emerald-600',
+            icon: ShieldCheck,
+            iconColor: 'text-emerald-700',
+            iconBg: 'bg-emerald-100/90 border-emerald-200',
           },
           {
-            title: 'ID New',
+            title: 'ID New Member',
             value: stats.idNew ?? 0,
-            icon: <UserAddOutlined className="text-2xl" />,
-            color: 'sky',
-            bgColor: 'bg-sky-50',
-            iconColor: 'text-sky-600',
+            icon: UserPlus,
+            iconColor: 'text-sky-700',
+            iconBg: 'bg-sky-100/90 border-sky-200',
           },
           {
             title: 'ID Mismatch',
             value: stats.idMismatch ?? 0,
-            icon: <WarningOutlined className="text-2xl" />,
-            color: 'rose',
-            bgColor: 'bg-rose-50',
-            iconColor: 'text-rose-600',
+            icon: AlertTriangle,
+            iconColor: 'text-rose-700',
+            iconBg: 'bg-rose-100/90 border-rose-200',
           },
           {
-            title: 'ID Need Review',
+            title: 'ID Review Needed',
             value: stats.idNeedReview ?? 0,
-            icon: <ExclamationCircleOutlined className="text-2xl" />,
-            color: 'orange',
-            bgColor: 'bg-orange-50',
-            iconColor: 'text-orange-600',
+            icon: HelpCircle,
+            iconColor: 'text-amber-700',
+            iconBg: 'bg-amber-100/90 border-amber-200',
           },
         ]
       : []),
     {
-      title: 'Physical',
+      title: 'Physical Interview',
       value: stats.physical ?? 0,
-      icon: <HomeOutlined className="text-2xl" />,
-      color: 'teal',
-      bgColor: 'bg-teal-50',
-      iconColor: 'text-teal-600',
+      icon: MapPin,
+      iconColor: 'text-emerald-700',
+      iconBg: 'bg-emerald-100/90 border-emerald-200',
     },
     {
-      title: 'Online',
+      title: 'Online Interview',
       value: stats.online ?? 0,
-      icon: <LaptopOutlined className="text-2xl" />,
-      color: 'violet',
-      bgColor: 'bg-violet-50',
-      iconColor: 'text-violet-600',
+      icon: Globe,
+      iconColor: 'text-indigo-700',
+      iconBg: 'bg-indigo-100/90 border-indigo-200',
     },
   ];
 
   return (
-    <div className="space-y-6 w-full max-w-full">
-      {/* Header */}
+    <div className="space-y-4 w-full">
+      {/* Header Banner */}
       <motion.div
-        initial={{ opacity: 0, y: -20 }}
+        initial={{ opacity: 0, y: -10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3 }}
+        className="p-4 sm:p-5 bg-white border border-slate-200/90 rounded-2xl shadow-xs flex items-center justify-between"
       >
-        <Card className="shadow-lg">
-          <div className="flex items-center gap-3">
-            <div className="p-3 bg-blue-100 rounded-lg">
-              <TeamOutlined className="text-2xl text-blue-600" />
-            </div>
-            <div>
-              <Title level={3} style={{ margin: 0 }}>
-                {committee === 'all' ? 'All Committees' : committee} Statistics
-              </Title>
-              <Text type="secondary">Overview of applicants and interview progress</Text>
-            </div>
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 text-[#00629B] flex items-center justify-center font-bold">
+            <Users className="w-5 h-5" />
           </div>
-        </Card>
+          <div>
+            <h2 className="text-base sm:text-lg font-bold text-slate-900 leading-tight">
+              {committee === 'all' ? 'All Committees' : committee} Metrics
+            </h2>
+            <p className="text-xs text-slate-500">Live recruitment & evaluation summary</p>
+          </div>
+        </div>
       </motion.div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-        {statsData.map((stat, index) => (
-          <motion.div
-            key={stat.title}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.3, delay: index * 0.05 }}
-          >
-              <Card
-                className="shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer"
-                variant="borderless"
-              >
-                <div className="flex items-center gap-4">
-                  <div className={`p-3 ${stat.bgColor} rounded-lg`}>
-                    <span className={stat.iconColor}>{stat.icon}</span>
-                  </div>
-                  <div className="flex-1">
-                    <Statistic
-                      title={<Text className="text-sm text-gray-600">{stat.title}</Text>}
-                      value={stat.value}
-                      valueStyle={{
-                        fontSize: '24px',
-                        fontWeight: 'bold',
-                        color: '#1f2937',
-                      }}
-                    />
-                  </div>
+      {/* Grid of Metric Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3.5">
+        {statsData.map((stat, index) => {
+          const Icon = stat.icon;
+          return (
+            <motion.div
+              key={stat.title}
+              initial={{ opacity: 0, scale: 0.96 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.2, delay: index * 0.02 }}
+              className="p-4 bg-white border border-slate-200/90 hover:border-[#00629B]/30 rounded-2xl shadow-2xs hover:shadow-sm transition-all duration-200 flex flex-col justify-between"
+            >
+              <div className="flex items-center justify-between gap-2 mb-2.5">
+                <span className="text-xs font-medium text-slate-500 truncate">{stat.title}</span>
+                <div
+                  className={`w-8 h-8 rounded-xl border flex items-center justify-center shrink-0 ${stat.iconBg} ${stat.iconColor}`}
+                >
+                  <Icon className="w-4 h-4 stroke-[1.75]" />
                 </div>
-              </Card>
-          </motion.div>
-        ))}
+              </div>
+              <div>
+                <span className="text-xl sm:text-2xl font-bold text-slate-800 tracking-tight leading-none">
+                  {stat.value.toLocaleString()}
+                </span>
+              </div>
+            </motion.div>
+          );
+        })}
       </div>
     </div>
   );

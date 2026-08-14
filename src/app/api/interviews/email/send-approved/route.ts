@@ -1,6 +1,5 @@
 // Copyright (c) 2025 Ahmed Fahmy
-// Developed at Ufuq.tech
-// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// Developed at Ufuq-tech.com// Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 /**
  * API Route: Send Approved/Rejected Emails
@@ -95,7 +94,7 @@ function fillTemplate(
   return filled;
 }
 
-export const POST = withRole('ChairMan', async (request: NextRequest) => {
+export const POST = withRole('ChairMan', async (request: NextRequest, user) => {
   try {
     const season = request.nextUrl.searchParams.get('season') || undefined;
     const body = await request.json();
@@ -285,7 +284,14 @@ export const POST = withRole('ChairMan', async (request: NextRequest) => {
 
     if (successfulUpdates.length > 0) {
       console.log(`\n📝 Batch updating ${successfulUpdates.length} members...`);
-      await batchUpdateMembers(successfulUpdates, 'system', season);
+      await batchUpdateMembers(
+        successfulUpdates,
+        {
+          name: user.name || user.username,
+          email: user.username,
+        },
+        season
+      );
       console.log(`   ✅ Batch update complete`);
     }
 

@@ -1,34 +1,100 @@
 /*
  * Copyright (c) 2025 Ahmed Fahmy
- * Developed at Ufuq.tech
- * Licensed under the MIT License. See LICENSE file in the project root for full license information.
+ * Developed at Ufuq-tech.com * Licensed under the MIT License. See LICENSE file in the project root for full license information.
  */
 
 /* ─── Tailwind ─── */
 @import 'tailwindcss';
 
-/* ─── CSS Variables & Theme ─── */
+/* ─── CSS Variables & IEEE Brand Theme ─── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f8fafc;
+  --foreground: #0f172a;
+
+  /* IEEE Brand Colors */
+  --ieee-primary: #00629b;
+  --ieee-primary-hover: #004b77;
+  --ieee-navy: #002855;
+  --ieee-cyan: #00b5e2;
+  --ieee-accent: #0284c7;
+
+  /* Surface Tokens */
+  --surface-card: #ffffff;
+  --surface-muted: #f1f5f9;
+  --border-subtle: rgba(226, 232, 240, 0.8);
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.6);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans:
+    var(--font-geist-sans), system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    sans-serif;
+  --font-mono: var(--font-geist-mono), monospace;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
+  -webkit-tap-highlight-color: transparent;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Custom Selection Style */
+::selection {
+  background-color: rgba(0, 98, 155, 0.2);
+  color: #004b77;
+}
+
+/* Focus Ring Accessibility */
+:focus-visible {
+  outline: 2px solid #00629b;
+  outline-offset: 2px;
+}
+
+/* ─── Ultra-Sleek Custom Scrollbar ─── */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 98, 155, 0.3) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 98, 155, 0.25);
+  border-radius: 9999px;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 98, 155, 0.55);
+}
+
+::-webkit-scrollbar-thumb:active {
+  background: #00629b;
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
 }

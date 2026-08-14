@@ -1,6 +1,5 @@
 // Copyright (c) 2025 Ahmed Fahmy
-// Developed at Ufuq.tech
-// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// Developed at Ufuq-tech.com// Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 /**
  * Send Single Email API Route
@@ -43,15 +42,19 @@ export const POST = withRole('ChairMan', async (request: NextRequest, user) => {
     const template = getInterviewTemplate(member.interviewMode);
 
     // Send email
-    const success = await sendInterviewEmail(
-      member,
-      template,
-      emailSubject
-    );
+    const success = await sendInterviewEmail(member, template, emailSubject);
 
     if (success) {
       // Update isEmailSend
-      await updateMember(id, { isEmailSend: true }, user.username, season);
+      await updateMember(
+        id,
+        { isEmailSend: true },
+        {
+          name: user.name || user.username,
+          email: user.username,
+        },
+        season
+      );
 
       return NextResponse.json({
         message: 'Email sent successfully',

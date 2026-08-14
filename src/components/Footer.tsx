@@ -1,48 +1,46 @@
-// Copyright (c) 2025 Ahmed Fahmy
-// Developed at Ufuq.tech
+// Copyright (c) 2026 IEEE KSB & Ahmed Fahmy
+// Developed by UFUQ Tech
 // Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 export default function Footer() {
+  const currentYear = new Date().getFullYear();
+
   return (
-    <footer className="bg-white border-t border-gray-200 mt-auto">
-      <div className="container mx-auto px-6 py-6">
-        <div className="flex items-center justify-center">
-          {/* Credits */}
-          <div className="flex items-center gap-2 text-sm text-gray-600">
-            <span>Built with</span>
-            <svg
-              className="w-4 h-4 text-red-500 animate-pulse"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
-              <path
-                fillRule="evenodd"
-                d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z"
-                clipRule="evenodd"
-              />
-            </svg>
-            <span>by</span>
+    <footer className="w-full bg-white/70 backdrop-blur-md border-t border-slate-200/80 mt-auto transition-colors">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-5">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-500">
+          {/* Organization & Copyright */}
+          <div className="flex items-center gap-2 tracking-tight">
+            <span className="font-semibold text-slate-700">IEEE KSB CRM</span>
+            <span className="text-slate-300">•</span>
+            <span>© {currentYear} IEEE Kafr El-Sheikh Student Branch</span>
+          </div>
+
+          {/* Engineering & Attribution */}
+          <div className="flex items-center gap-1.5 text-slate-500">
+            <span>Engineered by</span>
             <a
-              href="https://ahmedfahmy.me"
+              href="https://ahmed-fahmy.engineer"
               target="_blank"
               rel="noopener noreferrer"
-              className="font-medium text-blue-600 hover:text-blue-700 transition-colors group"
+              className="font-medium text-slate-700 hover:text-blue-600 transition-colors"
             >
               Ahmed Fahmy
             </a>
-            <span className="text-gray-400">@</span>
+            <span className="text-slate-300">at</span>
             <a
-              href="https://ufuq.tech"
+              href="https://ufuq-tech.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="font-semibold text-blue-600 hover:text-blue-700 transition-colors inline-flex items-center gap-1 group"
+              className="inline-flex items-center gap-1 font-semibold text-blue-600 hover:text-blue-700 transition-colors group"
             >
-              <span>Ufuq</span>
+              <span>UFUQ Tech</span>
               <svg
-                className="w-3 h-3 group-hover:translate-x-0.5 transition-transform"
+                className="w-3 h-3 text-slate-400 group-hover:text-blue-600 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
+                aria-hidden="true"
               >
                 <path
                   strokeLinecap="round"

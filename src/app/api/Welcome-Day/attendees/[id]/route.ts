@@ -1,6 +1,5 @@
 // Copyright (c) 2025 Ahmed Fahmy
-// Developed at Ufuq.tech
-// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// Developed at Ufuq-tech.com// Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 /**
  * Welcome Day Single Attendee API Route
@@ -12,6 +11,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { withAuth } from '@/lib/middleware';
 import { readAllWelcomeDayAttendees, updateWelcomeDayAttendee } from '@/lib/sheets/welcomeDay';
 import type { User } from '@/lib/auth';
+import {
+  appendSheetLogEntry,
+  buildSheetUpdateLogEntry,
+  collectSheetFieldChanges,
+} from '@/lib/sheets/logging';
 
 export const GET = withAuth(async (request: NextRequest, user: User) => {
   try {
@@ -199,29 +203,18 @@ export const PATCH = withAuth(async (request: NextRequest, user: User) => {
       );
     }
 
-    // Update the attendee with timestamp log
-    const timestamp = new Date().toISOString();
-    const changes: string[] = [];
-
-    // Track what changed
-    for (const [key, newValue] of Object.entries(updates)) {
-      if (key === 'rowIndex' || key === 'log') continue;
-
-      const oldValue = attendee[key as keyof typeof attendee];
-      if (oldValue !== newValue) {
-        changes.push(`${key} from "${oldValue}" to "${newValue}"`);
-      }
-    }
-
-    // Create log entry in format: timestamp | username | action
-    let logEntry = '';
-    if (changes.length > 0) {
-      logEntry = `${timestamp} | ${user.username} | updated: ${changes.join('; ')}`;
-    }
-
-    // Append to existing log
-    const existingLog = attendee.log || '';
-    const newLog = existingLog ? `${existingLog}\n${logEntry}` : logEntry;
+    const changes = collectSheetFieldChanges(attendee, updates, {
+      ignoreFields: ['rowIndex', 'log'],
+    });
+    const logEntry = buildSheetUpdateLogEntry({
+      actor: {
+        name: user.name || user.username,
+        email: user.username,
+      },
+      changes,
+      action: 'updated',
+    });
+    const newLog = appendSheetLogEntry(attendee.log, logEntry);
 
     const updatedAttendee = {
       ...attendee,

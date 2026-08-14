@@ -1,6 +1,5 @@
 // Copyright (c) 2025 Ahmed Fahmy
-// Developed at Ufuq.tech
-// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// Developed at Ufuq-tech.com// Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 /**
  * Welcome Day Send Email to Unsent Attendees API Route
@@ -14,12 +13,17 @@ import {
   batchUpdateWelcomeDayAttendees,
 } from '@/lib/sheets/welcomeDay';
 import {
+  appendSheetLogEntry,
+  buildSheetUpdateLogEntry,
+  collectSheetFieldChanges,
+} from '@/lib/sheets/logging';
+import {
   sendWelcomeDayEmail,
   DEFAULT_WELCOME_DAY_EMAIL_TEMPLATE,
   closeWelcomeDayTransporter,
 } from '@/lib/email';
 
-export const POST = withRoles(['ChairMan'], async (request: NextRequest) => {
+export const POST = withRoles(['ChairMan'], async (request: NextRequest, user) => {
   try {
     const season = request.nextUrl.searchParams.get('season') || undefined;
 
@@ -86,11 +90,28 @@ export const POST = withRoles(['ChairMan'], async (request: NextRequest) => {
           );
 
           if (success) {
+            const changes = collectSheetFieldChanges(
+              attendee,
+              { isEmailSend: true },
+              {
+                ignoreFields: ['rowIndex', 'log'],
+              }
+            );
+            const logEntry = buildSheetUpdateLogEntry({
+              actor: {
+                name: user.name || user.username,
+                email: user.username,
+              },
+              changes,
+              action: 'email sent',
+            });
+
             updates.push({
               rowIndex: attendee.rowIndex!,
               data: {
                 ...attendee,
                 isEmailSend: true,
+                log: appendSheetLogEntry(attendee.log, logEntry),
               },
             });
             results.sent++;

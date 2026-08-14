@@ -1,6 +1,5 @@
 // Copyright (c) 2025 Ahmed Fahmy
-// Developed at Ufuq.tech
-// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// Developed at Ufuq-tech.com// Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 'use client';
 
@@ -182,10 +181,17 @@ export default function AttendeeDetailPage() {
   }, [params.id, season, router]);
 
   useEffect(() => {
+    let isMounted = true;
     if (params.id) {
-      fetchAttendee();
-      fetchUserRole();
+      void (async () => {
+        if (!isMounted) return;
+        await fetchAttendee();
+        await fetchUserRole();
+      })();
     }
+    return () => {
+      isMounted = false;
+    };
   }, [params.id, fetchAttendee, fetchUserRole]);
 
   const handleInputChange = (field: string, value: string | boolean) => {

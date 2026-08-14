@@ -1,6 +1,5 @@
 // Copyright (c) 2025 Ahmed Fahmy
-// Developed at Ufuq.tech
-// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// Developed at Ufuq-tech.com// Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 'use client';
 
@@ -53,7 +52,14 @@ export default function ActiveInterviewsPage() {
   }, [router]);
 
   useEffect(() => {
-    checkAuth();
+    let isMounted = true;
+    void (async () => {
+      if (!isMounted) return;
+      await checkAuth();
+    })();
+    return () => {
+      isMounted = false;
+    };
   }, [checkAuth]);
 
   const fetchActiveMembers = useCallback(async () => {
@@ -76,11 +82,19 @@ export default function ActiveInterviewsPage() {
   }, [season]);
 
   useEffect(() => {
+    let isMounted = true;
     if (user) {
-      fetchActiveMembers();
-      // Refresh every 30 seconds
-      const interval = setInterval(fetchActiveMembers, 30000);
-      return () => clearInterval(interval);
+      void (async () => {
+        if (!isMounted) return;
+        await fetchActiveMembers();
+      })();
+      const interval = setInterval(() => {
+        if (isMounted) fetchActiveMembers();
+      }, 30000);
+      return () => {
+        isMounted = false;
+        clearInterval(interval);
+      };
     }
   }, [user, fetchActiveMembers]);
 

@@ -1,10 +1,9 @@
 // Copyright (c) 2025 Ahmed Fahmy
-// Developed at Ufuq.tech
-// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// Developed at Ufuq-tech.com// Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 
 interface PullPanelProps {
   onSuccess?: () => void;
@@ -35,27 +34,41 @@ export default function PullPanel({ onSuccess, season }: PullPanelProps) {
   const [result, setResult] = useState<PullResult | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchConfig = useCallback(async () => {
+  useEffect(() => {
+    let isMounted = true;
+    async function loadConfig() {
+      try {
+        const res = await fetch(`/api/Welcome-Day/pull${season ? `?season=${season}` : ''}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (isMounted) setConfig(data);
+        } else {
+          const err = await res.json();
+          if (isMounted) setError(err.error || 'Failed to load pull configuration');
+        }
+      } catch {
+        if (isMounted) setError('Failed to load pull configuration');
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+    loadConfig();
+    return () => {
+      isMounted = false;
+    };
+  }, [season]);
+
+  const refreshConfig = async () => {
     try {
-      setLoading(true);
       const res = await fetch(`/api/Welcome-Day/pull${season ? `?season=${season}` : ''}`);
       if (res.ok) {
         const data = await res.json();
         setConfig(data);
-      } else {
-        const err = await res.json();
-        setError(err.error || 'Failed to load pull configuration');
       }
     } catch {
-      setError('Failed to load pull configuration');
-    } finally {
-      setLoading(false);
+      // ignore
     }
-  }, [season]);
-
-  useEffect(() => {
-    fetchConfig();
-  }, [fetchConfig]);
+  };
 
   const handlePull = async () => {
     try {
@@ -71,7 +84,7 @@ export default function PullPanel({ onSuccess, season }: PullPanelProps) {
 
       if (res.ok) {
         setResult(data);
-        fetchConfig(); // Refresh to show updated timestamp
+        refreshConfig();
         if (data.pulled > 0 && onSuccess) {
           onSuccess();
         }
@@ -96,7 +109,7 @@ export default function PullPanel({ onSuccess, season }: PullPanelProps) {
       });
 
       if (res.ok) {
-        fetchConfig(); // Refresh to show cleared timestamp
+        refreshConfig();
       } else {
         const data = await res.json();
         setError(data.error || 'Failed to reset timestamp');
@@ -110,10 +123,12 @@ export default function PullPanel({ onSuccess, season }: PullPanelProps) {
 
   if (loading) {
     return (
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-8">
+      <div className="bg-white rounded-2xl shadow-xs border border-slate-200 p-8">
         <div className="flex items-center justify-center">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-500"></div>
-          <span className="ml-3 text-gray-600">Loading pull configuration...</span>
+          <div className="w-6 h-6 border-2 border-slate-200 border-t-purple-600 rounded-full animate-spin" />
+          <span className="ml-3 text-xs font-semibold text-slate-500">
+            Loading pull configuration...
+          </span>
         </div>
       </div>
     );
@@ -124,18 +139,32 @@ export default function PullPanel({ onSuccess, season }: PullPanelProps) {
       {/* Reset Confirmation Dialog */}
       {showResetConfirm && (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setShowResetConfirm(false)} />
+          <div
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm"
+            onClick={() => setShowResetConfirm(false)}
+          />
           <div className="relative bg-white rounded-2xl shadow-2xl p-6 max-w-md mx-4 animate-in fade-in zoom-in">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
-                <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                <svg
+                  className="w-5 h-5 text-red-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"
+                  />
                 </svg>
               </div>
               <h3 className="text-lg font-semibold text-gray-900">Reset Pull Timestamp</h3>
             </div>
             <p className="text-sm text-gray-600 mb-6">
-              This will clear the timestamp filter. The next pull will re-import all records from the origin sheet that are not already in the database.
+              This will clear the timestamp filter. The next pull will re-import all records from
+              the origin sheet that are not already in the database.
             </p>
             <div className="flex gap-3 justify-end">
               <button
@@ -300,7 +329,12 @@ export default function PullPanel({ onSuccess, season }: PullPanelProps) {
                 <div className="animate-spin rounded-full h-4 w-4 border-2 border-red-400 border-t-transparent"></div>
               ) : (
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                  />
                 </svg>
               )}
               <span className="text-sm">Reset</span>
@@ -311,12 +345,25 @@ export default function PullPanel({ onSuccess, season }: PullPanelProps) {
         {/* Last Pull Timestamp */}
         {config?.lastPullTimestamp && (
           <div className="mt-3 bg-purple-50 border border-purple-200 rounded-lg p-3 flex items-center gap-2">
-            <svg className="w-4 h-4 text-purple-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <svg
+              className="w-4 h-4 text-purple-500 flex-shrink-0"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
             <span className="text-sm text-purple-700">
-              Last pull cutoff: <strong>{new Date(config.lastPullTimestamp).toLocaleString()}</strong>
-              <span className="text-purple-500 ml-1">(only records newer than this will be imported)</span>
+              Last pull cutoff:{' '}
+              <strong>{new Date(config.lastPullTimestamp).toLocaleString()}</strong>
+              <span className="text-purple-500 ml-1">
+                (only records newer than this will be imported)
+              </span>
             </span>
           </div>
         )}

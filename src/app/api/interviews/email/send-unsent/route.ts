@@ -1,6 +1,5 @@
 // Copyright (c) 2025 Ahmed Fahmy
-// Developed at Ufuq.tech
-// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// Developed at Ufuq-tech.com// Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 /**
  * Send Unsent Emails API Route
@@ -86,7 +85,14 @@ export const POST = withRole('ChairMan', async (request: NextRequest, user) => {
       }));
 
     if (successfulUpdates.length > 0) {
-      await batchUpdateMembers(successfulUpdates, user.username, season);
+      await batchUpdateMembers(
+        successfulUpdates,
+        {
+          name: user.name || user.username,
+          email: user.username,
+        },
+        season
+      );
     }
 
     return NextResponse.json({

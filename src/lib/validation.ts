@@ -1,6 +1,5 @@
 // Copyright (c) 2025 Ahmed Fahmy
-// Developed at Ufuq.tech
-// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// Developed at Ufuq-tech.com// Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 /**
  * Validation Module
@@ -34,7 +33,13 @@ export function normalizePhoneNumber(phone: string): string {
 export function findDuplicatePhones(applicants: ApplicantRow[]): Array<{
   phone: string;
   normalizedPhone: string;
-  members: Array<{ id: string; fullName: string; email: string; phoneNumber: string; committee: string }>;
+  members: Array<{
+    id: string;
+    fullName: string;
+    email: string;
+    phoneNumber: string;
+    committee: string;
+  }>;
 }> {
   const phoneMap = new Map<string, ApplicantRow[]>();
 
@@ -54,7 +59,13 @@ export function findDuplicatePhones(applicants: ApplicantRow[]): Array<{
   const duplicates: Array<{
     phone: string;
     normalizedPhone: string;
-    members: Array<{ id: string; fullName: string; email: string; phoneNumber: string; committee: string }>;
+    members: Array<{
+      id: string;
+      fullName: string;
+      email: string;
+      phoneNumber: string;
+      committee: string;
+    }>;
   }> = [];
 
   for (const [normalized, group] of phoneMap.entries()) {
@@ -83,7 +94,13 @@ export function findDuplicatePhones(applicants: ApplicantRow[]): Array<{
  */
 export function findDuplicateEmails(applicants: ApplicantRow[]): Array<{
   email: string;
-  members: Array<{ id: string; fullName: string; email: string; emailAddress: string; committee: string }>;
+  members: Array<{
+    id: string;
+    fullName: string;
+    email: string;
+    emailAddress: string;
+    committee: string;
+  }>;
 }> {
   const emailMap = new Map<string, ApplicantRow[]>();
 
@@ -102,7 +119,13 @@ export function findDuplicateEmails(applicants: ApplicantRow[]): Array<{
   // Filter to only include duplicates
   const duplicates: Array<{
     email: string;
-    members: Array<{ id: string; fullName: string; email: string; emailAddress: string; committee: string }>;
+    members: Array<{
+      id: string;
+      fullName: string;
+      email: string;
+      emailAddress: string;
+      committee: string;
+    }>;
   }> = [];
 
   for (const [email, group] of emailMap.entries()) {
@@ -130,7 +153,13 @@ export function findDuplicateEmails(applicants: ApplicantRow[]): Array<{
  */
 export function findDuplicateEmailAddresses(applicants: ApplicantRow[]): Array<{
   email: string;
-  members: Array<{ id: string; fullName: string; email: string; emailAddress: string; committee: string }>;
+  members: Array<{
+    id: string;
+    fullName: string;
+    email: string;
+    emailAddress: string;
+    committee: string;
+  }>;
 }> {
   const emailMap = new Map<string, ApplicantRow[]>();
 
@@ -149,7 +178,13 @@ export function findDuplicateEmailAddresses(applicants: ApplicantRow[]): Array<{
   // Filter to only include duplicates
   const duplicates: Array<{
     email: string;
-    members: Array<{ id: string; fullName: string; email: string; emailAddress: string; committee: string }>;
+    members: Array<{
+      id: string;
+      fullName: string;
+      email: string;
+      emailAddress: string;
+      committee: string;
+    }>;
   }> = [];
 
   for (const [email, group] of emailMap.entries()) {

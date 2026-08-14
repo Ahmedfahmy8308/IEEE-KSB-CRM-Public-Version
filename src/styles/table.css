@@ -1,30 +1,42 @@
 /*
- * Ant Design Table Overrides
+ * Ant Design Table & Generic Table Enhancements - IEEE Brand
  */
 
 .ant-table {
-  border-radius: 8px !important;
+  border-radius: 14px !important;
+  overflow: hidden !important;
+  border: 1px solid rgba(226, 232, 240, 0.8) !important;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04) !important;
 }
 
 .ant-table-thead > tr > th {
-  background: #3b82f6 !important;
+  background: #00629b !important;
   font-weight: 600 !important;
+  font-size: 0.825rem !important;
   color: #ffffff !important;
-  border-bottom: 2px solid #2563eb !important;
+  letter-spacing: 0.025em !important;
+  border-bottom: 2px solid #004b77 !important;
+  padding: 14px 16px !important;
 }
 
 .ant-table-thead > tr > th::before {
   display: none !important;
 }
 
+.ant-table-tbody > tr > td {
+  padding: 14px 16px !important;
+  font-size: 0.875rem !important;
+  transition: background-color 0.15s ease !important;
+}
+
 .ant-table-tbody > tr:hover > td {
-  background: #f3f4f6 !important;
+  background: #f0f7ff !important;
 }
 
 .ant-table-striped .ant-table-tbody > tr:nth-child(2n) > td {
-  background: #f9fafb;
+  background: #f8fafc;
 }
 
 .ant-table-striped .ant-table-tbody > tr:nth-child(2n):hover > td {
-  background: #f3f4f6 !important;
+  background: #f0f7ff !important;
 }

@@ -1,6 +1,5 @@
 // Copyright (c) 2025 Ahmed Fahmy
-// Developed at Ufuq.tech
-// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// Developed at Ufuq-tech.com// Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 'use client';
 
@@ -51,7 +50,7 @@ function WelcomeDayContent() {
   const [user, setUser] = useState<User | null>(null);
   const [stats, setStats] = useState<Stats | null>(null);
   const [loading, setLoading] = useState(true);
-  const [selectedCommittee, setSelectedCommittee] = useState<string | null>(null);
+  const selectedCommittee = searchParams.get('committee');
 
   // Get active tab from URL, default to 'dashboard'
   const activeTab =
@@ -94,17 +93,17 @@ function WelcomeDayContent() {
   }, [season]);
 
   useEffect(() => {
-    checkAuth();
-    fetchStats();
+    let isMounted = true;
+    void (async () => {
+      if (!isMounted) return;
+      await checkAuth();
+      await fetchStats();
+    })();
 
-    // Check if committee parameter is set
-    const committee = searchParams.get('committee');
-    if (committee) {
-      setSelectedCommittee(committee);
-    } else {
-      setSelectedCommittee(null);
-    }
-  }, [searchParams, checkAuth, fetchStats]);
+    return () => {
+      isMounted = false;
+    };
+  }, [checkAuth, fetchStats]);
 
   const handleLogout = async () => {
     await fetch('/api/auth/logout', { method: 'POST' });
@@ -117,14 +116,7 @@ function WelcomeDayContent() {
 
   const handleTabChange = (
     tab:
-      | 'dashboard'
-      | 'search'
-      | 'members'
-      | 'email'
-      | 'validation'
-      | 'attendance'
-      | 'qrcode'
-      | 'pull'
+      'dashboard' | 'search' | 'members' | 'email' | 'validation' | 'attendance' | 'qrcode' | 'pull'
   ) => {
     // Update URL with new tab
     const p = new URLSearchParams(searchParams.toString());
@@ -202,7 +194,6 @@ function WelcomeDayContent() {
                   <div className="mb-4">
                     <button
                       onClick={() => {
-                        setSelectedCommittee(null);
                         const p = new URLSearchParams(searchParams.toString());
                         p.delete('committee');
                         router.push(`/Welcome-Day/${season}?${p.toString()}`);

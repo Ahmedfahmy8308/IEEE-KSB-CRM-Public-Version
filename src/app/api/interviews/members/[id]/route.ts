@@ -1,6 +1,5 @@
 // Copyright (c) 2025 Ahmed Fahmy
-// Developed at Ufuq.tech
-// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// Developed at Ufuq-tech.com// Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 /**
  * Single Member API Route
@@ -227,7 +226,15 @@ export const PATCH = withAuth(async (request: NextRequest, user) => {
     }
 
     // Update member with allowed updates
-    const updatedMember = await updateMember(id, allowedUpdates, user.username, season);
+    const updatedMember = await updateMember(
+      id,
+      allowedUpdates,
+      {
+        name: user.name || user.username,
+        email: user.username,
+      },
+      season
+    );
 
     if (!updatedMember) {
       return NextResponse.json({ error: 'Failed to update member' }, { status: 500 });

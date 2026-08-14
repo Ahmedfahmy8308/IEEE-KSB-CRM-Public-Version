@@ -1,6 +1,5 @@
 // Copyright (c) 2025 Ahmed Fahmy
-// Developed at Ufuq.tech
-// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// Developed at Ufuq-tech.com// Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 /**
  * Send Test Email API Route
@@ -71,11 +70,12 @@ export const POST = withRole('ChairMan', async (request: NextRequest) => {
       const physicalMember = members.find((m) => (m.interviewMode || '').trim() !== 'Online');
       const onlineMember = members.find((m) => (m.interviewMode || '').trim() === 'Online');
 
-      const testCandidates: Array<{ member: typeof members[0]; mode: string }> = [];
+      const testCandidates: Array<{ member: (typeof members)[0]; mode: string }> = [];
       if (physicalMember) testCandidates.push({ member: physicalMember, mode: 'Physical' });
       if (onlineMember) testCandidates.push({ member: onlineMember, mode: 'Online' });
       // Fallback: if neither matched explicitly, use the first member
-      if (testCandidates.length === 0) testCandidates.push({ member: members[0], mode: 'Physical' });
+      if (testCandidates.length === 0)
+        testCandidates.push({ member: members[0], mode: 'Physical' });
 
       for (const { member: testMember, mode } of testCandidates) {
         try {

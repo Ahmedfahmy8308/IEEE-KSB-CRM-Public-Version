@@ -1,6 +1,5 @@
 // Copyright (c) 2025 Ahmed Fahmy
-// Developed at Ufuq.tech
-// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// Developed at Ufuq-tech.com// Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 /**
  * Welcome Day Pull Records API Route
@@ -17,6 +16,7 @@ import {
   batchAppendWelcomeDayAttendees,
   type WelcomeDayAttendee,
 } from '@/lib/sheets/welcomeDay';
+import { buildSheetActionLogEntry } from '@/lib/sheets/logging';
 
 // Origin form column mapping for Welcome Day
 // Columns: Timestamp, Email Address, Full name, Email Address, Phone number,
@@ -58,11 +58,15 @@ function parseTimestamp(ts: string): Date | null {
   if (arMatch) {
     const [, hourStr, minute, second, ampm, year, month, day] = arMatch;
     let hour = parseInt(hourStr);
-    if (ampm === 'م' && hour < 12) hour += 12;      // PM
-    if (ampm === 'ص' && hour === 12) hour = 0;       // 12 AM = 0
+    if (ampm === 'م' && hour < 12) hour += 12; // PM
+    if (ampm === 'ص' && hour === 12) hour = 0; // 12 AM = 0
     return new Date(
-      parseInt(year), parseInt(month) - 1, parseInt(day),
-      hour, parseInt(minute), parseInt(second)
+      parseInt(year),
+      parseInt(month) - 1,
+      parseInt(day),
+      hour,
+      parseInt(minute),
+      parseInt(second)
     );
   }
 
@@ -71,8 +75,12 @@ function parseTimestamp(ts: string): Date | null {
   if (gfMatch) {
     const [, month, day, year, hour, minute, second] = gfMatch;
     return new Date(
-      parseInt(year), parseInt(month) - 1, parseInt(day),
-      parseInt(hour), parseInt(minute), parseInt(second)
+      parseInt(year),
+      parseInt(month) - 1,
+      parseInt(day),
+      parseInt(hour),
+      parseInt(minute),
+      parseInt(second)
     );
   }
 
@@ -101,7 +109,7 @@ function getPullConfig(season: string): PullConfig {
   };
 }
 
-export const POST = withRoles(['ChairMan'], async (request: NextRequest) => {
+export const POST = withRoles(['ChairMan'], async (request: NextRequest, user) => {
   try {
     const season = request.nextUrl.searchParams.get('season') || 'S1';
     const config = getPullConfig(season);
@@ -212,7 +220,14 @@ export const POST = withRoles(['ChairMan'], async (request: NextRequest) => {
         attended: '',
         isEmailSend: false,
         note: '',
-        log: `pull-${new Date().toISOString().split('T')[0]}`,
+        log: buildSheetActionLogEntry({
+          actor: {
+            name: user.name || user.username,
+            email: user.username,
+          },
+          action: 'created via pull',
+          details: `source=google-form; timestamp=${timestamp || 'empty'}`,
+        }),
       };
 
       newRecords.push(attendee);
@@ -225,9 +240,10 @@ export const POST = withRoles(['ChairMan'], async (request: NextRequest) => {
 
     // Always save the max timestamp from ALL origin rows we've seen.
     // This ensures deleted records won't be re-imported on future pulls.
-    const finalTimestamp = maxOriginTimestamp && (!latestTimestamp || maxOriginTimestamp > latestTimestamp)
-      ? maxOriginTimestamp
-      : latestTimestamp;
+    const finalTimestamp =
+      maxOriginTimestamp && (!latestTimestamp || maxOriginTimestamp > latestTimestamp)
+        ? maxOriginTimestamp
+        : latestTimestamp;
     if (finalTimestamp) {
       await updateConfig({
         pull: {

@@ -1,10 +1,9 @@
 // Copyright (c) 2025 Ahmed Fahmy
-// Developed at Ufuq.tech
-// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// Developed at Ufuq-tech.com// Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { useToast } from '@/components/ToastProvider';
 
 interface SchedulePanelProps {
@@ -25,12 +24,41 @@ export default function SchedulePanel({ onSuccess, season, readOnly }: ScheduleP
   const [scheduleMessage, setScheduleMessage] = useState('');
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [confirmAction, setConfirmAction] = useState<'assign' | 'generateIds' | null>(null);
-  const [byDay, setByDay] = useState<Record<string, { total: number; physical: number; online: number }> | null>(null);
+  const [byDay, setByDay] = useState<Record<
+    string,
+    { total: number; physical: number; online: number }
+  > | null>(null);
   const [physicalCount, setPhysicalCount] = useState(0);
   const [onlineCount, setOnlineCount] = useState(0);
   const [totalAssigned, setTotalAssigned] = useState(0);
 
-  const fetchByDayStats = useCallback(async () => {
+  useEffect(() => {
+    let isMounted = true;
+    async function loadStats() {
+      try {
+        const res = await fetch(
+          `/api/interviews/members/stats${season ? `?season=${season}` : ''}`
+        );
+        if (res.ok && isMounted) {
+          const data = await res.json();
+          if (data.stats?.byDay) {
+            setByDay(data.stats.byDay);
+          }
+          setPhysicalCount(data.stats?.physical ?? 0);
+          setOnlineCount(data.stats?.online ?? 0);
+          setTotalAssigned(data.stats?.assigned ?? 0);
+        }
+      } catch {
+        // silently fail
+      }
+    }
+    loadStats();
+    return () => {
+      isMounted = false;
+    };
+  }, [season]);
+
+  const refreshStats = async () => {
     try {
       const res = await fetch(`/api/interviews/members/stats${season ? `?season=${season}` : ''}`);
       if (res.ok) {
@@ -45,11 +73,7 @@ export default function SchedulePanel({ onSuccess, season, readOnly }: ScheduleP
     } catch {
       // silently fail
     }
-  }, [season]);
-
-  useEffect(() => {
-    fetchByDayStats();
-  }, [fetchByDayStats]);
+  };
 
   const openConfirmDialog = (action: 'assign' | 'generateIds') => {
     // For assign action, check if dates are filled
@@ -99,7 +123,7 @@ export default function SchedulePanel({ onSuccess, season, readOnly }: ScheduleP
       if (res.ok) {
         setScheduleMessage(' ' + data.message);
         showToast(data.message, 'success');
-        await fetchByDayStats();
+        await refreshStats();
         onSuccess?.();
       } else {
         setScheduleMessage(' ' + data.error);
@@ -126,7 +150,7 @@ export default function SchedulePanel({ onSuccess, season, readOnly }: ScheduleP
       if (res.ok) {
         setScheduleMessage(data.message);
         showToast(data.message, 'success');
-        await fetchByDayStats();
+        await refreshStats();
         onSuccess?.();
       } else {
         setScheduleMessage(data.error);
@@ -273,7 +297,11 @@ export default function SchedulePanel({ onSuccess, season, readOnly }: ScheduleP
                 disabled={scheduleLoading || readOnly}
                 className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
               >
-                {readOnly ? '🔒 View Only' : scheduleLoading ? '⏳ Scheduling...' : 'Assign Interview Schedule'}
+                {readOnly
+                  ? '🔒 View Only'
+                  : scheduleLoading
+                    ? '⏳ Scheduling...'
+                    : 'Assign Interview Schedule'}
               </button>
               <button
                 type="button"
@@ -281,7 +309,11 @@ export default function SchedulePanel({ onSuccess, season, readOnly }: ScheduleP
                 disabled={scheduleLoading || readOnly}
                 className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
               >
-                {readOnly ? '🔒 View Only' : scheduleLoading ? '⏳ Generating IDs...' : 'Generate IDs Only'}
+                {readOnly
+                  ? '🔒 View Only'
+                  : scheduleLoading
+                    ? '⏳ Generating IDs...'
+                    : 'Generate IDs Only'}
               </button>
             </div>
           </form>
@@ -328,7 +360,10 @@ export default function SchedulePanel({ onSuccess, season, readOnly }: ScheduleP
                   .map(([day, counts]) => {
                     const date = new Date(day + 'T00:00:00');
                     const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
-                    const monthDay = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    const monthDay = date.toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                    });
                     return (
                       <div
                         key={day}
@@ -338,8 +373,12 @@ export default function SchedulePanel({ onSuccess, season, readOnly }: ScheduleP
                         <p className="text-sm font-semibold text-indigo-800 mb-1">{monthDay}</p>
                         <p className="text-2xl font-bold text-indigo-900">{counts.total}</p>
                         <div className="flex justify-center gap-2 mt-1">
-                          <span className="text-xs text-emerald-700 bg-emerald-50 rounded px-1.5 py-0.5">Physical {counts.physical}</span>
-                          <span className="text-xs text-violet-700 bg-violet-50 rounded px-1.5 py-0.5">Online {counts.online}</span>
+                          <span className="text-xs text-emerald-700 bg-emerald-50 rounded px-1.5 py-0.5">
+                            Physical {counts.physical}
+                          </span>
+                          <span className="text-xs text-violet-700 bg-violet-50 rounded px-1.5 py-0.5">
+                            Online {counts.online}
+                          </span>
                         </div>
                       </div>
                     );

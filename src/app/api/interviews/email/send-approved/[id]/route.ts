@@ -1,6 +1,5 @@
 // Copyright (c) 2025 Ahmed Fahmy
-// Developed at Ufuq.tech
-// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// Developed at Ufuq-tech.com// Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 /**
  * API Route: Send Approved/Rejected Email to Specific Member
@@ -12,7 +11,8 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { requireRole } from '@/lib/middleware';
-import { findRowById, updateRow } from '@/lib/sheets';
+import { findRowById } from '@/lib/sheets';
+import { updateMember } from '@/lib/members';
 import { sendEmail } from '@/lib/email';
 import { INTERVIEW_STATE, APPROVAL_STATUS } from '@/lib/constants';
 import * as fs from 'fs';
@@ -83,6 +83,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   // Auth: ChairMan only
   const authResult = await requireRole(request, 'ChairMan');
   if (authResult instanceof NextResponse) return authResult;
+  const { user } = authResult;
 
   try {
     const season = request.nextUrl.searchParams.get('season') || undefined;
@@ -161,11 +162,16 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     // Send email
     await sendEmail(member.email, subject, emailContent);
 
-    // Update the sheet to mark email as sent
-    if (member.rowIndex) {
-      member.isApprovedEmailSend = true;
-      await updateRow(member.rowIndex, member, season);
-    }
+    // Update the sheet to mark email as sent with standardized log entry
+    await updateMember(
+      memberId,
+      { isApprovedEmailSend: true },
+      {
+        name: user.name || user.username,
+        email: user.username,
+      },
+      season
+    );
 
     const statusText = isApproved ? 'acceptance' : 'rejection';
     return NextResponse.json(

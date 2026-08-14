@@ -1,6 +1,5 @@
 // Copyright (c) 2025 Ahmed Fahmy
-// Developed at Ufuq.tech
-// Licensed under the MIT License. See LICENSE file in the project root for full license information.
+// Developed at Ufuq-tech.com// Licensed under the MIT License. See LICENSE file in the project root for full license information.
 
 /**
  * Welcome Day Mark Attendance API Route
@@ -13,6 +12,11 @@ import { NextRequest, NextResponse } from 'next/server';
 import { withRoles } from '@/lib/middleware';
 import { readAllWelcomeDayAttendees, updateWelcomeDayAttendee } from '@/lib/sheets/welcomeDay';
 import type { User } from '@/lib/auth';
+import {
+  appendSheetLogEntry,
+  buildSheetUpdateLogEntry,
+  collectSheetFieldChanges,
+} from '@/lib/sheets/logging';
 
 async function handler(request: NextRequest, user: User) {
   try {
@@ -53,12 +57,27 @@ async function handler(request: NextRequest, user: User) {
       });
     }
 
+    const changes = collectSheetFieldChanges(
+      attendee,
+      { attended: 'true' },
+      {
+        ignoreFields: ['rowIndex', 'log'],
+      }
+    );
+    const logEntry = buildSheetUpdateLogEntry({
+      actor: {
+        name: user.name || user.username,
+        email: user.username,
+      },
+      changes,
+      action: 'marked attendance',
+    });
+
     // Mark as attended
-    const timestamp = new Date().toISOString();
     const updatedAttendee = {
       ...attendee,
       attended: 'true',
-      log: `${attendee.log || ''}\n[${timestamp}] Marked as attended by ${user.username}`.trim(),
+      log: appendSheetLogEntry(attendee.log, logEntry),
     };
 
     await updateWelcomeDayAttendee(attendee.rowIndex!, updatedAttendee, season);
